@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
 import DarkModeToggle from '@/components/dark-mode-toggle';
-import { Separator } from '@/components/ui/separator';
 
 function Header({ className }: { className?: string }) {
   return (
