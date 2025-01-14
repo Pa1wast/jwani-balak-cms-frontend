@@ -8,7 +8,11 @@ import { DarkModeProvider } from '@/contexts/dark-mode-context';
 import Home from '@/pages/home';
 import DashboardLayout from '@/components/ui/dashboard-layout';
 import Dashboard from '@/pages/dashboard';
-import Products from './pages/products';
+import Products from '@/pages/products';
+import Transactions from '@/pages/transactions';
+import Invoices from '@/pages/invoices';
+import Reports from './pages/reports';
+import KleshNotes from './pages/klesh-notes';
 
 const queryClient = new QueryClient();
 
@@ -23,6 +27,10 @@ function App() {
             <Route path="dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="/dashboard/products" element={<Products />} />
+              <Route path="/dashboard/transactions" element={<Transactions />} />
+              <Route path="/dashboard/invoices" element={<Invoices />} />
+              <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
+              <Route path="/dashboard/reports" element={<Reports />} />
             </Route>
           </Routes>
         </BrowserRouter>
