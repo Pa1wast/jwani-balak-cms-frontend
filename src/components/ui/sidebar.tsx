@@ -32,7 +32,7 @@ function Sidebar({ className }: { className?: string }) {
       <Button
         variant="outline"
         size="sm"
-        className="text-primary-foreground bg-primary mb-10 dark:bg-primary-foreground dark:text-primary dark:hover:bg-primary/10 dark:hover:text-primary border-primary-foreground/20 dark:border-primary/20 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+        className="hidden md:flex  text-primary-foreground bg-primary mb-10 dark:bg-primary-foreground dark:text-primary dark:hover:bg-primary/10 dark:hover:text-primary border-primary-foreground/20 dark:border-primary/20 hover:bg-primary-foreground/10 hover:text-primary-foreground"
         asChild
       >
         <Link to="/">
