@@ -81,9 +81,11 @@ function Home() {
           <p className="text-xs md:text-sm">View, edit, and manage companies here.</p>
         </div>
 
-        {companies.map(company => (
-          <CompanyCard key={company.id} company={company} />
-        ))}
+        <div className="sm:grid md:grid-cols-3 lg:grid-cols-4 grid-cols-2 gap-2">
+          {companies.map(company => (
+            <CompanyCard key={company.id} company={company} />
+          ))}
+        </div>
       </main>
     </div>
   );

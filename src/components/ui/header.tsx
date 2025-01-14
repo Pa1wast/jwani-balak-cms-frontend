@@ -31,47 +31,49 @@ function Header({ className }: { className?: string }) {
 
         <div
           className={cn(
-            ' h-6 w-[1px] bg-muted-foreground/20 md:mx-4',
+            ' h-6 w-[1px] bg-muted-foreground/20 sm:mx-4',
             pathname === '/' && 'hidden'
           )}
         />
 
-        {pathname !== '/' && (
-          <Button variant="outline" size="icon" className="flex text-xs" asChild>
-            <Link to="/">
-              <ArrowLeft />
-            </Link>
-          </Button>
-        )}
+        <div className="flex items-center gap-1">
+          {pathname !== '/' && (
+            <Button variant="outline" size="icon" className="flex text-xs" asChild>
+              <Link to="/">
+                <ArrowLeft />
+              </Link>
+            </Button>
+          )}
 
-        {pathname !== '/' && (
-          <Select
-            onValueChange={value => setSelectedCompany(value)}
-            value={selectedCompanyId as string}
-          >
-            <SelectTrigger className="w-32 md:w-40">
-              <SelectValue placeholder="Company" />
-            </SelectTrigger>
-            <SelectContent>
-              {companies.map(company => (
-                <SelectItem key={company.id} value={company.id.toString()}>
-                  <div className="flex gap-2 w-full items-center justify-between text-xs">
-                    <Avatar className="h-7 w-7 rounded-none">
-                      <AvatarImage
-                        src={company.logo}
-                        alt={company.name}
-                        className="dark:bg-white"
-                      />
-                      <AvatarFallback>{company.name[0].toUpperCase()}</AvatarFallback>
-                    </Avatar>
+          {pathname !== '/' && (
+            <Select
+              onValueChange={value => setSelectedCompany(value)}
+              value={selectedCompanyId as string}
+            >
+              <SelectTrigger className="w-32 md:w-40">
+                <SelectValue placeholder="Company" />
+              </SelectTrigger>
+              <SelectContent>
+                {companies.map(company => (
+                  <SelectItem key={company.id} value={company.id.toString()}>
+                    <div className="flex gap-2 w-full items-center justify-between text-xs">
+                      <Avatar className="h-7 w-7 rounded-none">
+                        <AvatarImage
+                          src={company.logo}
+                          alt={company.name}
+                          className="dark:bg-white"
+                        />
+                        <AvatarFallback>{company.name[0].toUpperCase()}</AvatarFallback>
+                      </Avatar>
 
-                    <p className="text-xs">{company.name}</p>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+                      <p className="text-xs">{company.name}</p>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </div>
 
       <DarkModeToggle />
