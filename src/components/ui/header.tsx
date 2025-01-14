@@ -13,11 +13,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { companies } from '@/pages/home';
-import { useSelectedCompany } from '@/contexts/selected-company-context';
+import { useCompanies } from '@/contexts/companies-context';
 
 function Header({ className }: { className?: string }) {
   const { pathname } = useLocation();
-  const { selectedCompanyId, setSelectedCompany } = useSelectedCompany();
+  const { selectedCompanyId, setSelectedCompany } = useCompanies();
 
   return (
     <div

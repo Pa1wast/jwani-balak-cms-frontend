@@ -13,14 +13,14 @@ import Transactions from '@/pages/transactions';
 import Invoices from '@/pages/invoices';
 import Reports from './pages/reports';
 import KleshNotes from './pages/klesh-notes';
-import { SelectedCompanyProvider } from './contexts/selected-company-context';
+import { CompaniesProvider } from './contexts/companies-context';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <DarkModeProvider>
-      <SelectedCompanyProvider>
+      <CompaniesProvider>
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
@@ -37,7 +37,7 @@ function App() {
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>
-      </SelectedCompanyProvider>
+      </CompaniesProvider>
     </DarkModeProvider>
   );
 }

@@ -4,6 +4,9 @@ import Sort from '@/components/navigation/sort';
 import CompanyCard from '@/components/ui/company-card';
 import Header from '@/components/ui/header';
 import RegisterCompanyForm from '@/components/ui/register-company-form';
+import SelectGridView from '@/components/ui/select-grid-view';
+import { listViewTypes, useCompanies } from '@/contexts/companies-context';
+import { cn } from '@/lib/utils';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const companies = [
@@ -76,6 +79,7 @@ export const companies = [
 ];
 
 function Home() {
+  const { listView } = useCompanies();
   return (
     <div>
       <Header className="fixed z-50 top-0 bg-background" />
@@ -86,17 +90,26 @@ function Home() {
         </div>
 
         <div className="space-y-4">
-          <div className="flex justify-between">
-            <div className="flex gap-1">
+          <div className="flex justify-between gap-2 flex-wrap">
+            <div className="flex gap-1 flex-wrap md:flex-nowrap">
               <Search placeholder="Search companies..." />
               <Filter />
               <Sort />
+
+              <div className="h-[80%] my-auto w-[2px] bg-primary/20 mx-2 hidden md:block" />
+
+              <SelectGridView />
             </div>
 
             <RegisterCompanyForm />
           </div>
 
-          <div className="grid md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2">
+          <div
+            className={cn(
+              'grid md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2',
+              listView === listViewTypes.ROW && 'flex flex-col'
+            )}
+          >
             {companies.map(company => (
               <CompanyCard key={company.id} company={company} />
             ))}

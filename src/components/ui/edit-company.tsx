@@ -14,35 +14,71 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import useIsMobile from '@/hooks/useIsMobile';
 
-function EditCompany() {
+interface EditCompanyProps {
+  dialog?: boolean;
+}
+
+function EditCompany({ dialog }: EditCompanyProps) {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  if (isMobile || dialog)
+    return (
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="ml-auto absolute right-1 top-1 z-10">
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="mx-4">
+            <DropdownMenuItem className="cursor-pointer">
+              <Pen /> Edit
+            </DropdownMenuItem>
+
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setIsDeletePopupOpen(true)}>
+              <Trash /> Delete
+              <CircleAlert className="ml-auto text-destructive dark:text-red-500" />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <AlertDialog open={isDeletePopupOpen} onOpenChange={setIsDeletePopupOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
+    );
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="ml-auto absolute right-1 top-1 z-10">
-            <Ellipsis />
-          </Button>
-        </DropdownMenuTrigger>
+    <div className="flex gap-1">
+      <Button size="sm" variant="outline">
+        <Pen /> Edit
+      </Button>
 
-        <DropdownMenuContent className="mx-4">
-          <DropdownMenuItem className="cursor-pointer">
-            <Pen /> Edit
-          </DropdownMenuItem>
-
-          <DropdownMenuItem className="cursor-pointer" onClick={() => setIsDeletePopupOpen(true)}>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button size="sm" variant="destructive">
             <Trash /> Delete
-            <CircleAlert className="ml-auto text-destructive dark:text-red-500" />
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <AlertDialog open={isDeletePopupOpen} onOpenChange={setIsDeletePopupOpen}>
+          </Button>
+        </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -56,7 +92,7 @@ function EditCompany() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
 

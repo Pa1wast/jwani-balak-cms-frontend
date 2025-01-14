@@ -1,17 +1,21 @@
+import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
-function Filter() {
+interface FilterProps {
+  className?: string;
+}
+
+function Filter({ className }: FilterProps) {
   return (
-    <div>
-      <Select>
-        <SelectTrigger className="w-32 md:w-40">
-          <SelectValue placeholder="Filter By" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="filter">Filter</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <Select>
+      <SelectTrigger className={cn('w-32 md:w-40', className)}>
+        <SelectValue placeholder="Filter By" />
+      </SelectTrigger>
+
+      <SelectContent>
+        <SelectItem value="filter">Filter</SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
 

@@ -1,22 +1,11 @@
 import { Outlet } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 
 import Header from '@/components/ui/header';
 import Sidebar from '@/components/ui/sidebar';
+import useIsMobile from '@/hooks/useIsMobile';
 
 function DashboardLayout() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const isMobile = useIsMobile();
 
   return isMobile ? <MobileDashboardLayout /> : <DesktopDashboardLayout />;
 }
