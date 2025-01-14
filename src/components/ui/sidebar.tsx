@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   ArrowUpDown,
   BookOpenText,
   Boxes,
@@ -9,8 +8,6 @@ import {
 } from 'lucide-react';
 import SidebarItem from './sidebar-item';
 import { cn } from '@/lib/utils';
-import { Button } from './button';
-import { Link } from 'react-router-dom';
 
 const items = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -29,16 +26,6 @@ function Sidebar({ className }: { className?: string }) {
         className
       )}
     >
-      {/* <Button
-        variant="outline"
-        size="sm"
-        className="hidden md:flex  text-primary-foreground bg-primary mb-10 dark:bg-primary-foreground dark:text-primary dark:hover:bg-primary/10 dark:hover:text-primary border-primary-foreground/20 dark:border-primary/20 hover:bg-primary-foreground/10 hover:text-primary-foreground"
-        asChild
-      >
-        <Link to="/">
-          <ArrowLeft /> <span>Companies</span>
-        </Link>
-      </Button> */}
       {items.map(item => (
         <SidebarItem key={item.href} href={item.href} name={item.name} icon={item.icon} />
       ))}
