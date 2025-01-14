@@ -1,7 +1,24 @@
 import { cn } from '@/lib/utils';
 import DarkModeToggle from '@/components/dark-mode-toggle';
+import { Button } from './button';
+import { ArrowLeft } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+import { companies } from '@/pages/home';
+import { useSelectedCompany } from '@/contexts/selected-company-context';
 
 function Header({ className }: { className?: string }) {
+  const { pathname } = useLocation();
+  const { selectedCompanyId, setSelectedCompany } = useSelectedCompany();
+
   return (
     <div
       className={cn(
@@ -17,19 +34,49 @@ function Header({ className }: { className?: string }) {
           </p>
         </div>
 
-        <div className="hidden sm:block h-10 w-[1px] bg-muted-foreground" />
+        <div
+          className={cn(
+            'hidden sm:block h-10 w-[1px] bg-muted-foreground',
+            pathname === '/' && 'sm:hidden'
+          )}
+        />
 
-        <div className="gap-1 items-center hidden sm:flex">
-          <img
-            src="../../public/test-company-logo.png"
-            alt="Company Logo"
-            className="w-16 h-8 rounded-md border dark:bg-white"
-          />
+        {pathname !== '/' && (
+          <Select
+            onValueChange={value => setSelectedCompany(value)}
+            value={selectedCompanyId as string}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Company" />
+            </SelectTrigger>
+            <SelectContent>
+              {companies.map(company => (
+                <SelectItem key={company.id} value={company.id.toString()}>
+                  <div className="flex gap-2 w-full items-center justify-between text-xs">
+                    <Avatar className="h-7 w-7 rounded-none">
+                      <AvatarImage
+                        src={company.logo}
+                        alt={company.name}
+                        className="dark:bg-white"
+                      />
+                      <AvatarFallback>{company.name[0].toUpperCase()}</AvatarFallback>
+                    </Avatar>
 
-          <p className="text-sm font-semibold">Huewai</p>
-        </div>
+                    <p className="text-xs">{company.name}</p>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
-
+      {pathname !== '/' && (
+        <Button variant="outline" size="sm" className="flex md:hidden ml-auto mr-2 text-xs" asChild>
+          <Link to="/">
+            <ArrowLeft className="w-2 h-2" /> <span>Companies</span>
+          </Link>
+        </Button>
+      )}
       <DarkModeToggle />
     </div>
   );

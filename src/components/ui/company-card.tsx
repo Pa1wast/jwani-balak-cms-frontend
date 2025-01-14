@@ -3,6 +3,7 @@ import { Button } from './button';
 import { Card, CardContent, CardFooter, CardHeader } from './card';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { Link } from 'react-router-dom';
+import { useSelectedCompany } from '@/contexts/selected-company-context';
 
 interface CompanyCardProps {
   company: { id: number; name: string; address: string; logo?: string };
@@ -10,6 +11,8 @@ interface CompanyCardProps {
 
 function CompanyCard({ company }: CompanyCardProps) {
   const { id, name, address, logo } = company;
+  const { setSelectedCompany } = useSelectedCompany();
+
   return (
     <Card>
       <CardHeader className="relative space-y-8">
@@ -40,7 +43,7 @@ function CompanyCard({ company }: CompanyCardProps) {
       </CardContent>
 
       <CardFooter>
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild onClick={() => setSelectedCompany(id.toString())}>
           <Link to={`/dashboard?id=${id}`}>
             View Details <ArrowRight />
           </Link>

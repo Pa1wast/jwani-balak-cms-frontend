@@ -13,28 +13,31 @@ import Transactions from '@/pages/transactions';
 import Invoices from '@/pages/invoices';
 import Reports from './pages/reports';
 import KleshNotes from './pages/klesh-notes';
+import { SelectedCompanyProvider } from './contexts/selected-company-context';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <DarkModeProvider>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <BrowserRouter>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="dashboard" element={<DashboardLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="/dashboard/products" element={<Products />} />
-              <Route path="/dashboard/transactions" element={<Transactions />} />
-              <Route path="/dashboard/invoices" element={<Invoices />} />
-              <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
-              <Route path="/dashboard/reports" element={<Reports />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </QueryClientProvider>
+      <SelectedCompanyProvider>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <BrowserRouter>
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="dashboard" element={<DashboardLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="/dashboard/products" element={<Products />} />
+                <Route path="/dashboard/transactions" element={<Transactions />} />
+                <Route path="/dashboard/invoices" element={<Invoices />} />
+                <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
+                <Route path="/dashboard/reports" element={<Reports />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </SelectedCompanyProvider>
     </DarkModeProvider>
   );
 }

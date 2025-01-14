@@ -1,7 +1,7 @@
 import CompanyCard from '@/components/ui/company-card';
 import Header from '@/components/ui/header';
 
-const companies = [
+export const companies = [
   {
     id: 0,
     name: 'Amazon',
