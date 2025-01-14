@@ -1,11 +1,15 @@
-import { Button } from './components/ui/button';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div>
-      Jwani Balak CMS
-      <Button>Click me</Button>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="">Jwani Balak CMS</div>
+
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 
