@@ -82,7 +82,7 @@ function RegisterCompanyForm() {
                 <FormItem>
                   <FormLabel className="font-semibold">Logo</FormLabel>
 
-                  <FormControl>
+                  <FormControl className="cursor-pointer">
                     <Input {...field} type="file" />
                   </FormControl>
 
