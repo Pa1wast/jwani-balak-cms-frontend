@@ -1,6 +1,7 @@
 import CompanyCard from '@/components/ui/company-card';
 import Header from '@/components/ui/header';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const companies = [
   {
     id: 0,

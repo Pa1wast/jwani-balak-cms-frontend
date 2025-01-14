@@ -22,31 +22,34 @@ function Header({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'border-b border-foreground dark:border-primary-foreground w-full px-2 py-2 flex justify-between items-center',
+        'border-b items-center border-foreground dark:border-primary-foreground w-full px-2 py-2 flex justify-between  flex-wrap',
         className
       )}
     >
-      <div className="flex items-center gap-3 md:gap-6">
-        <div className="flex flex-col">
-          <p className="font-semibold md:font-bold text-lg md:text-2xl">JWANI BALAK</p>
-          <p className="text-xs md:font-semibold text-muted-foreground">
-            Company Management System
-          </p>
-        </div>
+      <div className="flex items-center gap-2 md:gap-6">
+        <p className="font-semibold md:font-bold text-sm md:text-xl">JWANI BALAK</p>
 
         <div
           className={cn(
-            'hidden sm:block h-10 w-[1px] bg-muted-foreground',
-            pathname === '/' && 'sm:hidden'
+            ' h-6 w-[1px] bg-muted-foreground/20 md:mx-4',
+            pathname === '/' && 'hidden'
           )}
         />
+
+        {pathname !== '/' && (
+          <Button variant="outline" size="icon" className="flex text-xs" asChild>
+            <Link to="/">
+              <ArrowLeft />
+            </Link>
+          </Button>
+        )}
 
         {pathname !== '/' && (
           <Select
             onValueChange={value => setSelectedCompany(value)}
             value={selectedCompanyId as string}
           >
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-32 md:w-40">
               <SelectValue placeholder="Company" />
             </SelectTrigger>
             <SelectContent>
@@ -70,13 +73,7 @@ function Header({ className }: { className?: string }) {
           </Select>
         )}
       </div>
-      {pathname !== '/' && (
-        <Button variant="outline" size="sm" className="flex md:hidden ml-auto mr-2 text-xs" asChild>
-          <Link to="/">
-            <ArrowLeft className="w-2 h-2" /> <span>Companies</span>
-          </Link>
-        </Button>
-      )}
+
       <DarkModeToggle />
     </div>
   );
