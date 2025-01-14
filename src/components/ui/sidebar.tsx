@@ -22,7 +22,7 @@ function Sidebar({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'flex justify-between border-t border-foreground p-2 md:border-t-0 md:border-r md:flex-col md:justify-start md:gap-4 md:pt-10',
+        'flex justify-between text-background bg-primary p-2 md:border-t-0 md:border-r md:flex-col md:justify-start md:gap-4 md:pt-10 dark:bg-primary-foreground',
         className
       )}
     >
