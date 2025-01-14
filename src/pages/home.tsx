@@ -1,11 +1,9 @@
 import Filter from '@/components/navigation/filter';
 import Search from '@/components/navigation/search';
 import Sort from '@/components/navigation/sort';
-import { Button } from '@/components/ui/button';
 import CompanyCard from '@/components/ui/company-card';
 import Header from '@/components/ui/header';
 import RegisterCompanyForm from '@/components/ui/register-company-form';
-import { Plus } from 'lucide-react';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const companies = [
@@ -79,9 +77,9 @@ export const companies = [
 
 function Home() {
   return (
-    <div className="overflow-hidden h-screen">
-      <Header />
-      <main className="px-2 py-4 space-y-12 ">
+    <div>
+      <Header className="fixed z-50 top-0 bg-background" />
+      <main className="px-2 py-4 space-y-12 mt-16">
         <div>
           <h1 className="font-semibold text-lg md:text-xl">Comapnies</h1>
           <p className="text-xs md:text-sm">View, edit, and manage companies here.</p>
@@ -98,7 +96,7 @@ function Home() {
             <RegisterCompanyForm />
           </div>
 
-          <div className="grid md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 overflow-auto h-[80vh] pb-48 pr-2">
+          <div className="grid md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2">
             {companies.map(company => (
               <CompanyCard key={company.id} company={company} />
             ))}
