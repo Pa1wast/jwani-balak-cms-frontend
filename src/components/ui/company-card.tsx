@@ -13,7 +13,7 @@ function CompanyCard({ company }: CompanyCardProps) {
   return (
     <Card>
       <CardHeader className="relative space-y-8">
-        <Button variant="ghost" size="icon" className="ml-auto absolute right-0 top-0 z-10">
+        <Button variant="ghost" size="icon" className="ml-auto absolute right-1 top-1 z-10">
           <Ellipsis />
         </Button>
 
