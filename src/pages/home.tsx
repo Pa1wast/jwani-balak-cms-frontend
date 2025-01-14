@@ -5,7 +5,8 @@ function Home() {
   return (
     <div>
       <Header />
-      <Link to="/dashboard">Dashboard</Link>
+      <h1>Comapnies</h1>
+      <p>View, edit, and manage companies here.</p>
     </div>
   );
 }
