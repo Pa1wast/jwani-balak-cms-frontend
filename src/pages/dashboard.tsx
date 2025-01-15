@@ -1,10 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { useCompanies } from '@/contexts/companies-context';
-import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { companies } from './home';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Download, FilePlus, Image, Pen, Trash, Upload } from 'lucide-react';
+import { Download, FilePlus, Image, Pen, Trash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function Dashboard() {
