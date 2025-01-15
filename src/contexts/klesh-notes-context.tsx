@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { createContext, ReactNode, useContext } from 'react';
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 
 interface KleshNotesProvider {
   selectedNoteId: string | undefined;

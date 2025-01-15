@@ -1,8 +1,6 @@
-import { BarChart, barElementClasses } from '@mui/x-charts/BarChart';
-import { axisClasses } from '@mui/x-charts/ChartsAxis';
-import { getPastMonths } from '@/utils/date';
+// import { getPastMonths } from '@/utils/date';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
-import { useDarkMode } from '@/contexts/dark-mode-context';
+// import { useDarkMode } from '@/contexts/dark-mode-context';
 import { Button } from './button';
 import { ArrowRight, FilePlus } from 'lucide-react';
 import { useState } from 'react';
@@ -15,14 +13,14 @@ export enum transactionTypes {
   ALL = 'ALL',
 }
 
-const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const profitsData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const months = getPastMonths(6);
-const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
+// const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
+// const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
+// const profitsData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
+// const months = getPastMonths(6);
+// const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
 
 function CompanyLineChart() {
-  const { isDarkMode } = useDarkMode();
+  // const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(0);
   const [showDataFor, setShowDataFor] = useState(transactionTypes.ALL);
 

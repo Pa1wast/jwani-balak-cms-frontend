@@ -1,7 +1,7 @@
 import { Ellipsis } from 'lucide-react';
-import { Button } from './button';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from './card';
-import { Separator } from './separator';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 interface KleshNoteCardProps {

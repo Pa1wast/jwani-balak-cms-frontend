@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import KleshNoteCard from '@/components/ui/klesh-note-card';
-import { BookDashed, Download, FilePen, FilePlus, Save, SquareArrowOutUpRight } from 'lucide-react';
+import { BookDashed, Download, FilePen, Save, SquareArrowOutUpRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import { Input } from '@/components/ui/input';

@@ -1,10 +1,21 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from './card';
-import { Separator } from './separator';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { transactionTypes } from './company-line-chart';
 
-function TransactionCard({ transaction }) {
+interface TransactionCardProps {
+  transaction: {
+    type: string;
+    totalCost: string;
+    date: Date;
+    productName: string;
+    pricePerUnit: string;
+    quantity: number;
+  };
+}
+
+function TransactionCard({ transaction }: TransactionCardProps) {
   return (
     <Link to="/dashboard/transactions" className="block">
       <Card className="p-2 relative  hover:border-foreground/50">
