@@ -3,8 +3,8 @@ import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { createContext, ReactNode, useContext } from 'react';
 
 export enum listViewTypes {
-  GRID = 'grid',
-  ROW = 'row',
+  GRID = 'GRID',
+  ROW = 'ROW',
 }
 
 interface CompaniesProvider {
@@ -14,7 +14,7 @@ interface CompaniesProvider {
   setListView: (viewType: listViewTypes) => void;
 }
 
-const SelectedCompanyContext = createContext<CompaniesProvider | undefined>(undefined);
+const CompaniesContext = createContext<CompaniesProvider | undefined>(undefined);
 
 function CompaniesProvider({ children }: { children: ReactNode }) {
   const [selectedCompanyId, setSelectedCompany] = useLocalStorageState<string | null>(
@@ -28,16 +28,16 @@ function CompaniesProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <SelectedCompanyContext.Provider
+    <CompaniesContext.Provider
       value={{ selectedCompanyId, setSelectedCompany, listView, setListView }}
     >
       {children}
-    </SelectedCompanyContext.Provider>
+    </CompaniesContext.Provider>
   );
 }
 
 function useCompanies() {
-  const context = useContext(SelectedCompanyContext);
+  const context = useContext(CompaniesContext);
 
   if (!context) {
     throw new Error('CompaniesContext was used outisde of a CompaniesProvider!');

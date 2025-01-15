@@ -14,6 +14,7 @@ import Invoices from '@/pages/invoices';
 import Reports from './pages/reports';
 import KleshNotes from './pages/klesh-notes';
 import { CompaniesProvider } from './contexts/companies-context';
+import { KleshNotesProvider } from './contexts/klesh-notes-context';
 
 const queryClient = new QueryClient();
 
@@ -21,22 +22,24 @@ function App() {
   return (
     <DarkModeProvider>
       <CompaniesProvider>
-        <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} />
-          <BrowserRouter>
-            <Routes>
-              <Route index element={<Home />} />
-              <Route path="dashboard" element={<DashboardLayout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="/dashboard/products" element={<Products />} />
-                <Route path="/dashboard/transactions" element={<Transactions />} />
-                <Route path="/dashboard/invoices" element={<Invoices />} />
-                <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
-                <Route path="/dashboard/reports" element={<Reports />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </QueryClientProvider>
+        <KleshNotesProvider>
+          <QueryClientProvider client={queryClient}>
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            <BrowserRouter>
+              <Routes>
+                <Route index element={<Home />} />
+                <Route path="dashboard" element={<DashboardLayout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="/dashboard/products" element={<Products />} />
+                  <Route path="/dashboard/transactions" element={<Transactions />} />
+                  <Route path="/dashboard/invoices" element={<Invoices />} />
+                  <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
+                  <Route path="/dashboard/reports" element={<Reports />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </KleshNotesProvider>
       </CompaniesProvider>
     </DarkModeProvider>
   );

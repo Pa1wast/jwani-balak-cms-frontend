@@ -16,7 +16,7 @@ function DesktopDashboardLayout() {
       <Header className="col-span-2" />
       <Sidebar />
 
-      <main className="overflow-auto px-4 py-6">
+      <main className="overflow-hidden px-4 py-6">
         <Outlet />
       </main>
     </div>
