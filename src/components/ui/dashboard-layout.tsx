@@ -25,7 +25,7 @@ function DesktopDashboardLayout() {
 
 function MobileDashboardLayout() {
   return (
-    <div className="h-screen flex flex-col justify-between overflow-hidden">
+    <div className="h-screen grid grid-cols-1 grid-rows-[max-content_1fr_max-content] justify-between overflow-hidden">
       <Header />
       <main className="overflow-auto px-2 py-4">
         <Outlet />

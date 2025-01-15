@@ -67,7 +67,7 @@ export const companies = [
   {
     id: 9,
     name: 'Adobe',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dc/Adobe_logo.svg',
+    logo: '',
     address: '345 Park Avenue, San Jose, CA',
   },
   {
