@@ -16,6 +16,7 @@ import KleshNotes from './pages/klesh-notes';
 import { CompaniesProvider } from './contexts/companies-context';
 import { KleshNotesProvider } from './contexts/klesh-notes-context';
 import Invoice from './components/pdf-templates/invoice/invoice';
+import Klesh from './components/pdf-templates/klesh/klesh';
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ function App() {
                 </Route>
                 <Route path="/pdf">
                   <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
+                  <Route path="/pdf/klesh/:noteId" element={<Klesh />} />
                 </Route>
               </Routes>
             </BrowserRouter>

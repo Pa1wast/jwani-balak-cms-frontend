@@ -9,8 +9,9 @@ import 'react-quill/dist/quill.snow.css';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { useKleshNotes } from '@/contexts/klesh-notes-context';
 import Search from '@/components/navigation/search';
+import { Link } from 'react-router-dom';
 
-const kleshNotes = [
+export const kleshNotes = [
   {
     id: 0,
     content:
@@ -97,6 +98,7 @@ const editorModules = {
 function KleshNotes() {
   const { isDarkMode } = useDarkMode();
   const { selectedNoteId, setSelectedNoteId } = useKleshNotes();
+  console.log({ selectedNoteId });
   const selectedNote = selectedNoteId
     ? kleshNotes.find(note => note.id === Number(selectedNoteId))
     : undefined;
@@ -213,15 +215,15 @@ function KleshNotes() {
       </div>
 
       <div className="col-span-2 justify-self-end fixed bottom-5 space-x-3 right-5">
-        <Button variant="outline">
-          <SquareArrowOutUpRight /> Share
-        </Button>
+        {selectedNoteId !== '' && (
+          <Button variant="outline" asChild>
+            <Link to={`/pdf/klesh/${selectedNoteId}`}>
+              <Download /> Download
+            </Link>
+          </Button>
+        )}
 
-        <Button variant="outline">
-          <Download /> Download
-        </Button>
-
-        <Button>
+        <Button disabled={content === ''}>
           <Save /> Save Note
         </Button>
       </div>
