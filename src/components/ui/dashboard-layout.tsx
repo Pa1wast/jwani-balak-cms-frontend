@@ -31,10 +31,16 @@ function DesktopDashboardLayout() {
 }
 
 function MobileDashboardLayout() {
+  const { pathname } = useLocation();
   return (
     <div className="h-screen grid grid-cols-1 grid-rows-[max-content_1fr_max-content] justify-between overflow-hidden">
       <Header />
-      <main className="overflow-auto px-2 py-4">
+      <main
+        className={cn(
+          'overflow-auto px-2 py-4',
+          pathname === '/dashboard/klesh-notes' && 'overflow-hidden'
+        )}
+      >
         <Outlet />
       </main>
       <Sidebar />
