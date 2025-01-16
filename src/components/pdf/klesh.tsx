@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link, useParams } from 'react-router-dom';
-import { styles } from '@/components/pdf-templates/invoice/styles';
+
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { invoices } from '@/pages/invoices';
 import { useRef } from 'react';
 import { kleshNotes } from '@/pages/klesh-notes';
 
@@ -13,7 +13,7 @@ function Klesh() {
   const pdfRef = useRef(null);
 
   async function handleClick() {
-    const html2pdf = (await import('html2pdf.js')).default;
+    const html2pdf = (await import('html2pdf.js')).default as any;
 
     if (!pdfRef) return;
 
