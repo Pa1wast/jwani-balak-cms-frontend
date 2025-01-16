@@ -160,8 +160,6 @@ function KleshNotes() {
       toolbar.style.width = '100%';
       toolbar.style.borderRadius = '5px';
       toolbar.style.background = 'transparent';
-
-      if (isMobile) toolbar.style.background = isDarkMode ? '#000' : '#fff';
     }
 
     if (container) {
@@ -190,6 +188,7 @@ function KleshNotes() {
       onCreateNewNote={handleCreateNewNote}
       onNoteSelecteion={handleNoteSelection}
       isMobileEditorOpen={isMobileEditorOpen}
+      setIsMobileEditorOpen={setIsMobileEditorOpen}
     />
   ) : (
     <DesktopKleshTextEditor
@@ -273,6 +272,7 @@ function DesktopKleshTextEditor({
 
 function MobileKleshTextEditor({
   isMobileEditorOpen,
+  setIsMobileEditorOpen,
   content,
   onNoteChange,
   selectedNoteId,
@@ -280,12 +280,8 @@ function MobileKleshTextEditor({
   onCreateNewNote,
   onNoteSelecteion,
 }) {
-  console.log({ isMobileEditorOpen });
-
   return isMobileEditorOpen ? (
-    <div>
-      {/* <h1 className="text-xl text-foreground font-semibold items-center">Klesh Note Editor</h1> */}
-
+    <>
       <ReactQuill
         theme="snow"
         value={content}
@@ -296,7 +292,7 @@ function MobileKleshTextEditor({
       />
 
       <div className="flex justify-between mt-1">
-        <Button size="sm">
+        <Button size="sm" onClick={() => setIsMobileEditorOpen(false)}>
           <ArrowLeft /> Back
         </Button>
 
@@ -314,9 +310,9 @@ function MobileKleshTextEditor({
           )}
         </div>
       </div>
-    </div>
+    </>
   ) : (
-    <div className="px-2 space-y-2 row-span-2 h-[100vh] pb-60">
+    <div className="px-2 space-y-2 row-span-2 h-[58vh]">
       <h2 className="text-lg font-semibold text-foreground/60">Klesh Notes</h2>
       <Button className="w-full" onClick={onCreateNewNote}>
         <FilePen />
