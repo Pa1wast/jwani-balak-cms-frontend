@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import KleshNoteCard from '@/components/ui/klesh-note-card';
-import { BookDashed, Download, FilePen, Save } from 'lucide-react';
+import { ArrowLeft, BookDashed, Download, FilePen, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -10,6 +10,7 @@ import { useKleshNotes } from '@/contexts/klesh-notes-context';
 import Search from '@/components/navigation/search';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import useIsMobile from '@/hooks/useIsMobile';
 
 export const kleshNotes = [
   {
@@ -96,9 +97,10 @@ const editorModules = {
 };
 
 function KleshNotes() {
+  const isMobile = useIsMobile();
+  const [isMobileEditorOpen, setIsMobileEditorOpen] = useState(false);
   const { isDarkMode } = useDarkMode();
   const { selectedNoteId, setSelectedNoteId } = useKleshNotes();
-  console.log({ selectedNoteId });
   const selectedNote = selectedNoteId
     ? kleshNotes.find(note => note.id === Number(selectedNoteId))
     : undefined;
@@ -130,6 +132,15 @@ function KleshNotes() {
     toast.success('Klesh Note has been saved', { position: 'bottom-center' });
   }
 
+  function handleCreateNewNote() {
+    setSelectedNoteId('');
+    setContent('');
+
+    if (isMobile) {
+      setIsMobileEditorOpen(true);
+    }
+  }
+
   useEffect(() => {
     if (selectedNote) {
       setContent(selectedNote.content || '');
@@ -148,8 +159,9 @@ function KleshNotes() {
       toolbar.style.zIndex = '10';
       toolbar.style.width = '100%';
       toolbar.style.borderRadius = '5px';
-
       toolbar.style.background = 'transparent';
+
+      if (isMobile) toolbar.style.background = isDarkMode ? '#000' : '#fff';
     }
 
     if (container) {
@@ -159,7 +171,7 @@ function KleshNotes() {
     }
 
     if (editor) {
-      editor.style.height = '450px';
+      editor.style.height = '400px';
       editor.style.backgroundColor = isDarkMode
         ? 'rgba(30, 90, 174, 0.058)'
         : 'rgba(30, 90, 174, 0.1)';
@@ -167,19 +179,43 @@ function KleshNotes() {
       editor.style.fontSize = '24px';
       editor.style.borderWidth = '1px';
     }
-  }, [isDarkMode]);
+  }, [isDarkMode, isMobile, isMobileEditorOpen]);
 
+  return isMobile ? (
+    <MobileKleshTextEditor
+      content={content}
+      onNoteChange={handleNoteChange}
+      selectedNoteId={selectedNoteId}
+      onSaveNote={handleSaveNote}
+      onCreateNewNote={handleCreateNewNote}
+      onNoteSelecteion={handleNoteSelection}
+      isMobileEditorOpen={isMobileEditorOpen}
+    />
+  ) : (
+    <DesktopKleshTextEditor
+      content={content}
+      onNoteChange={handleNoteChange}
+      selectedNoteId={selectedNoteId}
+      onSaveNote={handleSaveNote}
+      onCreateNewNote={handleCreateNewNote}
+      onNoteSelecteion={handleNoteSelection}
+    />
+  );
+}
+
+function DesktopKleshTextEditor({
+  content,
+  onNoteChange,
+  selectedNoteId,
+  onSaveNote,
+  onCreateNewNote,
+  onNoteSelecteion,
+}) {
   return (
-    <div className="grid grid-cols-[max-content_1fr] grid-rows-[1fr_max-content] gap-4">
+    <div className="grid md:grid-cols-[max-content_1fr] md:grid-rows-[1fr_max-content] gap-4">
       <div className="px-2 space-y-2 row-span-2 h-[100vh] pb-60">
         <h2 className="text-lg font-semibold text-foreground/60">Klesh Notes</h2>
-        <Button
-          className="w-full"
-          onClick={() => {
-            setSelectedNoteId('');
-            setContent('');
-          }}
-        >
+        <Button className="w-full" onClick={onCreateNewNote}>
           <FilePen />
           Create New Note
         </Button>
@@ -193,7 +229,7 @@ function KleshNotes() {
                 key={note.id}
                 note={note}
                 selectedNoteId={selectedNoteId}
-                onClick={() => handleNoteSelection(note.id.toString())}
+                onClick={() => onNoteSelecteion(note.id.toString())}
               />
             ))}
 
@@ -211,7 +247,7 @@ function KleshNotes() {
         <ReactQuill
           theme="snow"
           value={content}
-          onChange={handleNoteChange}
+          onChange={onNoteChange}
           modules={editorModules}
           placeholder="Start Typing something..."
           className="text-xl overflow-hidden"
@@ -227,9 +263,84 @@ function KleshNotes() {
           </Button>
         )}
 
-        <Button disabled={content === ''} onClick={handleSaveNote}>
+        <Button disabled={content === ''} onClick={onSaveNote}>
           <Save /> Save Note
         </Button>
+      </div>
+    </div>
+  );
+}
+
+function MobileKleshTextEditor({
+  isMobileEditorOpen,
+  content,
+  onNoteChange,
+  selectedNoteId,
+  onSaveNote,
+  onCreateNewNote,
+  onNoteSelecteion,
+}) {
+  console.log({ isMobileEditorOpen });
+
+  return isMobileEditorOpen ? (
+    <div>
+      {/* <h1 className="text-xl text-foreground font-semibold items-center">Klesh Note Editor</h1> */}
+
+      <ReactQuill
+        theme="snow"
+        value={content}
+        onChange={onNoteChange}
+        modules={editorModules}
+        placeholder="Start Typing something..."
+        className="text-xl overflow-auto"
+      />
+
+      <div className="flex justify-between mt-1">
+        <Button size="sm">
+          <ArrowLeft /> Back
+        </Button>
+
+        <div>
+          <Button disabled={content === ''} onClick={onSaveNote}>
+            <Save /> Save Note
+          </Button>
+
+          {selectedNoteId !== '' && (
+            <Button variant="outline" asChild>
+              <Link to={`/pdf/klesh/${selectedNoteId}`}>
+                <Download /> Download
+              </Link>
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="px-2 space-y-2 row-span-2 h-[100vh] pb-60">
+      <h2 className="text-lg font-semibold text-foreground/60">Klesh Notes</h2>
+      <Button className="w-full" onClick={onCreateNewNote}>
+        <FilePen />
+        Create New Note
+      </Button>
+
+      <Search placeholder="Search notes..." />
+
+      <div className="flex flex-col sticky overflow-auto h-full gap-2">
+        {kleshNotes.length &&
+          kleshNotes.map(note => (
+            <KleshNoteCard
+              key={note.id}
+              note={note}
+              selectedNoteId={selectedNoteId}
+              onClick={() => onNoteSelecteion(note.id.toString())}
+            />
+          ))}
+
+        {!kleshNotes.length && (
+          <div className="w-full h-max bg-secondary/40 rounded-lg flex gap-1 items-center p-4 font-medium text-foreground/80">
+            <BookDashed /> You have no notes
+          </div>
+        )}
       </div>
     </div>
   );

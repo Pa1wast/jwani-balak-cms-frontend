@@ -16,7 +16,7 @@ function KleshNoteCard({ note, selectedNoteId, onClick }: KleshNoteCardProps) {
   return (
     <Card
       className={cn(
-        'p-1 w-[200px] hover:border-foreground/50 dark:border-foreground/50 dark:hover:border-border',
+        'p-1 md:w-[200px] hover:border-foreground/50 dark:border-foreground/50 dark:hover:border-border',
         isSelected && 'border-foreground/50 dark:border-border'
       )}
     >
