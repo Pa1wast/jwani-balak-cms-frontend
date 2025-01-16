@@ -20,8 +20,8 @@ function KleshNoteCard({ note, selectedNoteId, onClick }: KleshNoteCardProps) {
         isSelected && 'border-foreground/50 dark:border-border'
       )}
     >
-      <CardHeader className="p-1 flex-row justify-between items-center">
-        <p className="text-xs font-semibold">#{note.id}</p>
+      <CardHeader className="p-0 pb-2 space-y-0 flex-row justify-between items-center">
+        <p className="text-xs font-semibold pl-2">#{note.id}</p>
 
         <Button variant="ghost" size="icon">
           <Ellipsis />
@@ -29,16 +29,8 @@ function KleshNoteCard({ note, selectedNoteId, onClick }: KleshNoteCardProps) {
       </CardHeader>
 
       <CardContent className="p-2 bg-secondary/30 text-sm rounded-lg text-right">
-        <p>
-          <span className="font-semibold ml-2">بەرێز:</span>
-
-          <span>{note.to}</span>
-          <Separator className="my-1" />
-        </p>
-        <p>{note.content.slice(0, 200)}</p>
+        {note.content.slice(0, 200)}
       </CardContent>
-
-      {/* <Separator className="my-2" /> */}
 
       <CardFooter className="p-1 flex justify-between gap-1 flex-row text-xs">
         <Button variant="ghost" size="sm" className="font-normal" onClick={onClick}>

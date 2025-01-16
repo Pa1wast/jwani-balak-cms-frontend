@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
-import { Download, FilePlus, Image, Pen, Trash } from 'lucide-react';
+import { Download, Eye, FilePlus, Files, Image, Pen, Trash, View } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function CompanyDetails({ company }) {
@@ -40,7 +40,7 @@ function CompanyDetails({ company }) {
               <FilePlus /> Generate Full Report
             </Button>
             <Button size="sm" variant="ghost" className="w-full h-8">
-              <Download /> Download Klesh Notes
+              <Files /> View Klesh Notes
             </Button>
           </div>
 

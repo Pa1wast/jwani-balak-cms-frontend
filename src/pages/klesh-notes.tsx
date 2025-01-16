@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import 'react-quill/dist/quill.snow.css';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { useKleshNotes } from '@/contexts/klesh-notes-context';
+import Search from '@/components/navigation/search';
 
 const kleshNotes = [
   {
@@ -136,6 +137,7 @@ function KleshNotes() {
     const editor = document.querySelector('.ql-editor') as HTMLElement;
 
     if (toolbar) {
+      toolbar.style.height = 'max-content';
       toolbar.style.position = 'sticky';
       toolbar.style.top = '0';
       toolbar.style.zIndex = '10';
@@ -152,7 +154,7 @@ function KleshNotes() {
     }
 
     if (editor) {
-      editor.style.height = '400px';
+      editor.style.height = '450px';
       editor.style.backgroundColor = isDarkMode
         ? 'rgba(30, 90, 174, 0.058)'
         : 'rgba(30, 90, 174, 0.1)';
@@ -164,7 +166,7 @@ function KleshNotes() {
 
   return (
     <div className="grid grid-cols-[max-content_1fr] grid-rows-[1fr_max-content] gap-4">
-      <div className="px-2 space-y-2 row-span-2 h-[80vh]">
+      <div className="px-2 space-y-2 row-span-2 h-[100vh] pb-60">
         <h2 className="text-lg font-semibold text-foreground/60">Klesh Notes</h2>
         <Button
           className="w-full"
@@ -177,6 +179,8 @@ function KleshNotes() {
           <FilePen />
           Create New Note
         </Button>
+
+        <Search placeholder="Search notes..." />
 
         <div className="flex flex-col sticky overflow-auto h-full gap-2">
           {kleshNotes.length &&
@@ -197,18 +201,8 @@ function KleshNotes() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="flex justify-between">
-          <h1 className="text-xl text-foreground font-semibold items-center">Klesh Note Editor</h1>
-          <div className="flex w-[400px] gap-4">
-            <Input
-              className="text-right text-xl"
-              value={to}
-              onChange={e => setTo(e.target.value)}
-            />
-            <span className="font-semibold text-2xl">:بەرێز</span>
-          </div>
-        </div>
+      <div className="space-y-2">
+        <h1 className="text-xl text-foreground font-semibold items-center">Klesh Note Editor</h1>
 
         <ReactQuill
           theme="snow"

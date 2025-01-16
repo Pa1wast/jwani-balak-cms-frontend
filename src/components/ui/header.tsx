@@ -22,7 +22,7 @@ function Header({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'border-b items-center border-foreground dark:border-primary dark:bg-primary/50 w-full px-2 py-2 flex justify-between  flex-wrap',
+        'border-b items-center border-foreground dark:border-primary dark:bg-primary/50 w-full px-2 py-2 flex justify-between  flex-wrap backdrop-blur-lg',
         className
       )}
     >
