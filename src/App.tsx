@@ -15,12 +15,13 @@ import Reports from '@/pages/reports';
 import KleshNotes from '@/pages/klesh-notes';
 
 import Invoice from '@/components/pdf/invoice';
-import Klesh from '@/components/pdf/klesh';
 import Report from '@/components/pdf/report';
+import KleshNote from '@/components/pdf/klesh-note';
 
 import { DarkModeProvider } from '@/contexts/dark-mode-context';
 import { CompaniesProvider } from '@/contexts/companies-context';
 import { KleshNotesProvider } from '@/contexts/klesh-notes-context';
+import PdfPageLayout from './components/pdf/pdf-page-layout';
 
 const queryClient = new QueryClient();
 
@@ -43,9 +44,9 @@ function App() {
                   <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
                   <Route path="/dashboard/reports" element={<Reports />} />
                 </Route>
-                <Route path="/pdf">
+                <Route path="/pdf" element={<PdfPageLayout />}>
                   <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
-                  <Route path="/pdf/klesh/:noteId" element={<Klesh />} />
+                  <Route path="/pdf/klesh/:noteId" element={<KleshNote />} />
                   <Route path="/pdf/report/:reportId" element={<Report />} />
                 </Route>
               </Routes>

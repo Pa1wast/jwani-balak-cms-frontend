@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import useIsMobile from '@/hooks/useIsMobile';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const kleshNotes = [
   {
     id: 0,
@@ -100,6 +101,9 @@ interface Props {
   content: string;
   selectedNoteId: string | undefined;
   isMobileEditorOpen?: boolean;
+  hasChanges?: boolean;
+  setSelectedNoteId?: (noteId: string) => void;
+  setHasChanges?: (hasChanges: boolean) => void;
   setIsMobileEditorOpen?: (isOpen: boolean) => void;
   onNoteChange: (newContent: string) => void;
   onSaveNote: () => void;
@@ -112,6 +116,7 @@ function KleshNotes() {
   const [isMobileEditorOpen, setIsMobileEditorOpen] = useState(false);
   const { isDarkMode } = useDarkMode();
   const { selectedNoteId, setSelectedNoteId } = useKleshNotes();
+  // const [isNewNote, setIsNewNote] = useState();
   const selectedNote = selectedNoteId
     ? kleshNotes.find(note => note.id === Number(selectedNoteId))
     : undefined;
@@ -188,13 +193,16 @@ function KleshNotes() {
       editor.style.fontSize = '24px';
       editor.style.borderWidth = '1px';
     }
-  }, [isDarkMode, isMobile, isMobileEditorOpen]);
+  }, [isDarkMode, isMobile, isMobileEditorOpen, selectedNoteId]);
 
   return isMobile ? (
     <MobileKleshTextEditor
       content={content}
       onNoteChange={handleNoteChange}
       selectedNoteId={selectedNoteId}
+      setSelectedNoteId={setSelectedNoteId}
+      hasChanges={hasChanges}
+      setHasChanges={setHasChanges}
       onSaveNote={handleSaveNote}
       onCreateNewNote={handleCreateNewNote}
       onNoteSelection={handleNoteSelection}
@@ -227,7 +235,7 @@ function DesktopKleshTextEditor({
         <h2 className="text-lg font-semibold text-foreground/60">Klesh Notes</h2>
         <Button className="w-full" onClick={onCreateNewNote}>
           <FilePen />
-          Create New Note
+          New Note
         </Button>
 
         <Search placeholder="Search notes..." />
@@ -259,7 +267,6 @@ function DesktopKleshTextEditor({
           value={content}
           onChange={onNoteChange}
           modules={editorModules}
-          placeholder="Start Typing something..."
           className="text-xl overflow-hidden"
         />
       </div>
@@ -285,40 +292,59 @@ function MobileKleshTextEditor({
   isMobileEditorOpen,
   setIsMobileEditorOpen,
   content,
+  hasChanges,
+  setHasChanges,
   onNoteChange,
   selectedNoteId,
+  setSelectedNoteId,
   onSaveNote,
   onCreateNewNote,
   onNoteSelection,
 }: Props) {
-  return isMobileEditorOpen ? (
+  return isMobileEditorOpen || selectedNoteId ? (
     <>
       <ReactQuill
         theme="snow"
         value={content}
         onChange={onNoteChange}
         modules={editorModules}
-        placeholder="Start Typing something..."
         className="text-xl overflow-auto"
       />
 
       <div className="flex justify-between mt-1">
-        <Button size="sm" onClick={() => setIsMobileEditorOpen!(false)}>
+        <Button
+          size="sm"
+          onClick={() => {
+            if (hasChanges) {
+              const userConfirmed = window.confirm(
+                'You have unsaved changes. Do you want to leave without saving?'
+              );
+
+              if (userConfirmed) {
+                setHasChanges!(false);
+                setSelectedNoteId!('');
+                setIsMobileEditorOpen!(false);
+              }
+            } else {
+              setIsMobileEditorOpen!(false);
+            }
+          }}
+        >
           <ArrowLeft /> Back
         </Button>
 
-        <div>
-          <Button disabled={content === ''} onClick={onSaveNote}>
-            <Save /> Save Note
-          </Button>
-
+        <div className="flex gap-2">
           {selectedNoteId !== '' && (
-            <Button variant="outline" asChild>
+            <Button size="sm" variant="outline" asChild>
               <Link to={`/pdf/klesh/${selectedNoteId}`}>
                 <Download /> Download
               </Link>
             </Button>
           )}
+
+          <Button size="sm" disabled={content === ''} onClick={onSaveNote}>
+            <Save /> Save Note
+          </Button>
         </div>
       </div>
     </>
@@ -327,7 +353,7 @@ function MobileKleshTextEditor({
       <h2 className="text-lg font-semibold text-foreground/60">Klesh Notes</h2>
       <Button className="w-full" onClick={onCreateNewNote}>
         <FilePen />
-        Create New Note
+        New Note
       </Button>
 
       <Search placeholder="Search notes..." />
