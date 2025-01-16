@@ -96,6 +96,17 @@ const editorModules = {
   ],
 };
 
+interface Props {
+  content: string;
+  selectedNoteId: string | undefined;
+  isMobileEditorOpen?: boolean;
+  setIsMobileEditorOpen?: (isOpen: boolean) => void;
+  onNoteChange: (newContent: string) => void;
+  onSaveNote: () => void;
+  onCreateNewNote: () => void;
+  onNoteSelection: (id: string) => void;
+}
+
 function KleshNotes() {
   const isMobile = useIsMobile();
   const [isMobileEditorOpen, setIsMobileEditorOpen] = useState(false);
@@ -186,7 +197,7 @@ function KleshNotes() {
       selectedNoteId={selectedNoteId}
       onSaveNote={handleSaveNote}
       onCreateNewNote={handleCreateNewNote}
-      onNoteSelecteion={handleNoteSelection}
+      onNoteSelection={handleNoteSelection}
       isMobileEditorOpen={isMobileEditorOpen}
       setIsMobileEditorOpen={setIsMobileEditorOpen}
     />
@@ -197,7 +208,7 @@ function KleshNotes() {
       selectedNoteId={selectedNoteId}
       onSaveNote={handleSaveNote}
       onCreateNewNote={handleCreateNewNote}
-      onNoteSelecteion={handleNoteSelection}
+      onNoteSelection={handleNoteSelection}
     />
   );
 }
@@ -208,8 +219,8 @@ function DesktopKleshTextEditor({
   selectedNoteId,
   onSaveNote,
   onCreateNewNote,
-  onNoteSelecteion,
-}) {
+  onNoteSelection,
+}: Props) {
   return (
     <div className="grid md:grid-cols-[max-content_1fr] md:grid-rows-[1fr_max-content] gap-4">
       <div className="px-2 space-y-2 row-span-2 h-[100vh] pb-60">
@@ -228,7 +239,7 @@ function DesktopKleshTextEditor({
                 key={note.id}
                 note={note}
                 selectedNoteId={selectedNoteId}
-                onClick={() => onNoteSelecteion(note.id.toString())}
+                onClick={() => onNoteSelection(note.id.toString())}
               />
             ))}
 
@@ -278,8 +289,8 @@ function MobileKleshTextEditor({
   selectedNoteId,
   onSaveNote,
   onCreateNewNote,
-  onNoteSelecteion,
-}) {
+  onNoteSelection,
+}: Props) {
   return isMobileEditorOpen ? (
     <>
       <ReactQuill
@@ -292,7 +303,7 @@ function MobileKleshTextEditor({
       />
 
       <div className="flex justify-between mt-1">
-        <Button size="sm" onClick={() => setIsMobileEditorOpen(false)}>
+        <Button size="sm" onClick={() => setIsMobileEditorOpen!(false)}>
           <ArrowLeft /> Back
         </Button>
 
@@ -328,7 +339,7 @@ function MobileKleshTextEditor({
               key={note.id}
               note={note}
               selectedNoteId={selectedNoteId}
-              onClick={() => onNoteSelecteion(note.id.toString())}
+              onClick={() => onNoteSelection(note.id.toString())}
             />
           ))}
 
