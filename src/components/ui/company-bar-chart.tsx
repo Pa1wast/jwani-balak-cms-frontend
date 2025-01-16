@@ -40,20 +40,21 @@ function CompanyBarChart() {
   }
 
   function handleGenerateReport() {
-    toast.success('Report genereated success', {
+    toast.success('Report genereated successfully', {
       action: { label: 'View', onClick: () => navigate('/dashboard/reports') },
     });
   }
 
   return (
     <Card className="my-10 p-2 border">
-      <CardHeader className="flex-row items-center justify-between gap-2">
-        <CardTitle>Exepenses, Revenue, & Profits</CardTitle>
+      <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
+        <CardTitle className="text-base md:text-xl">Exepenses, Revenue, & Profits</CardTitle>
 
         <Button variant="outline" size="sm" onClick={handleGenerateReport}>
           <FilePlus /> Generate Report
         </Button>
       </CardHeader>
+
       <CardContent className="space-y-2 p-2">
         <ChartFilters
           month={month}

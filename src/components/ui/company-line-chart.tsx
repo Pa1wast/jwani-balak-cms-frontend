@@ -36,8 +36,8 @@ function CompanyLineChart() {
 
   return (
     <Card className="my-10 p-2 border">
-      <CardHeader className="flex-row items-center justify-between gap-2">
-        <CardTitle>Transactions</CardTitle>
+      <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
+        <CardTitle className="text-base md:text-xl">Transactions</CardTitle>
 
         <Button variant="outline" size="sm">
           <FilePlus /> Generate Report
