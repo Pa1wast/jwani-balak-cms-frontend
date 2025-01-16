@@ -37,6 +37,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { Product } from '@/types/product';
 
 const data: Product[] = [
   { id: 'asasdfsdag353425b34b53s', name: 'Product 1', quantity: 1001 },
@@ -94,12 +95,6 @@ const data: Product[] = [
   { id: '49', name: 'Product 49', quantity: 1049 },
   { id: '50', name: 'Product 50', quantity: 1050 },
 ];
-
-export type Product = {
-  id: string;
-  name: string;
-  quantity: number;
-};
 
 export const columns: ColumnDef<Product>[] = [
   {

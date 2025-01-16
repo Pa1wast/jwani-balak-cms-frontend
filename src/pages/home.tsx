@@ -1,12 +1,13 @@
 import Filter from '@/components/navigation/filter';
 import Search from '@/components/navigation/search';
 import Sort from '@/components/navigation/sort';
-import CompanyCard from '@/components/ui/company-card';
+import CompanyCard from '@/components/company/company-card';
 import Header from '@/components/ui/header';
-import RegisterCompanyForm from '@/components/ui/register-company-form';
-import SelectGridView from '@/components/ui/select-grid-view';
-import { listViewTypes, useCompanies } from '@/contexts/companies-context';
+import RegisterCompanyForm from '@/components/company/register-company-form';
+import { useCompanies } from '@/contexts/companies-context';
 import { cn } from '@/lib/utils';
+import SelectListView from '@/components/company/select-list-view';
+import { listViewTypes } from '@/types/company';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const companies = [
@@ -98,7 +99,7 @@ function Home() {
 
               <div className="h-[80%] my-auto w-[2px] bg-primary/20 mx-2 hidden md:block" />
 
-              <SelectGridView />
+              <SelectListView />
             </div>
 
             <RegisterCompanyForm />

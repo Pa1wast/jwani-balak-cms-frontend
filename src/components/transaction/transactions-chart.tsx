@@ -1,17 +1,12 @@
 // import { getPastMonths } from '@/utils/date';
-import { Card, CardContent, CardHeader, CardTitle } from './card';
 // import { useDarkMode } from '@/contexts/dark-mode-context';
-import { Button } from './button';
+import { LineChart } from '@mui/x-charts';
+import { transactionTypes } from '@/types/transaction';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, FilePlus } from 'lucide-react';
 import { useState } from 'react';
-import TransactionCard from './transaction-card';
-import { LineChart } from '@mui/x-charts';
-
-export enum transactionTypes {
-  SELL = 'SELL',
-  BUY = 'BUY',
-  ALL = 'ALL',
-}
+import TransactionCard from '@/components/transaction/transaction-card';
 
 // const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
 // const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];

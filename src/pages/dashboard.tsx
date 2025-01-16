@@ -4,7 +4,7 @@ import CompanyDetails from '@/components/ui/company-details';
 import { Card } from '@/components/ui/card';
 import { Banknote, SquareArrowDown, SquareArrowUp } from 'lucide-react';
 import FinanceChart from '@/components/ui/finance-chart';
-import TransactionsChart from '@/components/ui/transactions-chart';
+import TransactionsChart from '@/components/transaction/transactions-chart';
 
 function Dashboard() {
   const { selectedCompanyId } = useCompanies();

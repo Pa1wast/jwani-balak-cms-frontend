@@ -8,13 +8,7 @@ import { FilePlus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-
-enum dataTypes {
-  EXPENSES = 'EXPENSES',
-  REVENUE = 'REVENUE',
-  PROFITS = 'PROFITS',
-  ALL = 'ALL',
-}
+import { dataTypes } from '@/types/finance';
 
 const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
 const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];

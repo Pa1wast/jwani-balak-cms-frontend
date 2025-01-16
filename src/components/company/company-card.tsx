@@ -1,11 +1,12 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from './button';
-import { Card, CardContent, CardFooter, CardHeader } from './card';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { Link } from 'react-router-dom';
-import { listViewTypes, useCompanies } from '@/contexts/companies-context';
-import EditCompany from '@/components/ui/edit-company';
+import { useCompanies } from '@/contexts/companies-context';
+import EditCompany from '@/components/company/edit-company';
 import useIsMobile from '@/hooks/useIsMobile';
+import { listViewTypes } from '@/types/company';
 
 interface CompanyCardProps {
   company: { id: number; name: string; address: string; logo?: string };

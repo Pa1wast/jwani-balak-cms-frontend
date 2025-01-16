@@ -12,9 +12,9 @@ import {
 } from '@/components/ui/dialog';
 
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { registerCompnaySchema } from '@/schemas';
-import { Input } from './input';
+import { Input } from '../ui/input';
 
 function RegisterCompanyForm() {
   const form = useForm<z.infer<typeof registerCompnaySchema>>({

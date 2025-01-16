@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
-import ProductsDataTable from '@/components/ui/products-data-table';
+import ProductsDataTable from '@/components/product/products-data-table';
 import { Plus } from 'lucide-react';
 
-import AddProductForm from '@/components/ui/add-product-form';
+import AddProductForm from '@/components/product/add-product-form';
 import {
   Dialog,
   DialogContent,

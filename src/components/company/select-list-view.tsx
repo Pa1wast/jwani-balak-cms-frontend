@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button';
-import { listViewTypes, useCompanies } from '@/contexts/companies-context';
+import { useCompanies } from '@/contexts/companies-context';
+import { listViewTypes } from '@/types/company';
 import { Grid2X2, Rows2 } from 'lucide-react';
 
-function SelectGridView() {
+function SelectListView() {
   const { listView, setListView } = useCompanies();
 
   return (
@@ -28,4 +29,4 @@ function SelectGridView() {
   );
 }
 
-export default SelectGridView;
+export default SelectListView;

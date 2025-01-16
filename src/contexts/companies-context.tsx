@@ -1,11 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+import { listViewTypes } from '@/types/company';
 import { createContext, ReactNode, useContext } from 'react';
-
-export enum listViewTypes {
-  GRID = 'GRID',
-  ROW = 'ROW',
-}
 
 interface CompaniesProvider {
   selectedCompanyId: string | null;
