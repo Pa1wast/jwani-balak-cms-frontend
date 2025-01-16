@@ -6,6 +6,8 @@
 html,
 body {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 @layer base {
@@ -60,5 +62,11 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  img {
+    display: initial;
   }
 }

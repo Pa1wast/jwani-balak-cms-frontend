@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { DarkModeProvider } from '@/contexts/dark-mode-context';
 
@@ -15,6 +15,7 @@ import Reports from './pages/reports';
 import KleshNotes from './pages/klesh-notes';
 import { CompaniesProvider } from './contexts/companies-context';
 import { KleshNotesProvider } from './contexts/klesh-notes-context';
+import Invoice from './components/pdf-templates/invoice/invoice';
 
 const queryClient = new QueryClient();
 
@@ -33,8 +34,12 @@ function App() {
                   <Route path="/dashboard/products" element={<Products />} />
                   <Route path="/dashboard/transactions" element={<Transactions />} />
                   <Route path="/dashboard/invoices" element={<Invoices />} />
+
                   <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
                   <Route path="/dashboard/reports" element={<Reports />} />
+                </Route>
+                <Route path="/pdf">
+                  <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
                 </Route>
               </Routes>
             </BrowserRouter>

@@ -3,6 +3,7 @@ import KleshNoteCard from '@/components/ui/klesh-note-card';
 import { BookDashed, Download, FilePen, Save, SquareArrowOutUpRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Input } from '@/components/ui/input';
 import 'react-quill/dist/quill.snow.css';
 import { useDarkMode } from '@/contexts/dark-mode-context';
@@ -102,7 +103,6 @@ function KleshNotes() {
 
   const [hasChanges, setHasChanges] = useState(false);
   const [content, setContent] = useState('');
-  const [to, setTo] = useState('');
 
   const handleNoteChange = (newContent: string) => {
     setContent(newContent);
@@ -127,7 +127,6 @@ function KleshNotes() {
   useEffect(() => {
     if (selectedNote) {
       setContent(selectedNote.content || '');
-      setTo(selectedNote.to || '');
     }
   }, [selectedNoteId, selectedNote]);
 
@@ -173,7 +172,6 @@ function KleshNotes() {
           onClick={() => {
             setSelectedNoteId('');
             setContent('');
-            setTo('');
           }}
         >
           <FilePen />
