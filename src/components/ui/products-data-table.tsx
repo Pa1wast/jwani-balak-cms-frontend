@@ -36,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 const data: Product[] = [
   { id: 'asasdfsdag353425b34b53s', name: 'Product 1', quantity: 1001 },
@@ -145,7 +146,7 @@ export const columns: ColumnDef<Product>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              Delete product{' '}
+              Delete product
               <AlertTriangle className="ml-auto dark:text-red-500 text-destructive" />
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -205,7 +206,7 @@ export default function ProductsDataTable() {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className={cn('capitalize', column.id === 'id' && 'hidden sm:flex')}
                     checked={column.getIsVisible()}
                     onCheckedChange={value => column.toggleVisibility(!!value)}
                   >
