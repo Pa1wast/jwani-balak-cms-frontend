@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link, useParams } from 'react-router-dom';
-import { styles } from '@/components/pdf-templates/invoice/styles';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ function Invoice() {
   const pdfRef = useRef(null);
 
   async function handleClick() {
-    const html2pdf = (await import('html2pdf.js')).default;
+    const html2pdf = (await import('html2pdf.js')).default as any;
 
     if (!pdfRef) return;
 
@@ -27,6 +27,8 @@ function Invoice() {
 
     html2pdf().set(options).from(element).save();
   }
+
+  if (!invoice) return <p className="mt-32 mx-auto w-max text-xl">Failed to get invoice</p>;
 
   return (
     <div className="w-max mx-auto relative">

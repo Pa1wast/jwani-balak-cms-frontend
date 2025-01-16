@@ -4,6 +4,7 @@ import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 interface DarkModeContextType {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
+  setIsDarkMode: (isDark: boolean) => void;
 }
 
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
@@ -29,7 +30,7 @@ function DarkModeProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+    <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode, setIsDarkMode }}>
       {children}
     </DarkModeContext.Provider>
   );
