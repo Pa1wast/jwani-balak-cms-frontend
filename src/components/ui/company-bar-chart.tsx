@@ -6,6 +6,8 @@ import { useDarkMode } from '@/contexts/dark-mode-context';
 import { Button } from './button';
 import { FilePlus } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 enum dataTypes {
   EXPENSES = 'EXPENSES',
@@ -21,6 +23,8 @@ const months = getPastMonths(6);
 const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
 
 function CompanyBarChart() {
+  const navigate = useNavigate();
+  console.log(navigate);
   const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(0);
   const [showDataFor, setShowDataFor] = useState(dataTypes.ALL);
@@ -35,12 +39,18 @@ function CompanyBarChart() {
     setShowDataFor(dataType);
   }
 
+  function handleGenerateReport() {
+    toast.success('Report genereated success', {
+      action: { label: 'View', onClick: () => navigate('/dashboard/reports') },
+    });
+  }
+
   return (
     <Card className="my-10 p-2 border">
       <CardHeader className="flex-row items-center justify-between gap-2">
         <CardTitle>Exepenses, Revenue, & Profits</CardTitle>
 
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handleGenerateReport}>
           <FilePlus /> Generate Report
         </Button>
       </CardHeader>

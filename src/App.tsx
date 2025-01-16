@@ -1,22 +1,26 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import { DarkModeProvider } from '@/contexts/dark-mode-context';
+import DashboardLayout from '@/components/ui/dashboard-layout';
+
+import { Toaster } from 'sonner';
 
 import Home from '@/pages/home';
-import DashboardLayout from '@/components/ui/dashboard-layout';
 import Dashboard from '@/pages/dashboard';
 import Products from '@/pages/products';
 import Transactions from '@/pages/transactions';
 import Invoices from '@/pages/invoices';
-import Reports from './pages/reports';
-import KleshNotes from './pages/klesh-notes';
-import { CompaniesProvider } from './contexts/companies-context';
-import { KleshNotesProvider } from './contexts/klesh-notes-context';
-import Invoice from './components/pdf-templates/invoice/invoice';
-import Klesh from './components/pdf-templates/klesh/klesh';
+import Reports from '@/pages/reports';
+import KleshNotes from '@/pages/klesh-notes';
+
+import Invoice from '@/components/pdf/invoice';
+import Klesh from '@/components/pdf/klesh';
+import Report from '@/components/pdf/report';
+
+import { DarkModeProvider } from '@/contexts/dark-mode-context';
+import { CompaniesProvider } from '@/contexts/companies-context';
+import { KleshNotesProvider } from '@/contexts/klesh-notes-context';
 
 const queryClient = new QueryClient();
 
@@ -42,9 +46,11 @@ function App() {
                 <Route path="/pdf">
                   <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
                   <Route path="/pdf/klesh/:noteId" element={<Klesh />} />
+                  <Route path="/pdf/report/:reportId" element={<Report />} />
                 </Route>
               </Routes>
             </BrowserRouter>
+            <Toaster />
           </QueryClientProvider>
         </KleshNotesProvider>
       </CompaniesProvider>

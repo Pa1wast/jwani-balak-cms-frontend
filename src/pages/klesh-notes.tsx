@@ -1,15 +1,15 @@
 import { Button } from '@/components/ui/button';
 import KleshNoteCard from '@/components/ui/klesh-note-card';
-import { BookDashed, Download, FilePen, Save, SquareArrowOutUpRight } from 'lucide-react';
+import { BookDashed, Download, FilePen, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Input } from '@/components/ui/input';
 import 'react-quill/dist/quill.snow.css';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { useKleshNotes } from '@/contexts/klesh-notes-context';
 import Search from '@/components/navigation/search';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const kleshNotes = [
   {
@@ -106,12 +106,12 @@ function KleshNotes() {
   const [hasChanges, setHasChanges] = useState(false);
   const [content, setContent] = useState('');
 
-  const handleNoteChange = (newContent: string) => {
+  function handleNoteChange(newContent: string) {
     setContent(newContent);
     setHasChanges(true);
-  };
+  }
 
-  const handleNoteSelection = (noteId: string) => {
+  function handleNoteSelection(noteId: string) {
     if (hasChanges) {
       const userConfirmed = window.confirm(
         'You have unsaved changes. Do you want to leave without saving?'
@@ -124,7 +124,11 @@ function KleshNotes() {
     } else {
       setSelectedNoteId(noteId);
     }
-  };
+  }
+
+  function handleSaveNote() {
+    toast.success('Klesh Note has been saved', { position: 'bottom-center' });
+  }
 
   useEffect(() => {
     if (selectedNote) {
@@ -223,7 +227,7 @@ function KleshNotes() {
           </Button>
         )}
 
-        <Button disabled={content === ''}>
+        <Button disabled={content === ''} onClick={handleSaveNote}>
           <Save /> Save Note
         </Button>
       </div>
