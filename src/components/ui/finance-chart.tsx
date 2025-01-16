@@ -22,7 +22,7 @@ const profitsData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
 const months = getPastMonths(6);
 const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
 
-function CompanyBarChart() {
+function FinanceChart() {
   const navigate = useNavigate();
   console.log(navigate);
   const { isDarkMode } = useDarkMode();
@@ -195,4 +195,4 @@ function ChartFilters({
   );
 }
 
-export default CompanyBarChart;
+export default FinanceChart;

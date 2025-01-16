@@ -19,7 +19,7 @@ export enum transactionTypes {
 // const months = getPastMonths(6);
 // const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
 
-function CompanyLineChart() {
+function TransactionsChart() {
   // const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(0);
   const [showDataFor, setShowDataFor] = useState(transactionTypes.ALL);
@@ -185,4 +185,4 @@ function ChartFilters({
   );
 }
 
-export default CompanyLineChart;
+export default TransactionsChart;

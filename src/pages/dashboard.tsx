@@ -1,10 +1,10 @@
 import { useCompanies } from '@/contexts/companies-context';
 import { companies } from '@/pages/home';
 import CompanyDetails from '@/components/ui/company-details';
-import CompanyBarChart from '@/components/ui/company-bar-chart';
 import { Card } from '@/components/ui/card';
 import { Banknote, SquareArrowDown, SquareArrowUp } from 'lucide-react';
-import CompanyLineChart from '@/components/ui/company-line-chart';
+import FinanceChart from '@/components/ui/finance-chart';
+import TransactionsChart from '@/components/ui/transactions-chart';
 
 function Dashboard() {
   const { selectedCompanyId } = useCompanies();
@@ -37,9 +37,9 @@ function Dashboard() {
           </Card>
         </div>
 
-        <CompanyBarChart />
+        <FinanceChart />
 
-        <CompanyLineChart />
+        <TransactionsChart />
       </div>
     </div>
   );

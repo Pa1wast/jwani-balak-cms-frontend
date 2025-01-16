@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from './card';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { transactionTypes } from './company-line-chart';
+import { transactionTypes } from './transactions-chart';
 
 interface TransactionCardProps {
   transaction: {
