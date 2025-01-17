@@ -39,7 +39,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/product';
 
-const data: Product[] = [
+export const data: Product[] = [
   { id: 'asasdfsdag353425b34b53s', name: 'Product 1', quantity: 1001 },
   { id: '2', name: 'Product 2', quantity: 1002 },
   { id: '3', name: 'Product 3', quantity: 1003 },

@@ -43,7 +43,9 @@ function AddProductForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">
+          <Plus /> Add
+        </Button>
       </form>
     </Form>
   );
