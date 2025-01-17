@@ -718,7 +718,7 @@ export const columns: ColumnDef<Transaction>[] = [
             'text-left font-bold flex justify-center items-center rounded-md px-2 w-max',
             currency === currencyTypes.IQD
               ? 'border-orange-500  text-orange-500 dark:border-orange-500/20 dark:text-orange-500 hover:border-orange-500/80 dark:hover:border-orange-500/60'
-              : 'border-cyan-500  text-cyan-500 dark:border-cyan-500/20 dark:text-cyan-500 hover:border-cyan-500/80 dark:hover:border-orange-500/60'
+              : 'border-cyan-500  text-cyan-500 dark:border-cyan-500/20 dark:text-cyan-500 hover:border-cyan-500/80 dark:hover:border-cyan-500/60'
           )}
         >
           {currency}
