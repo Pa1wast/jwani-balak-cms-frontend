@@ -63,7 +63,7 @@ export const data: Transaction[] = [
   },
   {
     id: '6b5e692f-c125-4256-8102-7939f4e4500e',
-    type: 'BUY',
+    type: 'SELL',
     currency: 'USD',
     pricePerUnit: 466.15,
     quantity: 52,
@@ -75,7 +75,7 @@ export const data: Transaction[] = [
   },
   {
     id: '0d3d7b79-6279-4548-9a2a-731960b75d64',
-    type: 'ALL',
+    type: 'SELL',
     currency: 'USD',
     pricePerUnit: 132.17,
     quantity: 13,
@@ -88,7 +88,7 @@ export const data: Transaction[] = [
   },
   {
     id: '926a5d05-c616-4650-a574-ee956970384f',
-    type: 'ALL',
+    type: 'SELL',
     currency: 'IQD',
     pricePerUnit: 25.48,
     quantity: 30,
@@ -112,7 +112,7 @@ export const data: Transaction[] = [
   },
   {
     id: 'a2b11eaf-f00a-427f-9e53-68f7978d11d3',
-    type: 'BUY',
+    type: 'SELL',
     currency: 'IQD',
     pricePerUnit: 253.79,
     quantity: 1,
@@ -183,7 +183,7 @@ export const data: Transaction[] = [
   },
   {
     id: '556a8c23-010b-42b9-9409-adfc951a90e2',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 361.38,
     quantity: 57,
@@ -196,7 +196,7 @@ export const data: Transaction[] = [
   },
   {
     id: '7dfbc5fc-3bda-409e-8a95-08de75e2687f',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 63.9,
     quantity: 45,
@@ -208,7 +208,7 @@ export const data: Transaction[] = [
   },
   {
     id: 'cfc7f2b5-9a59-40fa-8144-f27f7ace4358',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 32.86,
     quantity: 8,
@@ -242,7 +242,7 @@ export const data: Transaction[] = [
   },
   {
     id: '7b2a8bf3-88a2-41ce-ac4d-96dcc6e1362c',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'IQD',
     pricePerUnit: 398.5,
     quantity: 69,
@@ -255,7 +255,7 @@ export const data: Transaction[] = [
   },
   {
     id: '4e84d4ed-4d64-4ca1-8184-e6aec46852b0',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 456.88,
     quantity: 78,
@@ -291,7 +291,7 @@ export const data: Transaction[] = [
   },
   {
     id: '821a30c3-69c9-43e7-9bb0-1253bb14a8de',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'IQD',
     pricePerUnit: 351.24,
     quantity: 85,
@@ -324,7 +324,7 @@ export const data: Transaction[] = [
   },
   {
     id: 'ec937ebe-3753-44ac-a788-8b4bcf02c157',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 227.13,
     quantity: 73,
@@ -430,7 +430,7 @@ export const data: Transaction[] = [
   },
   {
     id: 'd3c7add5-8c15-4c3f-9b0d-a69ff01a0b03',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'IQD',
     pricePerUnit: 370.96,
     quantity: 14,
@@ -478,7 +478,7 @@ export const data: Transaction[] = [
   },
   {
     id: 'ef78ad2f-a4be-4d4d-aa64-819f39de8008',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'IQD',
     pricePerUnit: 214.54,
     quantity: 60,
@@ -503,7 +503,7 @@ export const data: Transaction[] = [
   },
   {
     id: 'a1b7b5d8-314e-45d9-9912-585816bbce6c',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 205.3,
     quantity: 91,
@@ -515,7 +515,7 @@ export const data: Transaction[] = [
   },
   {
     id: '8b5857d0-190e-4ce7-bdc5-58b13dedec5c',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 357.26,
     quantity: 9,
@@ -527,7 +527,7 @@ export const data: Transaction[] = [
   },
   {
     id: '14b205d4-39f2-4834-adf7-eab64e9f1a32',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'IQD',
     pricePerUnit: 200.77,
     quantity: 71,
@@ -561,7 +561,7 @@ export const data: Transaction[] = [
   },
   {
     id: '525d2b2c-455a-49f9-861a-23d9e634b4dc',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'USD',
     pricePerUnit: 310.37,
     quantity: 61,
@@ -621,7 +621,7 @@ export const data: Transaction[] = [
   },
   {
     id: '31a10f5c-3a67-47a0-b20c-39bab7755fd4',
-    type: 'ALL',
+    type: 'BUY',
     currency: 'IQD',
     pricePerUnit: 128.5,
     quantity: 38,

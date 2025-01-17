@@ -16,7 +16,7 @@ export interface Expense {
 
 export interface Transaction {
   id: string;
-  type: 'SELL' | 'ALL';
+  type: 'SELL' | 'BUY';
   currency: 'USD' | 'IQD';
   pricePerUnit: number;
   quantity: number;
