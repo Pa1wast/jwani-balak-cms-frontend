@@ -23,4 +23,5 @@ export interface Transaction {
   quantity: number;
   productName: string;
   expenses: Expense[];
+  createdAt: Date;
 }

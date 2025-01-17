@@ -16,6 +16,7 @@ import {
 } from '@tanstack/react-table';
 import {
   AlertCircle,
+  ArrowRight,
   ArrowUpDown,
   ChevronDown,
   Copy,
@@ -58,7 +59,8 @@ export const data: Transaction[] = [
     currency: 'USD',
     pricePerUnit: 34834346.42,
     quantity: 21,
-    productName: 'Product A sgdf dsgd gdf gdf gdfsg d',
+    productName:
+      'Product A sgdf dsgd gdf gdf gdfsg ddfgfdgd g gdf gdsfg sdfg dfg sdfg dfsg sdg dsfg sdfg dsfg dsfg dfsg fdh ghgjgh kh ltr yur y esdg sreyxcb hmyt',
     expenses: [{ name: 'Tax', amount: 32.36 }],
     createdAt: new Date('2023-01-15T10:30:00Z'),
   },
@@ -339,7 +341,11 @@ export const columns: ColumnDef<Transaction>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      return <div className="capitalize font-bold truncate">{row.getValue('productName')}</div>;
+      return (
+        <div className="capitalize font-bold truncate max-w-[200px]">
+          {row.getValue('productName')}
+        </div>
+      );
     },
   },
   {
@@ -396,10 +402,7 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
     cell: ({ row }) => {
       const date = row.getValue('createdAt') as Date;
-      console.log({ date, id: row.id });
-      return (
-        <div className="capitalize truncate">{date ? date.toLocaleDateString('en-GB') : '_'}</div>
-      );
+      return <div className="capitalize truncate">{date.toLocaleDateString('en-GB')}</div>;
     },
   },
   {
@@ -407,6 +410,7 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const product = row.original;
+      const transactionId = row.getValue('id');
 
       return (
         <>
@@ -421,7 +425,7 @@ export const columns: ColumnDef<Transaction>[] = [
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
               <DropdownMenuItem>
-                <Link to={`/dashboard/transactions/${row.getValue('id')}`}>View details</Link>
+                <Link to={`/dashboard/transactions/${transactionId}`}>View details</Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
@@ -447,6 +451,12 @@ export const columns: ColumnDef<Transaction>[] = [
 
               <Button variant="outline" size="icon">
                 <FilePlus />
+              </Button>
+
+              <Button variant="outline" asChild>
+                <Link to={`/dashboard/transactions/${transactionId}`}>
+                  View detials <ArrowRight />
+                </Link>
               </Button>
             </div>
 
@@ -566,7 +576,7 @@ export default function TransactionDataTable() {
                     >
                       <div
                         className={cn(
-                          'flex justify-between p-2 rounded-lg md:hidden',
+                          'flex gap-2 p-2 rounded-lg md:hidden',
                           !cell.id.includes('actions') && 'bg-secondary/20'
                         )}
                       >

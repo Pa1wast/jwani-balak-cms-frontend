@@ -22,6 +22,7 @@ import { DarkModeProvider } from '@/contexts/dark-mode-context';
 import { CompaniesProvider } from '@/contexts/companies-context';
 import { KleshNotesProvider } from '@/contexts/klesh-notes-context';
 import PdfPageLayout from './components/pdf/pdf-page-layout';
+import TransactionDetails from './components/transaction/transaction-details';
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,10 @@ function App() {
                   <Route index element={<Dashboard />} />
                   <Route path="/dashboard/products" element={<Products />} />
                   <Route path="/dashboard/transactions" element={<Transactions />} />
+                  <Route
+                    path="/dashboard/transactions/:transactionId"
+                    element={<TransactionDetails />}
+                  />
                   <Route path="/dashboard/invoices" element={<Invoices />} />
 
                   <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
