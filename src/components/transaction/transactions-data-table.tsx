@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { AlertCircle, AlertTriangle, ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { AlertCircle, ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -39,14 +39,7 @@ import {
 import { cn } from '@/lib/utils';
 import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
 import { Badge } from '../ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem } from '../ui/select';
 import { SelectTrigger } from '@radix-ui/react-select';
 
 export const data: Transaction[] = [
