@@ -180,7 +180,7 @@ export default function ProductsDataTable() {
     <div className="w-full">
       <div className="flex items-center gap-2 py-4">
         <Input
-          placeholder="Filter products..."
+          placeholder="Filter products by name..."
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={event => table.getColumn('name')?.setFilterValue(event.target.value)}
           className="max-w-sm"

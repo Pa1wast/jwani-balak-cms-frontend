@@ -2,9 +2,10 @@ import { Ellipsis } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { cn } from '@/lib/utils';
+import { KleshNote } from '@/types/klesh-note';
 
 interface KleshNoteCardProps {
-  note: { id: number; content: string; to: string; date: string };
+  note: KleshNote;
   selectedNoteId?: string;
   onClick: () => void;
 }
@@ -28,14 +29,14 @@ function KleshNoteCard({ note, selectedNoteId, onClick }: KleshNoteCardProps) {
       </CardHeader>
 
       <CardContent className="p-2 bg-secondary/30 text-sm rounded-lg text-right">
-        {note.content.slice(0, 200)}
+        {note?.content?.slice(0, 200)}
       </CardContent>
 
       <CardFooter className="p-1 flex justify-between gap-1 flex-row text-xs">
         <Button variant="ghost" size="sm" className="font-normal" onClick={onClick}>
           Open
         </Button>
-        {note.date}
+        {note?.date && new Date(note.date).toLocaleDateString('en-GB')}
       </CardFooter>
     </Card>
   );

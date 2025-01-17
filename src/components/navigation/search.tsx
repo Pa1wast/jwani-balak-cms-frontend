@@ -1,16 +1,15 @@
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { SearchIcon } from 'lucide-react';
-import { useState } from 'react';
 
 interface SearchProps {
+  searchValue: string;
+  setSearchValue: (value: string) => void;
   placeholder?: string;
   className?: string;
 }
 
-function Search({ placeholder, className }: SearchProps) {
-  const [searchValue, setSearchValue] = useState('');
-
+function Search({ placeholder, className, searchValue, setSearchValue }: SearchProps) {
   return (
     <div className={cn('relative w-full', className)}>
       <SearchIcon className="absolute top-[50%] translate-y-[-50%] left-2" />
