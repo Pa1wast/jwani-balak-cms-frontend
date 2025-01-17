@@ -20,7 +20,7 @@ interface TransactionCardProps {
 function TransactionCard({ transaction }: TransactionCardProps) {
   return (
     <Link to="/dashboard/transactions" className="block">
-      <Card className="p-2 relative  border-foreground/50 hover:border-border">
+      <Card className="p-2 relative  hover:border-foreground/50 dark:border-foreground/50 dark:hover:border-border">
         <CardHeader className="p-2 flex-row items-center space-y-0 gap-2">
           <div
             className={cn(
