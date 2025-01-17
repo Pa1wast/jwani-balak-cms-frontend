@@ -873,7 +873,7 @@ export default function TransactionDataTable() {
                     key={column.id}
                     className={cn(
                       'capitalize',
-                      (column.id === 'id' || column.id === 'currency') && 'hidden sm:flex'
+                      (column.id === 'id' || column.id === 'currency') && 'hidden md:flex'
                     )}
                     checked={column.getIsVisible()}
                     onCheckedChange={value => column.toggleVisibility(!!value)}
@@ -896,7 +896,7 @@ export default function TransactionDataTable() {
                     <TableHead
                       key={header.id}
                       className={
-                        header.id === 'id' || header.id === 'currency' ? 'hidden sm:table-cell' : ''
+                        header.id === 'id' || header.id === 'currency' ? 'hidden md:table-cell' : ''
                       }
                     >
                       {header.isPlaceholder
@@ -918,7 +918,7 @@ export default function TransactionDataTable() {
                       key={cell.id}
                       className={
                         cell.id.includes('id') || cell.id.includes('currency')
-                          ? 'hidden sm:table-cell'
+                          ? 'hidden md:table-cell'
                           : ''
                       }
                     >
