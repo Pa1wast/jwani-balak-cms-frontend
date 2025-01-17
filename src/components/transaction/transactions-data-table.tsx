@@ -14,7 +14,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { AlertCircle, ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowUpDown,
+  ChevronDown,
+  Copy,
+  FilePlus,
+  MoreHorizontal,
+  Trash,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -49,7 +57,7 @@ export const data: Transaction[] = [
     currency: 'USD',
     pricePerUnit: 34834346.42,
     quantity: 21,
-    productName: 'Product A',
+    productName: 'Product A sgdf dsgd gdf gdf gdfsg d',
     expenses: [{ name: 'Tax', amount: 32.36 }],
   },
   {
@@ -736,7 +744,7 @@ export const columns: ColumnDef<Transaction>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      return <div className="capitalize">{row.getValue('productName')}</div>;
+      return <div className="capitalize font-bold truncate">{row.getValue('productName')}</div>;
     },
   },
   {
@@ -790,32 +798,54 @@ export const columns: ColumnDef<Transaction>[] = [
       const product = row.original;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="" />
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0 hidden md:flex">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
+                View details
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
+                Copy transaction ID
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
+                Generate invoice
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem>
+                Delete transaction
+                <AlertCircle className="ml-auto dark:text-red-500 text-destructive" />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="md:hidden flex justify-between w-full">
+            <div className="flex gap-2 items-center">
+              <Button variant="outline" size="icon">
+                <Copy />
+              </Button>
+
+              <Button variant="outline" size="icon">
+                <FilePlus />
+              </Button>
+            </div>
+
+            <Button variant="destructive" size="icon" className="">
+              <Trash />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
-              Copy transaction ID
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
-              Generate invoice
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem>
-              Delete transaction
-              <AlertCircle className="ml-auto dark:text-red-500 text-destructive" />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </div>
+        </>
       );
     },
   },
@@ -853,11 +883,11 @@ export default function TransactionDataTable() {
           placeholder="Filter transactions by product name..."
           value={(table.getColumn('productName')?.getFilterValue() as string) ?? ''}
           onChange={event => table.getColumn('productName')?.setFilterValue(event.target.value)}
-          className="max-w-sm"
+          className="md:max-w-sm "
         />
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="hidden md:flex">
             <Button variant="outline">
               Columns <ChevronDown />
             </Button>
@@ -873,7 +903,8 @@ export default function TransactionDataTable() {
                     key={column.id}
                     className={cn(
                       'capitalize',
-                      (column.id === 'id' || column.id === 'currency') && 'hidden md:flex'
+                      column.id === 'currency' && 'hidden lg:flex',
+                      column.id === 'id' && 'hidden lg:flex'
                     )}
                     checked={column.getIsVisible()}
                     onCheckedChange={value => column.toggleVisibility(!!value)}
@@ -888,16 +919,17 @@ export default function TransactionDataTable() {
 
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="hidden md:table-header-group">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
                   return (
                     <TableHead
                       key={header.id}
-                      className={
-                        header.id === 'id' || header.id === 'currency' ? 'hidden md:table-cell' : ''
-                      }
+                      className={cn(
+                        header.id === 'currency' ? 'hidden lg:table-cell' : '',
+                        header.id === 'id' && 'hidden lg:table-cell'
+                      )}
                     >
                       {header.isPlaceholder
                         ? null
@@ -912,17 +944,41 @@ export default function TransactionDataTable() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="grid w-full flex-wrap relative md:table-row">
                   {row.getVisibleCells().map(cell => (
                     <TableCell
                       key={cell.id}
-                      className={
-                        cell.id.includes('id') || cell.id.includes('currency')
-                          ? 'hidden md:table-cell'
-                          : ''
-                      }
+                      className={cn(
+                        'flex-1 md:flex-none',
+                        cell.id.includes('currency') && 'hidden lg:table-cell',
+                        cell.id.includes('id') && 'hidden lg:table-cell',
+                        cell.id.includes('action') && ''
+                      )}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      <div
+                        className={cn(
+                          'flex justify-between p-2 rounded-lg md:hidden',
+                          !cell.id.includes('actions') && 'bg-secondary/20'
+                        )}
+                      >
+                        {cell.id.includes('type') && (
+                          <p className="md:hidden font-medium opacity-60">Type: </p>
+                        )}
+                        {cell.id.includes('productName') && (
+                          <p className="md:hidden font-medium opacity-60">Product name: </p>
+                        )}
+                        {cell.id.includes('pricePerUnit') && (
+                          <p className="md:hidden font-medium opacity-60">Price / Unit: </p>
+                        )}
+                        {cell.id.includes('quantity') && (
+                          <p className="md:hidden font-medium opacity-60">Quantity: </p>
+                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </div>
+
+                      <div className="md:table-cell hidden">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>
