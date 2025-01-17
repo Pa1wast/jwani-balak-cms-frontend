@@ -5,6 +5,7 @@ export enum transactionTypes {
 }
 
 export enum currencyTypes {
+  ALL = 'ALL',
   USD = 'USD',
   IQD = 'IQD',
 }

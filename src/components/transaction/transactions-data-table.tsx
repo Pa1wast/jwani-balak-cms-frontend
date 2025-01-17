@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { AlertTriangle, ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -37,14 +37,24 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { Transaction } from '@/types/transaction';
+import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
+import { Badge } from '../ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectValue,
+} from '../ui/select';
+import { SelectTrigger } from '@radix-ui/react-select';
 
 export const data: Transaction[] = [
   {
     id: '530347e8-6881-46cd-a261-c9b2469a2817',
     type: 'SELL',
     currency: 'USD',
-    pricePerUnit: 348.42,
+    pricePerUnit: 34834346.42,
     quantity: 21,
     productName: 'Product A',
     expenses: [{ name: 'Tax', amount: 32.36 }],
@@ -638,15 +648,103 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'id',
     header: () => <div className="text-left">#ID</div>,
-    cell: ({ row }) => (
-      <div className="text-left font-medium hidden sm:block">#{row.getValue('id')}</div>
-    ),
+    cell: ({ row }) => <div className="text-left font-medium">#{row.getValue('id')}</div>,
+  },
+  {
+    accessorKey: 'type',
+    header: ({ column }) => {
+      const handleFilterChange = (value: transactionTypes) => {
+        column.setFilterValue(value === transactionTypes.ALL ? undefined : value);
+      };
+
+      return (
+        <Select onValueChange={handleFilterChange}>
+          <SelectTrigger className="w-[180px]" asChild>
+            <Button className="justify-start w-max" variant="ghost">
+              Type
+              <ChevronDown />
+            </Button>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={transactionTypes.ALL}>ALL</SelectItem>
+              <SelectItem value={transactionTypes.SELL}>SELL</SelectItem>
+              <SelectItem value={transactionTypes.BUY}>BUY</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      );
+    },
+    cell: ({ row }) => {
+      const type = row.getValue('type') as string;
+      return (
+        <Badge
+          className={cn(
+            'text-left font-bold flex justify-center items-center rounded-md px-2 w-max',
+            type === transactionTypes.SELL
+              ? 'bg-green-500 dark:bg-green-500/20 dark:text-green-500 hover:bg-green-500/80 dark:hover:bg-green-500/60'
+              : 'bg-blue-500 dark:bg-blue-500/20 dark:text-blue-500 hover:bg-blue-500/80 dark:hover:bg-blue-500/60'
+          )}
+        >
+          {type}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: 'currency',
+    header: ({ column }) => {
+      const handleFilterChange = (value: currencyTypes) => {
+        column.setFilterValue(value === currencyTypes.ALL ? undefined : value);
+      };
+
+      return (
+        <Select onValueChange={handleFilterChange}>
+          <SelectTrigger className="hiddem sm:flex w-max" asChild>
+            <Button variant="ghost">
+              Currency
+              <ChevronDown />
+            </Button>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={currencyTypes.ALL}>ALL</SelectItem>
+              <SelectItem value={currencyTypes.IQD}>IQD</SelectItem>
+              <SelectItem value={currencyTypes.USD}>USD</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      );
+    },
+    cell: ({ row }) => {
+      const currency = row.getValue('currency') as string;
+      return (
+        <Badge
+          variant="outline"
+          className={cn(
+            'text-left font-bold flex justify-center items-center rounded-md px-2 w-max',
+            currency === currencyTypes.IQD
+              ? 'border-orange-500  text-orange-500 dark:border-orange-500/20 dark:text-orange-500 hover:border-orange-500/80 dark:hover:border-orange-500/60'
+              : 'border-cyan-500  text-cyan-500 dark:border-cyan-500/20 dark:text-cyan-500 hover:border-cyan-500/80 dark:hover:border-orange-500/60'
+          )}
+        >
+          {currency}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: 'productName',
     enableHiding: false,
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Product
+        <ArrowUpDown />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      return <div className="capitalize">{row.getValue('productName')}</div>;
+    },
   },
   {
     accessorKey: 'pricePerUnit',
@@ -658,18 +756,39 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
     cell: ({ row }) => {
       const price = parseFloat(row.getValue('pricePerUnit'));
-      return <div>{price}</div>;
+      const currency = row._valuesCache.currency;
+
+      const formattedPriceValue = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(price);
+
+      const formattedPrice =
+        currency === currencyTypes.IQD ? `${formattedPriceValue} IQD` : `$${formattedPriceValue}`;
+
+      return (
+        <div
+          className={cn(
+            'font-semibold',
+            currency === currencyTypes.IQD
+              ? 'text-orange-500  dark:text-orange-500'
+              : 'text-cyan-500  dark:text-cyan-500'
+          )}
+        >
+          {formattedPrice}
+        </div>
+      );
     },
   },
   {
     accessorKey: 'quantity',
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Stock Quantity
+        Quantity
         <ArrowUpDown />
       </Button>
     ),
-    cell: ({ row }) => <div>{Number(row.getValue('quantity'))}</div>,
+    cell: ({ row }) => <div className="font-bold">{row.getValue('quantity')}</div>,
   },
   {
     id: 'actions',
@@ -687,13 +806,20 @@ export const columns: ColumnDef<Transaction>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
               Copy transaction ID
             </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product.id)}>
+              Generate invoice
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem>
               Delete transaction
-              <AlertTriangle className="ml-auto dark:text-red-500 text-destructive" />
+              <AlertCircle className="ml-auto dark:text-red-500 text-destructive" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -731,9 +857,9 @@ export default function TransactionDataTable() {
     <div className="w-full">
       <div className="flex items-center gap-2 py-4">
         <Input
-          placeholder="Filter products..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={event => table.getColumn('name')?.setFilterValue(event.target.value)}
+          placeholder="Filter transactions by product name..."
+          value={(table.getColumn('productName')?.getFilterValue() as string) ?? ''}
+          onChange={event => table.getColumn('productName')?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
 
@@ -752,15 +878,14 @@ export default function TransactionDataTable() {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className={cn('capitalize', column.id === 'id' && 'hidden sm:flex')}
+                    className={cn(
+                      'capitalize',
+                      (column.id === 'id' || column.id === 'currency') && 'hidden sm:flex'
+                    )}
                     checked={column.getIsVisible()}
                     onCheckedChange={value => column.toggleVisibility(!!value)}
                   >
-                    {column.id === 'id'
-                      ? 'ID'
-                      : column.id === 'quantity'
-                      ? 'Stock Quantity'
-                      : column.id}
+                    {column.id === 'id' ? 'ID' : column.id}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -777,7 +902,9 @@ export default function TransactionDataTable() {
                   return (
                     <TableHead
                       key={header.id}
-                      className={header.id === 'id' ? 'hidden sm:table-cell' : ''}
+                      className={
+                        header.id === 'id' || header.id === 'currency' ? 'hidden sm:table-cell' : ''
+                      }
                     >
                       {header.isPlaceholder
                         ? null
@@ -796,7 +923,11 @@ export default function TransactionDataTable() {
                   {row.getVisibleCells().map(cell => (
                     <TableCell
                       key={cell.id}
-                      className={cell.id.includes('id') ? 'hidden sm:table-cell' : ''}
+                      className={
+                        cell.id.includes('id') || cell.id.includes('currency')
+                          ? 'hidden sm:table-cell'
+                          : ''
+                      }
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
