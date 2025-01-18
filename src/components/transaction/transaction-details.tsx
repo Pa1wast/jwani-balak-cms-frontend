@@ -72,7 +72,6 @@ function TransactionDetails() {
         </div>
 
         <Card className="overflow-hidden">
-          {/* <CardHeader className="flex-row items-center w-full justify-between"></CardHeader> */}
           <CardContent className="flex gap-10 flex-row flex-wrap">
             <div className="flex flex-1 items-center gap-4">
               <p className="text-lg text-foreground/60 min-w-max">Product name:</p>
@@ -119,7 +118,7 @@ function TransactionDetails() {
         </Card>
       </div>
 
-      <div className="flex gap-2 w-full ">
+      <div className="flex gap-2 w-full flex-col sm:flex-row">
         <Card className="flex-1 max-h-max">
           <CardHeader>
             <CardTitle>Add Expenses</CardTitle>
