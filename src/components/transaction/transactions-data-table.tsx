@@ -424,7 +424,7 @@ export const columns: ColumnDef<Transaction>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link to={`/dashboard/transactions/${transactionId}`}>View details</Link>
               </DropdownMenuItem>
 
