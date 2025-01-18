@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
-import { FilePlus, Files, Image, Pen, Trash } from 'lucide-react';
+import { FilePlus, Image, Pen, Trash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Company } from '@/types/company';
 
@@ -58,19 +58,14 @@ function CompanyDetails({ company }: CompanyDetailsProps) {
       </Card>
 
       <Card className="sm:col-span-2 md:col-span-1">
-        <CardContent className="p-2 grid grid-cols-1 sm:grid-cols-[1fr_max-content_1fr] gap-2 md:flex md:flex-col">
-          <div className="space-y-1">
-            <Button size="sm" variant="ghost" className="w-full h-8">
-              <FilePlus /> Generate Full Report
-            </Button>
-            <Button size="sm" variant="ghost" className="w-full h-8">
-              <Files /> View Klesh Notes
-            </Button>
-          </div>
+        <CardContent className="p-2 grid grid-cols-1 justify-between items-center h-full sm:grid-cols-[1fr_max-content_1fr] gap-2 md:flex md:flex-col">
+          <Button size="sm" variant="ghost" className="w-full  h-full">
+            <FilePlus /> Generate Full Report
+          </Button>
 
           <div className="w-full h-[1px] sm:h-full sm:w-[1px] bg-foreground/20 md:w-full md:h-[1px]" />
 
-          <div className="space-y-1">
+          <div className="space-y-1 w-full">
             <Dialog>
               <DialogTrigger asChild>
                 <Button size="sm" variant="ghost" className="w-full h-8">
