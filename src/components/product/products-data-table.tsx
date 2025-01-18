@@ -107,7 +107,12 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: 'name',
     enableHiding: false,
-    header: 'Name',
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Name
+        <ArrowUpDown />
+      </Button>
+    ),
     cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
   {
