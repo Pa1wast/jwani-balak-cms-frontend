@@ -10,7 +10,7 @@ function Transactions() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="font-semibold text-lg md:text-xl">Transactions</h1>
-          <p className="text-xs md:text-sm">View, add, and manage products here.</p>
+          <p className="text-xs md:text-sm">View, add, and manage transactions here.</p>
         </div>
 
         <Sheet>
