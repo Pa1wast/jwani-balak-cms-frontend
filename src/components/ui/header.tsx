@@ -13,6 +13,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useCompanies } from '@/features/company/useCompanies';
+import { Company } from '@/types/company';
+import Loader from './loader';
 
 function Header({ className }: { className?: string }) {
   const { pathname } = useLocation();
@@ -51,11 +53,11 @@ function Header({ className }: { className?: string }) {
               value={selectedCompanyId as string}
             >
               <SelectTrigger className="w-32 md:w-40">
-                <SelectValue placeholder="Company" />
+                {!isLoading ? <SelectValue placeholder="Company" /> : <Loader size="sm" />}
               </SelectTrigger>
               <SelectContent>
                 {!isLoading &&
-                  companies.map(company => (
+                  companies.map((company: Company) => (
                     <SelectItem key={company._id} value={company._id}>
                       <div className="flex gap-2 w-full items-center justify-between text-xs">
                         <Avatar className="h-7 w-7 rounded-none">
