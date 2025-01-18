@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { useCompanies } from '@/contexts/companies-context';
+import { useCompaniesView } from '@/contexts/companies-view-context';
 import { listViewTypes } from '@/types/company';
 import { Grid2X2, Rows2 } from 'lucide-react';
 
 function SelectListView() {
-  const { listView, setListView } = useCompanies();
+  const { listView, setListView } = useCompaniesView();
 
   return (
     <div className="outline outline-border outline-1 rounded-lg hidden md:flex w-max">

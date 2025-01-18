@@ -1,16 +1,28 @@
-import { useCompanies } from '@/contexts/companies-context';
-import { companies } from '@/pages/home';
-import CompanyDetails from '@/components/ui/company-details';
+import CompanyDetails from '@/components/company/company-details';
 import { Card } from '@/components/ui/card';
 import { Banknote, SquareArrowDown, SquareArrowUp } from 'lucide-react';
 import FinanceChart from '@/components/ui/finance-chart';
 import TransactionsChart from '@/components/transaction/transactions-chart';
+import { useCompany } from '@/features/company/useCompany';
+import Loader from '@/components/ui/loader';
+import ErrorMessage from '@/components/ui/error-message';
 
 function Dashboard() {
-  const { selectedCompanyId } = useCompanies();
-  const company = companies.find(company => company.id === Number(selectedCompanyId));
+  const { isLoading, company } = useCompany();
 
-  if (!company) return <p>Could not load company data!</p>;
+  if (isLoading)
+    return (
+      <div className="w-full h-full grid items-center">
+        <Loader />
+      </div>
+    );
+
+  if (!company)
+    return (
+      <div className="w-full h-full grid items-center">
+        <ErrorMessage message="Failed to get company data!" />
+      </div>
+    );
 
   return (
     <div>

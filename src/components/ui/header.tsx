@@ -11,13 +11,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
-import { companies } from '@/pages/home';
-import { useCompanies } from '@/contexts/companies-context';
+import { useCompaniesView } from '@/contexts/companies-view-context';
+import { useCompanies } from '@/features/company/useCompanies';
 
 function Header({ className }: { className?: string }) {
   const { pathname } = useLocation();
-  const { selectedCompanyId, setSelectedCompany } = useCompanies();
+  const { selectedCompanyId, setSelectedCompany } = useCompaniesView();
+  const { isLoading, companies } = useCompanies();
 
   return (
     <div
@@ -54,22 +54,23 @@ function Header({ className }: { className?: string }) {
                 <SelectValue placeholder="Company" />
               </SelectTrigger>
               <SelectContent>
-                {companies.map(company => (
-                  <SelectItem key={company.id} value={company.id.toString()}>
-                    <div className="flex gap-2 w-full items-center justify-between text-xs">
-                      <Avatar className="h-7 w-7 rounded-none">
-                        <AvatarImage
-                          src={company.logo}
-                          alt={company.name}
-                          className="dark:bg-white"
-                        />
-                        <AvatarFallback>{company.name[0].toUpperCase()}</AvatarFallback>
-                      </Avatar>
+                {!isLoading &&
+                  companies.map(company => (
+                    <SelectItem key={company._id} value={company._id}>
+                      <div className="flex gap-2 w-full items-center justify-between text-xs">
+                        <Avatar className="h-7 w-7 rounded-none">
+                          <AvatarImage
+                            src={company.logoPath}
+                            alt={company.companyName}
+                            className="dark:bg-white"
+                          />
+                          <AvatarFallback>{company.companyName[0].toUpperCase()}</AvatarFallback>
+                        </Avatar>
 
-                      <p className="text-xs">{company.name}</p>
-                    </div>
-                  </SelectItem>
-                ))}
+                        <p className="text-xs truncate">{company.companyName}</p>
+                      </div>
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           )}

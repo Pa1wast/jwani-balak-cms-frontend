@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { data as transactions } from '@/components/transaction/transactions-data-table';
-import { CircleOff, Delete, Plus, Trash2, X } from 'lucide-react';
+import { CircleOff, Plus, X } from 'lucide-react';
 import { Card, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { CardContent } from '@mui/material';
 import { Badge } from '../ui/badge';

@@ -19,14 +19,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import useIsMobile from '@/hooks/useIsMobile';
+import { useDeleteCompany } from '@/features/company/useDeleteCompany';
+import { Company } from '@/types/company';
+import EditCompanyForm from './edit-company-form';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 
 interface EditCompanyProps {
   dialog?: boolean;
+  company: Company;
 }
 
-function EditCompany({ dialog }: EditCompanyProps) {
+function EditCompany({ dialog, company }: EditCompanyProps) {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isEditCompanyOpen, setIsEditCompanyOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { isDeleting, deleteCompany } = useDeleteCompany();
 
   if (isMobile || dialog)
     return (
@@ -39,7 +46,7 @@ function EditCompany({ dialog }: EditCompanyProps) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="mx-4">
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setIsEditCompanyOpen(true)}>
               <Pen /> Edit
             </DropdownMenuItem>
 
@@ -50,6 +57,16 @@ function EditCompany({ dialog }: EditCompanyProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
+        <Dialog open={isEditCompanyOpen} onOpenChange={setIsEditCompanyOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Update company information</DialogTitle>
+            </DialogHeader>
+
+            <EditCompanyForm company={company} />
+          </DialogContent>
+        </Dialog>
+
         <AlertDialog open={isDeletePopupOpen} onOpenChange={setIsDeletePopupOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -58,7 +75,11 @@ function EditCompany({ dialog }: EditCompanyProps) {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500">
+              <AlertDialogAction
+                className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
+                onClick={() => deleteCompany(company._id)}
+                disabled={isDeleting}
+              >
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -69,9 +90,20 @@ function EditCompany({ dialog }: EditCompanyProps) {
 
   return (
     <div className="flex gap-1">
-      <Button size="sm" variant="outline">
-        <Pen /> Edit
-      </Button>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button size="sm" variant="outline">
+            <Pen /> Edit
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update company information</DialogTitle>
+          </DialogHeader>
+
+          <EditCompanyForm company={company} />
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
@@ -86,7 +118,11 @@ function EditCompany({ dialog }: EditCompanyProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500">
+            <AlertDialogAction
+              className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
+              onClick={() => deleteCompany(company._id)}
+              disabled={isDeleting}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

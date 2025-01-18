@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import DashboardLayout from '@/components/ui/dashboard-layout';
 
@@ -19,7 +19,7 @@ import Report from '@/components/pdf/report';
 import KleshNote from '@/components/pdf/klesh-note';
 
 import { DarkModeProvider } from '@/contexts/dark-mode-context';
-import { CompaniesProvider } from '@/contexts/companies-context';
+import { CompaniesViewProvider } from '@/contexts/companies-view-context';
 import { KleshNotesProvider } from '@/contexts/klesh-notes-context';
 import PdfPageLayout from './components/pdf/pdf-page-layout';
 import TransactionDetails from './components/transaction/transaction-details';
@@ -29,10 +29,10 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <DarkModeProvider>
-      <CompaniesProvider>
+      <CompaniesViewProvider>
         <KleshNotesProvider>
           <QueryClientProvider client={queryClient}>
-            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            <ReactQueryDevtools initialIsOpen={false} />
             <BrowserRouter>
               <Routes>
                 <Route index element={<Home />} />
@@ -59,7 +59,7 @@ function App() {
             <Toaster />
           </QueryClientProvider>
         </KleshNotesProvider>
-      </CompaniesProvider>
+      </CompaniesViewProvider>
     </DarkModeProvider>
   );
 }

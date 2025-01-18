@@ -15,19 +15,23 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { registerCompnaySchema } from '@/schemas';
 import { Input } from '../ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAddCompany } from '@/features/company/useAddCompany';
 
 function RegisterCompanyForm() {
+  const { isAdding, addCompany } = useAddCompany();
   const form = useForm<z.infer<typeof registerCompnaySchema>>({
-    defaultValues: { name: '', address: '', logo: '' },
+    resolver: zodResolver(registerCompnaySchema),
+    defaultValues: { companyName: '', address: '', logoPath: '' },
   });
 
   function onSubmit(values: z.infer<typeof registerCompnaySchema>) {
     const { success, data } = registerCompnaySchema.safeParse(values);
-    if (success) console.log({ data });
+    if (success) addCompany(data);
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={() => form.reset()}>
       <DialogTrigger asChild>
         <Button>
           <Plus /> Register Company
@@ -43,12 +47,10 @@ function RegisterCompanyForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="companyName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-semibold">
-                    Name <span className="text-destructive dark:text-red-500">*</span>
-                  </FormLabel>
+                  <FormLabel className="font-semibold">Name</FormLabel>
 
                   <FormControl>
                     <Input {...field} type="text" />
@@ -77,7 +79,7 @@ function RegisterCompanyForm() {
 
             <FormField
               control={form.control}
-              name="logo"
+              name="logoPath"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-semibold">Logo</FormLabel>
@@ -91,7 +93,7 @@ function RegisterCompanyForm() {
               )}
             />
 
-            <Button type="submit">
+            <Button type="submit" disabled={isAdding}>
               <Plus /> Register
             </Button>
           </form>

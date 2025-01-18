@@ -1,9 +1,9 @@
 import * as z from 'zod';
 
 export const registerCompnaySchema = z.object({
-  name: z.string().min(1, 'Company name is required'),
-  address: z.optional(z.string()),
-  logo: z.optional(z.string()),
+  companyName: z.string().min(1, 'Name is required'),
+  address: z.string().min(1, 'Address is required'),
+  logoPath: z.string().min(1, 'Logo is required'),
 });
 
 export const addProductSchema = z.object({
