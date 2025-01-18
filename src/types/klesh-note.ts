@@ -1,5 +1,5 @@
 export interface KleshNote {
-  id: number;
+  _id: number;
   content?: string;
   date: Date;
 }

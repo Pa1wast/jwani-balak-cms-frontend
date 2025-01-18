@@ -3,7 +3,7 @@ export async function getCompany(companyId: string) {
   const response = await fetch(apiUrl);
 
   if (!response.ok) {
-    throw new Error('Could get company');
+    throw new Error('Could not get company');
   }
 
   const data = await response.json();

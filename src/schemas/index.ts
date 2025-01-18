@@ -7,7 +7,8 @@ export const registerCompnaySchema = z.object({
 });
 
 export const addProductSchema = z.object({
-  name: z.string().min(1, 'Product name is required'),
+  productName: z.string().min(1, 'Product name is required'),
+  company: z.string().min(1, 'Company is required'),
 });
 
 export const addTransactionSchema = z.object({

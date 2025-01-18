@@ -16,15 +16,22 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useCompaniesView } from '@/contexts/companies-view-context';
+import { useAddProduct } from '@/features/product/useAddProduct';
 
 function AddProductForm() {
+  const { selectedCompanyId } = useCompaniesView();
+  const { isAdding, addProduct } = useAddProduct();
+
   const form = useForm<z.infer<typeof addProductSchema>>({
     resolver: zodResolver(addProductSchema),
-    defaultValues: { name: '' },
+    defaultValues: { productName: '', company: selectedCompanyId as string },
   });
 
   function onSubmit(values: z.infer<typeof addProductSchema>) {
-    console.log(values);
+    const { success, data } = addProductSchema.safeParse(values);
+
+    if (success) addProduct(data);
   }
 
   return (
@@ -32,7 +39,7 @@ function AddProductForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="name"
+          name="productName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Product Name</FormLabel>
@@ -43,7 +50,8 @@ function AddProductForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">
+
+        <Button type="submit" disabled={isAdding}>
           <Plus /> Add
         </Button>
       </form>

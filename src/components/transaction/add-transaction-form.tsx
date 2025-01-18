@@ -17,7 +17,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-import { data as products } from '@/components/product/products-data-table';
 import {
   Command,
   CommandEmpty,
@@ -31,8 +30,13 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
 import { useState } from 'react';
+import { useProducts } from '@/features/product/useProducts';
+import { Product } from '@/types/product';
+import Loader from '../ui/loader';
 
 function AddTransactionForm() {
+  const { isLoading, products } = useProducts();
+
   const form = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
@@ -81,52 +85,57 @@ function AddTransactionForm() {
           render={({ field }) => (
             <FormItem className="flex flex-col space-y-3">
               <FormLabel>Product</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        ' justify-between truncate',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value
-                        ? products.find(product => product.name === field.value)?.name
-                        : 'Select product'}
-                      <ChevronsUpDown className="opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="p-0">
-                  <Command>
-                    <CommandInput placeholder="Search product..." className="h-9" />
-                    <CommandList>
-                      <CommandEmpty>No products found.</CommandEmpty>
-                      <CommandGroup>
-                        {products.map(product => (
-                          <CommandItem
-                            value={product.name}
-                            key={product.id}
-                            onSelect={() => {
-                              form.setValue('productName', product.name);
-                            }}
-                          >
-                            {product.name}
-                            <Check
-                              className={cn(
-                                'ml-auto',
-                                product.name === field.value ? 'opacity-100' : 'opacity-0'
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              {!isLoading ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          ' justify-between truncate',
+                          !field.value && 'text-muted-foreground'
+                        )}
+                      >
+                        {field.value
+                          ? products.find((product: Product) => product.productName === field.value)
+                              ?.name
+                          : 'Select product'}
+                        <ChevronsUpDown className="opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0">
+                    <Command>
+                      <CommandInput placeholder="Search product..." className="h-9" />
+                      <CommandList>
+                        <CommandEmpty>No products found.</CommandEmpty>
+                        <CommandGroup>
+                          {products.map((product: Product) => (
+                            <CommandItem
+                              value={product.productName}
+                              key={product.id}
+                              onSelect={() => {
+                                form.setValue('productName', product.productName);
+                              }}
+                            >
+                              {product.productName}
+                              <Check
+                                className={cn(
+                                  'ml-auto',
+                                  product.productName === field.value ? 'opacity-100' : 'opacity-0'
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Loader />
+              )}
 
               <FormMessage />
             </FormItem>

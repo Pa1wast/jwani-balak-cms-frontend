@@ -1,5 +1,10 @@
 export interface Product {
-  id: string;
-  name: string;
-  quantity: number;
+  _id: string;
+  productName: string;
+  company: string;
+}
+
+export interface NewProduct {
+  productName: string;
+  company: string;
 }
