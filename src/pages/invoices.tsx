@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Download, ReceiptText } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { ReceiptText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const invoices = [
