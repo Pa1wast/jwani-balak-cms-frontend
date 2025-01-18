@@ -148,14 +148,20 @@ function AddTransactionForm() {
                   >
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
-                        <RadioGroupItem value={transactionTypes.SELL} />
+                        <RadioGroupItem
+                          value={transactionTypes.SELL}
+                          className="text-green-500 border-green-500"
+                        />
                       </FormControl>
                       <FormLabel className="font-normal">Sell</FormLabel>
                     </FormItem>
 
-                    <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormItem className="flex items-center space-x-3 space-y-0 ">
                       <FormControl>
-                        <RadioGroupItem value={transactionTypes.BUY} />
+                        <RadioGroupItem
+                          value={transactionTypes.BUY}
+                          className="text-blue-500 border-blue-500"
+                        />
                       </FormControl>
                       <FormLabel className="font-normal">Buy</FormLabel>
                     </FormItem>
@@ -180,14 +186,20 @@ function AddTransactionForm() {
                   >
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
-                        <RadioGroupItem value={currencyTypes.IQD} />
+                        <RadioGroupItem
+                          value={currencyTypes.IQD}
+                          className="text-orange-500 border-orange-500"
+                        />
                       </FormControl>
                       <FormLabel className="font-normal">IQD</FormLabel>
                     </FormItem>
 
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
-                        <RadioGroupItem value={currencyTypes.USD} />
+                        <RadioGroupItem
+                          value={currencyTypes.USD}
+                          className="text-cyan-500 border-cyan-500"
+                        />
                       </FormControl>
                       <FormLabel className="font-normal">USD</FormLabel>
                     </FormItem>
