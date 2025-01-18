@@ -22,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useDeleteProduct } from '@/features/product/useDeleteProduct';
-import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import UpdateProductForm from './update-product-form';
 import { Product } from '@/types/product';
 
@@ -79,7 +79,9 @@ function ProductRowActions({ product }: { product: Product }) {
         </AlertDialog>
 
         <DialogContent>
-          <DialogHeader>Update product name</DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Update product name</DialogTitle>
+          </DialogHeader>
 
           <UpdateProductForm product={product} />
         </DialogContent>
