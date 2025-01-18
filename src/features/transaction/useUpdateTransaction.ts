@@ -1,5 +1,5 @@
 import { updateTransactionApi } from '@/api/transaction/update-transaction';
-import { UpdatedtTransaction } from '@/types/transaction';
+import { UpdatedTransaction } from '@/types/transaction';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -12,7 +12,7 @@ export function useUpdateTransaction() {
       updatedTransaction,
     }: {
       transactionId: string;
-      updatedTransaction: UpdatedtTransaction;
+      updatedTransaction: UpdatedTransaction;
     }) => updateTransactionApi({ transactionId, updatedTransaction }),
     onSuccess: () => {
       toast.success('Transaction successfully updated');

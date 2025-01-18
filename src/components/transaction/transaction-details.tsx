@@ -1,23 +1,14 @@
-import * as z from 'zod';
-
-import { Pen, Plus, Trash, X } from 'lucide-react';
+import { Pen, Trash, X } from 'lucide-react';
 import { Card, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { CardContent } from '@mui/material';
 import { Badge } from '../ui/badge';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { cn } from '@/lib/utils';
-import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { useState } from 'react';
-import { toast } from 'sonner';
 import ErrorMessage from '../ui/error-message';
 import Loader from '../ui/loader';
 import { useTransaction } from '@/features/transaction/useTransaction';
 import { formatDate } from '@/lib/date';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { addExpenseSchema } from '@/schemas';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,41 +24,19 @@ import { useDeleteTransaction } from '@/features/transaction/useDeleteTransactio
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import UpdateTransactionForm from './update-transaction-form';
+import { formatPrice } from '@/lib/price';
+import AddExpenseForm from './add-expense-form';
+import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
 
 function TransactionDetails() {
   const { isLoading, error, transaction } = useTransaction();
+
+  const { isLoading: isLoading2, transactions } = useTransactionsByProductId(
+    transaction?.product?._id
+  );
+
   const { isDeleting, deleteTransaction } = useDeleteTransaction();
   const navigate = useNavigate();
-
-  const form = useForm<z.infer<typeof addExpenseSchema>>({
-    resolver: zodResolver(addExpenseSchema),
-    defaultValues: { name: '', amount: 0 },
-  });
-
-  const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
-  const [curExpense, setCurExpense] = useState<{ name: string; amount: number }>({
-    name: '',
-    amount: 0,
-  });
-
-  const addExpense = () => {
-    if (!curExpense.name) {
-      toast.error('Expense name is required!');
-      return;
-    }
-    if (!curExpense.amount) {
-      toast.error('Expense amount is required!');
-      return;
-    }
-
-    setExpenses([...expenses, curExpense]);
-    setCurExpense({ name: '', amount: 0 });
-  };
-
-  const removeExpense = (index: number) => {
-    const updatedExpenses = expenses.filter((_, i) => i !== index);
-    setExpenses(updatedExpenses);
-  };
 
   if (isLoading)
     return (
@@ -86,7 +55,7 @@ function TransactionDetails() {
   return (
     <div>
       <h1 className="text-lg md:text-xl font-semibold mb-10">
-        Transaction <span className="text-xs font-normal">#{transaction._id}</span>
+        Transaction | <span className="text-xs font-normal">#{transaction._id}</span>
       </h1>
 
       <div className="space-y-2 mb-2">
@@ -105,7 +74,7 @@ function TransactionDetails() {
           <p className="font-medium">{formatDate(transaction.createdAt)}</p>
         </div>
 
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap sm:flex-nowrap">
           <Card className="overflow-hidden w-full">
             <CardContent className="flex gap-10 flex-row flex-wrap">
               <div className="flex flex-1 items-center gap-4">
@@ -118,15 +87,7 @@ function TransactionDetails() {
               <div className="flex items-center gap-4">
                 <p className="text-lg text-foreground/60">Price / Unit:</p>
                 <p className="text-lg font-semibold">
-                  {transaction.currency === currencyTypes.IQD
-                    ? `${new Intl.NumberFormat('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(transaction.pricePerUnit)} IQD`
-                    : `$${new Intl.NumberFormat('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(transaction.pricePerUnit)}`}
+                  {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
                 </p>
               </div>
 
@@ -137,25 +98,31 @@ function TransactionDetails() {
             </CardContent>
 
             <CardFooter className="flex-row p-4 items-center justify-between w-full">
-              <p className="text-lg text-foreground/60">Totla Cost (w/o) expenses:</p>
-              <p className={'text-xl font-bold text-red-900 dark:text-red-500'}>
-                {transaction.currency === currencyTypes.IQD
-                  ? `${new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(transaction.pricePerUnit * transaction.quantity)} IQD`
-                  : `$${new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(transaction.pricePerUnit * transaction.quantity)}`}
+              <p className="text-lg text-foreground/60">
+                {transaction.transactionType.toUpperCase() === transactionTypes.SELL
+                  ? 'Revenue: '
+                  : 'Total Cost (w/o) expenses: '}
+              </p>
+              <p
+                className={cn(
+                  'text-xl font-bold ',
+                  transaction.transactionType.toUpperCase() === transactionTypes.SELL
+                    ? 'text-blue-500'
+                    : 'text-red-500'
+                )}
+              >
+                {formatPrice(
+                  transaction.pricePerUnit * transaction.quantity,
+                  transaction.currency as currencyTypes
+                )}
               </p>
             </CardFooter>
           </Card>
 
-          <Card>
+          <Card className="w-full sm:w-max h-max">
             <CardContent className="flex flex-col gap-1">
               <Dialog>
-                <DialogTrigger>
+                <DialogTrigger asChild>
                   <Button className="w-full" variant="outline">
                     <Pen />
                     Edit
@@ -171,7 +138,7 @@ function TransactionDetails() {
               </Dialog>
 
               <AlertDialog>
-                <AlertDialogTrigger>
+                <AlertDialogTrigger asChild>
                   <Button className="w-full" variant="destructive">
                     <Trash />
                     Delete
@@ -211,48 +178,7 @@ function TransactionDetails() {
             </CardHeader>
 
             <CardContent className="flex flex-col space-y-4">
-              <Form {...form}>
-                <form className="flex gap-2 w-full items-center">
-                  <FormField
-                    name="name"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input type="text" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    name="amount"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            {...field}
-                            onChange={e => {
-                              const value = e.target.value;
-                              if (!isNaN(Number(value))) field.onChange(Number(value));
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </form>
-
-                <Button type="button" variant="outline" onClick={addExpense}>
-                  <Plus /> Add Expense
-                </Button>
-              </Form>
+              <AddExpenseForm transaction={transaction} />
             </CardContent>
           </Card>
         )}
@@ -262,27 +188,30 @@ function TransactionDetails() {
             <CardTitle>All Expenses</CardTitle>
           </CardHeader>
           <CardContent className="gap-2 flex flex-row flex-wrap">
-            {expenses.map((expense, index) => (
+            {transaction.expenses?.map((expense, index) => (
               <Badge
+                key={index}
                 variant="outline"
                 className="w-max h-max flex justify-between rounded-md p-0 overflow-hidden"
               >
                 <div className="flex gap-4">
                   <p className="p-2">{expense.name}</p>
-                  <p className="p-2 text-destructive/60 dark:text-red-700">${expense.amount}</p>
+                  <p className="p-2 text-destructive/60 font-bold dark:text-red-700">
+                    {formatPrice(expense.amount, transaction.currency as currencyTypes)}
+                  </p>
                 </div>
+
                 <div className="h-full w-[1px] bg-secondary" />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className=" h-6 w-6 m-2"
-                  onClick={() => removeExpense(index)}
-                >
+
+                <Button size="icon" variant="ghost" className=" h-6 w-6 m-2">
                   <X />
                 </Button>
               </Badge>
             ))}
-            {!expenses.length && <p className="text-foreground/60">There are no expenses!</p>}
+
+            {!transaction.expenses?.length && (
+              <p className="text-foreground/60">There are no expenses!</p>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -41,8 +41,9 @@ export interface NewTransaction {
   expenses?: Expense[];
 }
 
-export interface UpdatedtTransaction {
-  currency: 'USD' | 'IQD';
-  pricePerUnit: number;
-  quantity: number;
+export interface UpdatedTransaction {
+  currency?: 'USD' | 'IQD';
+  pricePerUnit?: number;
+  quantity?: number;
+  expenses?: Expense[];
 }

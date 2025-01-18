@@ -1,11 +1,11 @@
-import { UpdatedtTransaction } from '@/types/transaction';
+import { UpdatedTransaction } from '@/types/transaction';
 
 export async function updateTransactionApi({
   transactionId,
   updatedTransaction,
 }: {
   transactionId: string;
-  updatedTransaction: UpdatedtTransaction;
+  updatedTransaction: UpdatedTransaction;
 }) {
   const apiUrl = `http://localhost:8080/transaction/${transactionId}`;
 
