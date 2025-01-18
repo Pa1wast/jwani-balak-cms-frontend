@@ -114,7 +114,7 @@ function AddTransactionForm() {
                           {products.map((product: Product) => (
                             <CommandItem
                               value={product.productName}
-                              key={product.id}
+                              key={product._id}
                               onSelect={() => {
                                 form.setValue('productName', product.productName);
                               }}
