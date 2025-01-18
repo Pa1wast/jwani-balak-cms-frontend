@@ -4,43 +4,37 @@ import { cn } from '@/lib/utils';
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { transactionTypes } from '@/types/transaction';
+import { Transaction, transactionTypes } from '@/types/transaction';
+import { formatDate } from '@/lib/date';
 
 interface TransactionCardProps {
-  transaction: {
-    type: string;
-    totalCost: string;
-    date: Date;
-    productName: string;
-    pricePerUnit: string;
-    quantity: number;
-  };
+  transaction: Transaction;
 }
 
 function TransactionCard({ transaction }: TransactionCardProps) {
   return (
-    <Link to="/dashboard/transactions" className="block">
+    <Link to={`/dashboard/transactions/${transaction._id}`} className="block">
       <Card className="p-2 relative  hover:border-foreground/50 dark:border-foreground/50 dark:hover:border-border">
         <CardHeader className="p-2 flex-row items-center space-y-0 gap-2">
           <div
             className={cn(
               'w-2 h-2  rounded-full',
-              transaction.type === transactionTypes.SELL ? 'bg-green-700' : 'bg-blue-500'
+              transaction.transactionType === transactionTypes.SELL ? 'bg-green-700' : 'bg-blue-500'
             )}
           />
           <p className="text-foreground/60 text-sm font-medium">
-            {transaction.type === transactionTypes.BUY ? 'Buy' : 'Sell'} Transaction
+            {transaction.transactionType === transactionTypes.BUY ? 'Buy' : 'Sell'} Transaction
           </p>
         </CardHeader>
 
         <CardContent className="p-2 bg-secondary/30 rounded-lg grid grid-cols-2 gap-y-4 truncate">
           <p className="text-xs col-span-2 ">
             Product Name:
-            <span className="font-bold inline-block ml-2">{transaction.productName}</span>
+            <span className="font-bold inline-block ml-2">{transaction.product.productName}</span>
           </p>
 
           <p className="text-xs">
-            Price/Unit:
+            Price / Unit:
             <span className="font-bold inline-block ml-2">{transaction.pricePerUnit}</span>
           </p>
 
@@ -55,12 +49,14 @@ function TransactionCard({ transaction }: TransactionCardProps) {
         <CardFooter className="p-2 flex items-center justify-between gap-4">
           <p className="col-span-2 text-xs">
             Total Cost:
-            <span className="inline-block ml-2 font-bold">{transaction.totalCost}</span>
+            <span className="inline-block ml-2 font-bold">
+              {transaction.pricePerUnit * transaction.quantity}
+            </span>
           </p>
 
-          <p className="col-span-2 ml-auto text-xs font-light">{`${transaction.date.getDay()}/${
-            transaction.date.getMonth() + 1
-          }/${transaction.date.getFullYear()}`}</p>
+          <p className="col-span-2 ml-auto text-xs font-light">
+            {formatDate(transaction.createdAt)}
+          </p>
         </CardFooter>
       </Card>
     </Link>

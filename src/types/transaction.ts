@@ -1,3 +1,6 @@
+import { Company } from './company';
+import { Product } from './product';
+
 export enum transactionTypes {
   SELL = 'SELL',
   BUY = 'BUY',
@@ -17,11 +20,29 @@ export interface Expense {
 
 export interface Transaction {
   _id: string;
-  type: 'SELL' | 'BUY';
+  transactionType: 'SELL' | 'BUY';
   currency: 'USD' | 'IQD';
   pricePerUnit: number;
   quantity: number;
-  productName: string;
-  expenses: Expense[];
-  createdAt: Date;
+  product: Product;
+  company: Company;
+  expenses?: Expense[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewTransaction {
+  transactionType: 'SELL' | 'BUY';
+  currency: 'USD' | 'IQD';
+  pricePerUnit: number;
+  quantity: number;
+  product: string;
+  company: string;
+  expenses?: Expense[];
+}
+
+export interface UpdatedtTransaction {
+  currency: 'USD' | 'IQD';
+  pricePerUnit: number;
+  quantity: number;
 }

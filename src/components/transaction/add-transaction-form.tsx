@@ -33,26 +33,34 @@ import { useState } from 'react';
 import { useProducts } from '@/features/product/useProducts';
 import { Product } from '@/types/product';
 import Loader from '../ui/loader';
+import { useAddTransaction } from '@/features/transaction/useAddTransaction';
+import { useCompaniesView } from '@/contexts/companies-view-context';
 
 function AddTransactionForm() {
+  const { selectedCompanyId } = useCompaniesView();
+
   const { isLoading, products } = useProducts();
+  const { isAdding, addTransaction } = useAddTransaction();
 
   const form = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
-      type: 'SELL',
+      transactionType: 'SELL',
       currency: 'IQD',
-      productName: '',
+      product: '',
+      company: selectedCompanyId as string,
       pricePerUnit: 0,
       quantity: 0,
     },
   });
 
   function onSubmit(values: z.infer<typeof addTransactionSchema>) {
-    console.log(
-      values,
-      expenses.filter(expense => !(!expense.name || !expense.amount))
-    );
+    const { success, data } = addTransactionSchema.safeParse(values);
+
+    if (success) {
+      const newTransaction = { ...data, expenses };
+      addTransaction(newTransaction);
+    }
   }
 
   const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
@@ -81,7 +89,7 @@ function AddTransactionForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="productName"
+          name="product"
           render={({ field }) => (
             <FormItem className="flex flex-col space-y-3">
               <FormLabel>Product</FormLabel>
@@ -98,8 +106,8 @@ function AddTransactionForm() {
                         )}
                       >
                         {field.value
-                          ? products.find((product: Product) => product.productName === field.value)
-                              ?.name
+                          ? products.find((product: Product) => product._id === field.value)
+                              ?.productName
                           : 'Select product'}
                         <ChevronsUpDown className="opacity-50" />
                       </Button>
@@ -110,20 +118,21 @@ function AddTransactionForm() {
                       <CommandInput placeholder="Search product..." className="h-9" />
                       <CommandList>
                         <CommandEmpty>No products found.</CommandEmpty>
+
                         <CommandGroup>
                           {products.map((product: Product) => (
                             <CommandItem
-                              value={product.productName}
+                              value={product._id}
                               key={product._id}
                               onSelect={() => {
-                                form.setValue('productName', product.productName);
+                                form.setValue('product', product._id);
                               }}
                             >
                               {product.productName}
                               <Check
                                 className={cn(
                                   'ml-auto',
-                                  product.productName === field.value ? 'opacity-100' : 'opacity-0'
+                                  product._id === field.value ? 'opacity-100' : 'opacity-0'
                                 )}
                               />
                             </CommandItem>
@@ -145,7 +154,7 @@ function AddTransactionForm() {
         <div className="flex justify-between">
           <FormField
             control={form.control}
-            name="type"
+            name="transactionType"
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel>Transaction Type</FormLabel>
@@ -264,40 +273,42 @@ function AddTransactionForm() {
           )}
         />
 
-        <div className="flex flex-col space-y-4">
-          <FormLabel>Expenses</FormLabel>
-          {expenses.map((expense, index) => (
-            <div key={index} className="flex items-center gap-4">
-              <div className="flex gap-2 items-center">
-                <Input
-                  type="text"
-                  placeholder="Expense name"
-                  value={expense.name}
-                  onChange={e => updateExpense(index, 'name', e.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Amount"
-                  value={expense.amount}
-                  onChange={e => updateExpense(index, 'amount', e.target.value)}
-                />
+        {form.getValues('transactionType').toUpperCase() === transactionTypes.BUY && (
+          <div className="flex flex-col space-y-4">
+            <FormLabel>Expenses</FormLabel>
+            {expenses.map((expense, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <div className="flex gap-2 items-center">
+                  <Input
+                    type="text"
+                    placeholder="Expense name"
+                    value={expense.name}
+                    onChange={e => updateExpense(index, 'name', e.target.value)}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Amount"
+                    value={expense.amount}
+                    onChange={e => updateExpense(index, 'amount', e.target.value)}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => removeExpense(index)}
+                  className="text-destructive dark:text-red-500"
+                >
+                  <Trash2 />
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => removeExpense(index)}
-                className="text-destructive dark:text-red-500"
-              >
-                <Trash2 />
-              </Button>
-            </div>
-          ))}
-          <Button type="button" variant="outline" onClick={addExpense}>
-            <Plus /> Add Expense
-          </Button>
-        </div>
+            ))}
+            <Button type="button" variant="outline" onClick={addExpense}>
+              <Plus /> Add Expense
+            </Button>
+          </div>
+        )}
 
-        <Button type="submit">
+        <Button type="submit" disabled={isAdding}>
           <Plus /> Add Transaction
         </Button>
       </form>

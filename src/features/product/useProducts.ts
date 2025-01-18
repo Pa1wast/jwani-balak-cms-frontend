@@ -1,5 +1,6 @@
 import { getProducts } from '@/api/product/get-products';
 import { useCompaniesView } from '@/contexts/companies-view-context';
+import { Product } from '@/types/product';
 import { useQuery } from '@tanstack/react-query';
 
 export function useProducts() {
@@ -10,5 +11,7 @@ export function useProducts() {
     queryFn: () => getProducts(selectedCompanyId as string),
   });
 
-  return { isLoading, error, products: data?.data?.products };
+  const products: Product[] = data?.data?.products;
+
+  return { isLoading, error, products };
 }

@@ -1,4 +1,5 @@
 import { getCompanies } from '@/api/company/get-companies';
+import { Company } from '@/types/company';
 import { useQuery } from '@tanstack/react-query';
 
 export function useCompanies() {
@@ -7,5 +8,7 @@ export function useCompanies() {
     queryFn: getCompanies,
   });
 
-  return { isLoading, error, companies: data?.data?.companies };
+  const companies: Company[] = data?.data?.companies;
+
+  return { isLoading, error, companies };
 }

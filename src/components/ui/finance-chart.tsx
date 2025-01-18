@@ -1,6 +1,6 @@
 import { BarChart, barElementClasses } from '@mui/x-charts/BarChart';
 import { axisClasses } from '@mui/x-charts/ChartsAxis';
-import { getPastMonths } from '@/utils/date';
+import { getPastMonths } from '@/lib/date';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { Button } from './button';

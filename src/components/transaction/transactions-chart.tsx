@@ -1,12 +1,14 @@
 // import { getPastMonths } from '@/utils/date';
 // import { useDarkMode } from '@/contexts/dark-mode-context';
 import { LineChart } from '@mui/x-charts';
-import { transactionTypes } from '@/types/transaction';
+import { Transaction, transactionTypes } from '@/types/transaction';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, FilePlus } from 'lucide-react';
 import { useState } from 'react';
 import TransactionCard from '@/components/transaction/transaction-card';
+import { useTransactions } from '@/features/transaction/useTransactions';
+import Loader from '../ui/loader';
 
 // const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
 // const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
@@ -18,6 +20,17 @@ function TransactionsChart() {
   // const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(0);
   const [showDataFor, setShowDataFor] = useState(transactionTypes.ALL);
+  const { isLoading, transactions } = useTransactions();
+
+  const mostRecentTransactions = !isLoading
+    ? transactions
+        .slice()
+        .sort(
+          (a: Transaction, b: Transaction) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .slice(0, 2)
+    : [];
 
   function handleSetMonth(month: number) {
     if (month !== 0 && !month) return;
@@ -76,27 +89,13 @@ function TransactionsChart() {
           </div>
 
           <div className="space-y-1">
-            <TransactionCard
-              transaction={{
-                type: transactionTypes.SELL,
-                productName: 'Loool',
-                totalCost: '$3000',
-                pricePerUnit: '40.90 IQD',
-                quantity: 20,
-                date: new Date(),
-              }}
-            />
-
-            <TransactionCard
-              transaction={{
-                type: transactionTypes.BUY,
-                productName: 'Noool',
-                totalCost: '$5000',
-                pricePerUnit: '$67.90',
-                quantity: 28,
-                date: new Date(),
-              }}
-            />
+            {!isLoading ? (
+              mostRecentTransactions.map((transaction: Transaction) => (
+                <TransactionCard transaction={transaction} />
+              ))
+            ) : (
+              <Loader />
+            )}
           </div>
         </div>
       </CardContent>
