@@ -3,17 +3,28 @@ import { LoaderCircle } from 'lucide-react';
 
 interface LoaderProps {
   className?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-function Loader({ className }: LoaderProps) {
+function Loader({ className, size = 'md' }: LoaderProps) {
   return (
     <div
       className={cn(
-        'mx-auto text-xl font-semibold flex gap-2 items-center text-primary/80',
+        'mx-auto font-semibold flex gap-2 items-center text-primary/80',
+        size === 'sm' && 'text-sm',
+        size === 'md' && 'text-base',
+        size === 'lg' && 'text-xl',
         className
       )}
     >
-      <LoaderCircle className="rotate" />
+      <LoaderCircle
+        className={cn(
+          'rotate size-4',
+          size === 'sm' && 'size-4',
+          size === 'md' && 'size-6',
+          size === 'lg' && 'size-12'
+        )}
+      />
       Loading...
     </div>
   );
