@@ -14,6 +14,6 @@ export const addTransactionSchema = z.object({
   productName: z.string().min(1, 'Product is required'),
   currency: z.enum(['IQD', 'USD']),
   type: z.enum(['BUY', 'SELL']),
-  pricePerUnit: z.string().min(1, 'Price Per Unit is required'),
-  quantity: z.string().min(1, 'Quantity is required'),
+  pricePerUnit: z.number().min(1, 'Price Per Unit is required'),
+  quantity: z.number().min(1, 'Quantity is required'),
 });

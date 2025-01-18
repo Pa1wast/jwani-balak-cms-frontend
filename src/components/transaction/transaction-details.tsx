@@ -15,10 +15,10 @@ function TransactionDetails() {
   const { transactionId } = useParams();
   const transaction = transactions.find(transaction => transaction.id === transactionId);
 
-  const [expenses, setExpenses] = useState<{ name: string; amount: string }[]>([]);
-  const [curExpense, setCurExpense] = useState<{ name: string; amount: string }>({
+  const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
+  const [curExpense, setCurExpense] = useState<{ name: string; amount: number }>({
     name: '',
-    amount: '',
+    amount: 0,
   });
 
   const addExpense = () => {
@@ -32,7 +32,7 @@ function TransactionDetails() {
     }
 
     setExpenses([...expenses, curExpense]);
-    setCurExpense({ name: '', amount: '' });
+    setCurExpense({ name: '', amount: 0 });
   };
 
   const removeExpense = (index: number) => {
@@ -137,7 +137,12 @@ function TransactionDetails() {
                 type="text"
                 placeholder="Amount"
                 value={curExpense.amount}
-                onChange={e => setCurExpense(cur => ({ ...cur, amount: e.target.value }))}
+                onChange={e => {
+                  const value = e.target.value;
+                  if (!isNaN(Number(value))) {
+                    setCurExpense(cur => ({ ...cur, amount: +value }));
+                  }
+                }}
                 className="w-full"
               />
             </div>

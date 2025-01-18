@@ -39,8 +39,8 @@ function AddTransactionForm() {
       type: 'SELL',
       currency: 'IQD',
       productName: '',
-      pricePerUnit: '',
-      quantity: '',
+      pricePerUnit: 0,
+      quantity: 0,
     },
   });
 
@@ -51,16 +51,16 @@ function AddTransactionForm() {
     );
   }
 
-  const [expenses, setExpenses] = useState<{ name: string; amount: string }[]>([]);
+  const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
 
   const addExpense = () => {
-    setExpenses([...expenses, { name: '', amount: '' }]);
+    setExpenses([...expenses, { name: '', amount: 0 }]);
   };
 
   const updateExpense = (index: number, field: 'name' | 'amount', value: string) => {
     const updatedExpenses = [...expenses];
     if (field === 'amount') {
-      updatedExpenses[index].amount = value;
+      if (!isNaN(Number(value))) updatedExpenses[index].amount = +value;
     } else {
       updatedExpenses[index].name = value;
     }
@@ -206,7 +206,14 @@ function AddTransactionForm() {
               <FormLabel>Price / Unit</FormLabel>
 
               <FormControl>
-                <Input type="text" {...field} />
+                <Input
+                  type="text"
+                  {...field}
+                  onChange={e => {
+                    const value = e.target.value;
+                    if (!isNaN(Number(value))) field.onChange(Number(value));
+                  }}
+                />
               </FormControl>
 
               <FormMessage />
@@ -222,7 +229,14 @@ function AddTransactionForm() {
               <FormLabel>Quantity</FormLabel>
 
               <FormControl>
-                <Input type="text" {...field} />
+                <Input
+                  type="text"
+                  {...field}
+                  onChange={e => {
+                    const value = e.target.value;
+                    if (!isNaN(Number(value))) field.onChange(Number(value));
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
