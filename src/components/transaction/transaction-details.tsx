@@ -119,7 +119,7 @@ function TransactionDetails() {
             </CardFooter>
           </Card>
 
-          <Card className="w-full sm:w-max h-max">
+          <Card className="w-full sm:w-max">
             <CardContent className="flex flex-col gap-1">
               <Dialog>
                 <DialogTrigger asChild>
@@ -170,7 +170,7 @@ function TransactionDetails() {
         </div>
       </div>
 
-      <div className="flex gap-2 w-full flex-col sm:flex-row">
+      <div className="flex gap-2 w-full flex-col sm:flex-row mb-2">
         {transaction.transactionType.toUpperCase() === transactionTypes.BUY && (
           <Card className="flex-1 max-h-max">
             <CardHeader>
@@ -187,21 +187,19 @@ function TransactionDetails() {
           <CardHeader>
             <CardTitle>All Expenses</CardTitle>
           </CardHeader>
-          <CardContent className="gap-2 flex flex-row flex-wrap">
+          <CardContent className="gap-2 flex mr-2 flex-col lg:grid lg:grid-cols-2 overflow-auto h-[150px]">
             {transaction.expenses?.map((expense, index) => (
               <Badge
                 key={index}
                 variant="outline"
-                className="w-max h-max flex justify-between rounded-md p-0 overflow-hidden"
+                className="w-full lg:h-max flex justify-between rounded-md"
               >
-                <div className="flex gap-4">
+                <div className="flex justify-between w-full gap-4">
                   <p className="p-2">{expense.name}</p>
                   <p className="p-2 text-destructive/60 font-bold dark:text-red-700">
                     {formatPrice(expense.amount, transaction.currency as currencyTypes)}
                   </p>
                 </div>
-
-                <div className="h-full w-[1px] bg-secondary" />
 
                 <Button size="icon" variant="ghost" className=" h-6 w-6 m-2">
                   <X />
@@ -215,6 +213,38 @@ function TransactionDetails() {
           </CardContent>
         </Card>
       </div>
+
+      {/* <Card className="flex-1">
+        <CardHeader>
+          <CardTitle>All Expenses</CardTitle>
+        </CardHeader>
+        <CardContent className="gap-2 flex flex-row flex-wrap">
+          {transaction.expenses?.map((expense, index) => (
+            <Badge
+              key={index}
+              variant="outline"
+              className="w-max h-max flex justify-between rounded-md p-0 overflow-hidden"
+            >
+              <div className="flex gap-4">
+                <p className="p-2">{expense.name}</p>
+                <p className="p-2 text-destructive/60 font-bold dark:text-red-700">
+                  {formatPrice(expense.amount, transaction.currency as currencyTypes)}
+                </p>
+              </div>
+
+              <div className="h-full w-[1px] bg-secondary" />
+
+              <Button size="icon" variant="ghost" className=" h-6 w-6 m-2">
+                <X />
+              </Button>
+            </Badge>
+          ))}
+
+          {!transaction.expenses?.length && (
+            <p className="text-foreground/60">There are no expenses!</p>
+          )}
+        </CardContent>
+      </Card> */}
     </div>
   );
 }
