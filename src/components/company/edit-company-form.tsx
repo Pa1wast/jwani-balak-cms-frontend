@@ -3,14 +3,6 @@ import { useForm } from 'react-hook-form';
 
 import { Plus } from 'lucide-react';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { registerCompnaySchema } from '@/schemas';
@@ -25,7 +17,7 @@ interface EditCompanyFormProps {
 
 function EditCompanyForm({ company }: EditCompanyFormProps) {
   const { isUpdating, updateCompany } = useUpdateCompany();
-  const { _id, companyName, logoPath, address } = company;
+  const { _id, companyName, address } = company;
 
   const form = useForm<z.infer<typeof registerCompnaySchema>>({
     resolver: zodResolver(registerCompnaySchema),
