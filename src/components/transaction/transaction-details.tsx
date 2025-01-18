@@ -10,10 +10,11 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import ErrorMessage from '../ui/error-message';
 
 function TransactionDetails() {
   const { transactionId } = useParams();
-  const transaction = transactions.find(transaction => transaction.id === transactionId);
+  const transaction = transactions.find(transaction => transaction._id === transactionId);
 
   const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
   const [curExpense, setCurExpense] = useState<{ name: string; amount: number }>({
@@ -43,9 +44,7 @@ function TransactionDetails() {
   if (!transaction)
     return (
       <div className="h-full grid items-center">
-        <p className="text-lg bg-secondary/30 w-max mx-auto p-4 rounded-lg flex items-center gap-2">
-          <CircleOff /> Could not load transaction data!
-        </p>
+        <ErrorMessage message="Could not load transaction data!" />
       </div>
     );
 
