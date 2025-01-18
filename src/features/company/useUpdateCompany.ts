@@ -1,4 +1,4 @@
-import { editCompanyApi } from '@/api/company/edit-company';
+import { updateCompanyApi } from '@/api/company/update-company';
 import { NewCompany } from '@/types/company';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -13,10 +13,11 @@ export function useUpdateCompany() {
     }: {
       companyId: string;
       updatedCompany: NewCompany;
-    }) => editCompanyApi({ companyId, updatedCompany }),
+    }) => updateCompanyApi({ companyId, updatedCompany }),
     onSuccess: () => {
       toast.success('Company successfully updated');
-      queryClient.invalidateQueries({ queryKey: ['companies', 'company'] });
+      queryClient.invalidateQueries({ queryKey: ['companies'] });
+      queryClient.invalidateQueries({ queryKey: ['company'] });
     },
     onError: err => toast.error(err.message),
   });

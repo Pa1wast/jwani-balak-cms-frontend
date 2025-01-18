@@ -11,7 +11,7 @@ const KleshNotesContext = createContext<KleshNotesProvider | undefined>(undefine
 
 function KleshNotesProvider({ children }: { children: ReactNode }) {
   const [selectedNoteId, setSelectedNoteId] = useLocalStorageState<string | undefined>(
-    undefined,
+    '',
     'selected-note-id'
   );
 

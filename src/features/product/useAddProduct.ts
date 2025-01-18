@@ -11,6 +11,7 @@ export function useAddProduct() {
     onSuccess: () => {
       toast.success('Product successfully added');
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product'] });
     },
     onError: err => toast.error(err.message),
   });

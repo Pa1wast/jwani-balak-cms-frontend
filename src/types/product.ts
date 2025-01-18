@@ -6,5 +6,4 @@ export interface Product {
 
 export interface NewProduct {
   productName: string;
-  company: string;
 }

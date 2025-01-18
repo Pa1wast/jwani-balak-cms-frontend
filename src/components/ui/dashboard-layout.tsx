@@ -1,12 +1,32 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import Header from '@/components/ui/header';
 import Sidebar from '@/components/ui/sidebar';
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
+import { useCompaniesView } from '@/contexts/companies-view-context';
+import { Button } from './button';
+import { ArrowLeft } from 'lucide-react';
+import ErrorMessage from './error-message';
 
 function DashboardLayout() {
+  const { selectedCompanyId } = useCompaniesView();
+  const navigate = useNavigate();
+
   const isMobile = useIsMobile();
+
+  if (!selectedCompanyId)
+    return (
+      <div className="h-screen grid items-center">
+        <div className="mx-auto flex flex-col items-center gap-2">
+          <ErrorMessage message="No company is selected" />
+
+          <Button variant="outline" onClick={() => navigate('/')}>
+            <ArrowLeft /> Back to home
+          </Button>
+        </div>
+      </div>
+    );
 
   return isMobile ? <MobileDashboardLayout /> : <DesktopDashboardLayout />;
 }

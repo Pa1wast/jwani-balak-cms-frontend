@@ -9,7 +9,8 @@ export function useDeleteCompany() {
     mutationFn: (companyId: string) => deleteCompanyApi(companyId),
     onSuccess: () => {
       toast.success('Company successfully deleted');
-      queryClient.invalidateQueries({ queryKey: ['companies', 'company'] });
+      queryClient.invalidateQueries({ queryKey: ['companies'] });
+      queryClient.invalidateQueries({ queryKey: ['company'] });
     },
     onError: err => toast.error(err.message),
   });

@@ -1,5 +1,5 @@
-export async function getCompanies(page = 1, limit = 10000) {
-  const apiUrl = `http://localhost:8080/company?page=${page}&limit=${limit}`;
+export async function getCompanies() {
+  const apiUrl = 'http://localhost:8080/company?page=1&limit=10000';
   const response = await fetch(apiUrl);
 
   if (!response.ok) {

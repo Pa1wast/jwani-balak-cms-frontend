@@ -11,6 +11,10 @@ export const addProductSchema = z.object({
   company: z.string().min(1, 'Company is required'),
 });
 
+export const updateProductSchema = z.object({
+  productName: z.string().min(1, 'Product name is required'),
+});
+
 export const addTransactionSchema = z.object({
   productName: z.string().min(1, 'Product is required'),
   currency: z.enum(['IQD', 'USD']),

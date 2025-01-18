@@ -1,6 +1,6 @@
 import { NewCompany } from '@/types/company';
 
-export async function editCompanyApi({
+export async function updateCompanyApi({
   companyId,
   updatedCompany,
 }: {

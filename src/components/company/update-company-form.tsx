@@ -11,11 +11,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateCompany } from '@/features/company/useUpdateCompany';
 import { Company } from '@/types/company';
 
-interface EditCompanyFormProps {
+interface UpdateCompanyFormProps {
   company: Company;
 }
 
-function EditCompanyForm({ company }: EditCompanyFormProps) {
+function UpdateCompanyForm({ company }: UpdateCompanyFormProps) {
   const { isUpdating, updateCompany } = useUpdateCompany();
   const { _id, companyName, address } = company;
 
@@ -88,4 +88,4 @@ function EditCompanyForm({ company }: EditCompanyFormProps) {
   );
 }
 
-export default EditCompanyForm;
+export default UpdateCompanyForm;

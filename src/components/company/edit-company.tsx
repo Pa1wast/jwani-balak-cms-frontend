@@ -21,7 +21,7 @@ import { useState } from 'react';
 import useIsMobile from '@/hooks/useIsMobile';
 import { useDeleteCompany } from '@/features/company/useDeleteCompany';
 import { Company } from '@/types/company';
-import EditCompanyForm from './edit-company-form';
+import UpdateCompanyForm from './update-company-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 
 interface EditCompanyProps {
@@ -63,7 +63,7 @@ function EditCompany({ dialog, company }: EditCompanyProps) {
               <DialogTitle>Update company information</DialogTitle>
             </DialogHeader>
 
-            <EditCompanyForm company={company} />
+            <UpdateCompanyForm company={company} />
           </DialogContent>
         </Dialog>
 
@@ -101,7 +101,7 @@ function EditCompany({ dialog, company }: EditCompanyProps) {
             <DialogTitle>Update company information</DialogTitle>
           </DialogHeader>
 
-          <EditCompanyForm company={company} />
+          <UpdateCompanyForm company={company} />
         </DialogContent>
       </Dialog>
 
