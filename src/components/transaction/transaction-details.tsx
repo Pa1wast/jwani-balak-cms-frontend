@@ -24,9 +24,12 @@ import { useDeleteTransaction } from '@/features/transaction/useDeleteTransactio
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import UpdateTransactionForm from './update-transaction-form';
-import { formatPrice } from '@/lib/price';
+import { formatPercentage, formatPrice } from '@/lib/price';
 import AddExpenseForm from './add-expense-form';
 import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
+import { Separator } from '../ui/separator';
+import { Input } from '../ui/input';
+import { useState } from 'react';
 
 function TransactionDetails() {
   const { isLoading, error, transaction } = useTransaction();
@@ -36,7 +39,11 @@ function TransactionDetails() {
   );
 
   const { isDeleting, deleteTransaction } = useDeleteTransaction();
+
   const navigate = useNavigate();
+
+  const [sellingPricePerUnit, setSellingPricePerUnit] = useState(0);
+  const [profitMargin, setProfitMargin] = useState(0);
 
   if (isLoading)
     return (
@@ -51,6 +58,11 @@ function TransactionDetails() {
         <ErrorMessage message={error?.message ?? 'Something went wrong'} />
       </div>
     );
+
+  const totalAmountExpenes = transaction.expenses?.reduce((acc, cur) => acc + cur.amount, 0);
+  const totalCost = transaction.pricePerUnit * transaction.quantity;
+
+  const totalAmountPaid = totalAmountExpenes ? totalAmountExpenes + totalCost : totalCost;
 
   return (
     <div>
@@ -196,7 +208,7 @@ function TransactionDetails() {
               >
                 <div className="flex justify-between w-full gap-4">
                   <p className="p-2">{expense.name}</p>
-                  <p className="p-2 text-destructive/60 font-bold dark:text-red-700">
+                  <p className="p-2 font-bold">
                     {formatPrice(expense.amount, transaction.currency as currencyTypes)}
                   </p>
                 </div>
@@ -214,37 +226,132 @@ function TransactionDetails() {
         </Card>
       </div>
 
-      {/* <Card className="flex-1">
+      <Card className="flex-1 mb-2">
         <CardHeader>
-          <CardTitle>All Expenses</CardTitle>
+          <CardTitle>Cost Breakdown</CardTitle>
         </CardHeader>
-        <CardContent className="gap-2 flex flex-row flex-wrap">
-          {transaction.expenses?.map((expense, index) => (
-            <Badge
-              key={index}
-              variant="outline"
-              className="w-max h-max flex justify-between rounded-md p-0 overflow-hidden"
-            >
-              <div className="flex gap-4">
+        <CardContent className="gap-2 flex flex-col flex-wrap">
+          <p className="flex gap-1 items-center font-semibold">
+            Expenses
+            <span className="inline-block ml-auto text-xs">
+              ({transaction.currency} | % Of the total cost)
+            </span>
+          </p>
+
+          <div className="space-y-1">
+            {transaction.expenses?.map((expense, index) => (
+              <Badge
+                key={index}
+                variant="outline"
+                className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
+              >
                 <p className="p-2">{expense.name}</p>
-                <p className="p-2 text-destructive/60 font-bold dark:text-red-700">
-                  {formatPrice(expense.amount, transaction.currency as currencyTypes)}
-                </p>
-              </div>
 
-              <div className="h-full w-[1px] bg-secondary" />
+                <div className="flex gap-1">
+                  <p className="p-2 font-bold">
+                    {formatPrice(expense.amount, transaction.currency as currencyTypes)}
+                  </p>
 
-              <Button size="icon" variant="ghost" className=" h-6 w-6 m-2">
-                <X />
-              </Button>
-            </Badge>
-          ))}
+                  <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
 
-          {!transaction.expenses?.length && (
-            <p className="text-foreground/60">There are no expenses!</p>
-          )}
+                  <p className="p-2">{formatPercentage(expense.amount, totalCost)} </p>
+                </div>
+              </Badge>
+            ))}
+          </div>
+
+          <div className="w-full flex font-medium  p-2 rounded-md justify-between">
+            <p>Total Expenses: </p>
+
+            <p className=" font-bold">
+              {formatPrice(totalAmountExpenes as number, transaction.currency as currencyTypes)}
+            </p>
+          </div>
         </CardContent>
-      </Card> */}
+
+        <Separator />
+
+        <CardFooter className="flex flex-col gap-1 pt-4">
+          <div className="w-full flex bg-blue-500/20 dark:bg-blue-500/50 font-semibold p-2 rounded-md justify-between">
+            <p>Total Cost (w/o) expenses: </p>
+
+            <p className="text-lg font-bold">
+              {formatPrice(totalCost, transaction.currency as currencyTypes)}
+            </p>
+          </div>
+
+          <div className="w-full flex bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
+            <p>Total Amount Paid: </p>
+
+            <p className="text-lg font-bold">
+              {formatPrice(totalAmountPaid, transaction.currency as currencyTypes)}
+            </p>
+          </div>
+        </CardFooter>
+      </Card>
+
+      <Card className="flex-1">
+        <CardHeader>
+          <CardTitle>Insights & Estimations</CardTitle>
+        </CardHeader>
+
+        <CardContent className="gap-2 flex flex-col flex-wrap">
+          <div className="space-y-1">
+            <div className="flex items-center justify-between gap-1">
+              <p className="font-semibold">Selling Price / Unit: </p>
+
+              <Input
+                type="text"
+                value={sellingPricePerUnit}
+                onChange={e => {
+                  const value = e.target.value;
+                  if (!isNaN(Number(value))) setSellingPricePerUnit(Number(value));
+                }}
+                className="w-max"
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-1">
+              <p className="font-semibold">Profit Margin(%): </p>
+
+              <Input
+                type="text"
+                value={profitMargin}
+                onChange={e => {
+                  const value = e.target.value;
+                  if (!isNaN(Number(value))) setProfitMargin(Number(value));
+                }}
+                className="w-max"
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-1">
+              <p className="font-semibold">Estimated Profit Amount({transaction.currency}): </p>
+              <p className="font-semibold">89</p>
+            </div>
+          </div>
+        </CardContent>
+
+        <Separator />
+
+        <CardFooter className="flex flex-col gap-1 pt-4">
+          {/* <div className="w-full flex bg-blue-500/20 dark:bg-blue-500/50 font-semibold p-2 rounded-md justify-between">
+            <p>Total Cost (w/o) expenses: </p>
+
+            <p className="text-lg font-bold">
+              {formatPrice(totalCost, transaction.currency as currencyTypes)}
+            </p>
+          </div>
+
+          <div className="w-full flex bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
+            <p>Total Amount Paid: </p>
+
+            <p className="text-lg font-bold">
+              {formatPrice(totalAmountPaid, transaction.currency as currencyTypes)}
+            </p>
+          </div> */}
+        </CardFooter>
+      </Card>
     </div>
   );
 }
