@@ -1,5 +1,10 @@
 export interface KleshNote {
   _id: number;
-  content?: string;
-  date: Date;
+  note: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewKleshNote {
+  note: string;
 }

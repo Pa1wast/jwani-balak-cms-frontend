@@ -15,72 +15,15 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import 'react-quill/dist/quill.snow.css';
 import { useDarkMode } from '@/contexts/dark-mode-context';
-import { useKleshNotes } from '@/contexts/klesh-notes-context';
+import { useKleshNotesEditor } from '@/contexts/klesh-notes-context';
 import Search from '@/components/navigation/search';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import useIsMobile from '@/hooks/useIsMobile';
 import { KleshNote } from '@/types/klesh-note';
 import { Separator } from '@/components/ui/separator';
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const kleshNotes: KleshNote[] = [
-  {
-    id: 0,
-    content: 'پۆپۆئی دیاس فی اسفی ویوەو  اسف اسف ساف...',
-    date: new Date(), // Current date
-  },
-  {
-    id: 1,
-    content: 'گرتوو پەیوەندی خوێن خۆڕای ئەبێ...',
-    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day earlier
-  },
-  {
-    id: 2,
-    content: 'ژینگەی سروشتی پەیوەندیدارێکی گەورەی گەورەیە...',
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days earlier
-  },
-  {
-    id: 3,
-    content: 'بەردەوامی خوێندن و گەورەبوون لە کۆمەڵگەدا...',
-    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days earlier
-  },
-  {
-    id: 4,
-    content: 'هەنگاوەکانت بە فەرمی چاک بکە و خزمەتگوزاریەکانت...',
-    date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days earlier
-  },
-  {
-    id: 5,
-    content: 'ئەو شاردەوانەی کە دەتوانن نوێ بوونەوەی فکری...',
-    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days earlier
-  },
-  {
-    id: 6,
-    content: 'لە ماوەیەکدا، هەموو شتێک بەرز دەکرێت...',
-    date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days earlier
-  },
-  {
-    id: 7,
-    content: 'پەیوەندیدانی هەستی و مەعنا بە ئاستی گەورەدا...',
-    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days earlier
-  },
-  {
-    id: 8,
-    content: 'چاوەڕوانی نوێی نووسراوەکان بەرەوپێشبردنی...',
-    date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days earlier
-  },
-  {
-    id: 9,
-    content: 'ئامادەبوون بۆ ئامانجەکانی نووسراوەکان...',
-    date: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), // 9 days earlier
-  },
-  {
-    id: 10,
-    content: 'هەموو ئەو شتانی نوێ بەرز دەکرێن کە بە...',
-    date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days earlier
-  },
-];
+import Loader from '@/components/ui/loader';
+import { useKleshNotes } from '@/features/klesh/useKleshNotes';
 
 const editorModules = {
   toolbar: [
@@ -98,6 +41,7 @@ interface Props {
   hasChanges?: boolean;
   searchValue: string;
   sort: 'asc' | 'desc';
+  isLoading: boolean;
   onToggleSort: () => void;
   onSearchNotes: (value: string) => void;
   setSelectedNoteId?: (noteId: string) => void;
@@ -113,25 +57,25 @@ function KleshNotes() {
   const isMobile = useIsMobile();
   const [isMobileEditorOpen, setIsMobileEditorOpen] = useState(false);
   const { isDarkMode } = useDarkMode();
-  const { selectedNoteId, setSelectedNoteId } = useKleshNotes();
-  // const [isNewNote, setIsNewNote] = useState();
+  const { selectedNoteId, setSelectedNoteId } = useKleshNotesEditor();
+  const { isLoading, kleshNotes } = useKleshNotes();
 
   const [searchValue, setSearchValue] = useState('');
   const [sort, setSort] = useState<'asc' | 'desc'>('asc');
 
   const selectedNote = selectedNoteId
-    ? kleshNotes.find(note => note.id === Number(selectedNoteId))
+    ? kleshNotes?.find(note => note._id === Number(selectedNoteId))
     : undefined;
 
   const [hasChanges, setHasChanges] = useState(false);
   const [content, setContent] = useState('');
 
   const filteredNotes = kleshNotes
-    .filter(note => note.content?.includes(searchValue))
+    ?.filter(note => note.note?.includes(searchValue))
     .sort((a, b) => {
       return sort === 'asc'
-        ? new Date(a.date).getTime() - new Date(b.date).getTime()
-        : new Date(b.date).getTime() - new Date(a.date).getTime();
+        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
   const displayedNotes = filteredNotes;
@@ -179,7 +123,7 @@ function KleshNotes() {
 
   useEffect(() => {
     if (selectedNote) {
-      setContent(selectedNote.content || '');
+      setContent(selectedNote.note || '');
     }
   }, [selectedNoteId, selectedNote]);
 
@@ -233,6 +177,7 @@ function KleshNotes() {
       onNoteSelection={handleNoteSelection}
       isMobileEditorOpen={isMobileEditorOpen}
       setIsMobileEditorOpen={setIsMobileEditorOpen}
+      isLoading={isLoading}
     />
   ) : (
     <DesktopKleshTextEditor
@@ -247,6 +192,7 @@ function KleshNotes() {
       onSaveNote={handleSaveNote}
       onCreateNewNote={handleCreateNewNote}
       onNoteSelection={handleNoteSelection}
+      isLoading={isLoading}
     />
   );
 }
@@ -263,6 +209,7 @@ function DesktopKleshTextEditor({
   onSearchNotes,
   sort,
   onToggleSort,
+  isLoading,
 }: Props) {
   return (
     <div className="grid md:grid-cols-[max-content_1fr] md:grid-rows-[1fr_max-content] gap-4">
@@ -289,23 +236,26 @@ function DesktopKleshTextEditor({
         </div>
 
         <div className="flex flex-col sticky overflow-auto h-full gap-2 pb-12">
-          {notes.length > 0 &&
-            notes.map(note => (
+          {!isLoading ? (
+            notes?.map(note => (
               <KleshNoteCard
-                key={note.id}
-                note={note}
+                key={note._id}
+                kleshNote={note}
                 selectedNoteId={selectedNoteId}
-                onClick={() => onNoteSelection(note.id.toString())}
+                onClick={() => onNoteSelection(note._id.toString())}
               />
-            ))}
+            ))
+          ) : (
+            <Loader />
+          )}
 
-          {!notes.length && !searchValue && (
+          {!isLoading && !notes?.length && !searchValue && (
             <div className="w-full  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
               <BookDashed /> You have no notes
             </div>
           )}
 
-          {!notes.length && searchValue && (
+          {!isLoading && !notes?.length && searchValue && (
             <div className="w-full  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
               <SearchX /> No notes found!
             </div>
@@ -359,6 +309,7 @@ function MobileKleshTextEditor({
   onNoteSelection,
   sort,
   onToggleSort,
+  isLoading,
 }: Props) {
   return isMobileEditorOpen || selectedNoteId ? (
     <>
@@ -431,15 +382,18 @@ function MobileKleshTextEditor({
       </div>
 
       <div className="flex flex-col sticky overflow-auto h-full gap-2 pb-20">
-        {notes.length > 0 &&
+        {!isLoading ? (
           notes.map(note => (
             <KleshNoteCard
-              key={note.id}
-              note={note}
+              key={note._id}
+              kleshNote={note}
               selectedNoteId={selectedNoteId}
-              onClick={() => onNoteSelection(note.id.toString())}
+              onClick={() => onNoteSelection(note._id.toString())}
             />
-          ))}
+          ))
+        ) : (
+          <Loader />
+        )}
 
         {!notes.length && !searchValue && (
           <div className="w-full  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">

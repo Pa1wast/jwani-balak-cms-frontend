@@ -1,6 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-'use client';
-
 import * as React from 'react';
 import {
   ColumnDef,
@@ -54,17 +52,27 @@ export const columns: ColumnDef<Invoice>[] = [
     enableHiding: false,
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Name
+        Product
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => {
       const product = row.getValue('product') as Product;
-      return <div className="capitalize">{product.productName}</div>;
+      return (
+        <div className="capitalize">
+          {product?.productName ? (
+            product.productName
+          ) : (
+            <p className="bg-red-500/20 font-medium text-red-500 px-2 rounded-lg w-max">
+              Unavailable
+            </p>
+          )}
+        </div>
+      );
     },
     filterFn: (row, _, filterValue) => {
       const product = row.getValue('product') as Product;
-      return product.productName.toLowerCase().includes(filterValue.toLowerCase());
+      return product?.productName.toLowerCase().includes(filterValue.toLowerCase());
     },
   },
   {

@@ -20,7 +20,7 @@ import KleshNote from '@/components/pdf/klesh-note';
 
 import { DarkModeProvider } from '@/contexts/dark-mode-context';
 import { CompaniesViewProvider } from '@/contexts/companies-view-context';
-import { KleshNotesProvider } from '@/contexts/klesh-notes-context';
+import { KleshNotesEditorProvider } from '@/contexts/klesh-notes-context';
 import PdfPageLayout from './components/pdf/pdf-page-layout';
 import TransactionDetails from './components/transaction/transaction-details';
 
@@ -30,7 +30,7 @@ function App() {
   return (
     <DarkModeProvider>
       <CompaniesViewProvider>
-        <KleshNotesProvider>
+        <KleshNotesEditorProvider>
           <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} />
             <BrowserRouter>
@@ -58,7 +58,7 @@ function App() {
             </BrowserRouter>
             <Toaster />
           </QueryClientProvider>
-        </KleshNotesProvider>
+        </KleshNotesEditorProvider>
       </CompaniesViewProvider>
     </DarkModeProvider>
   );

@@ -2,28 +2,28 @@
 import { createContext, ReactNode, useContext } from 'react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 
-interface KleshNotesProvider {
+interface KleshNotesEditorProvider {
   selectedNoteId: string | undefined;
   setSelectedNoteId: (id: string) => void;
 }
 
-const KleshNotesContext = createContext<KleshNotesProvider | undefined>(undefined);
+const KleshNotesEditorContext = createContext<KleshNotesEditorProvider | undefined>(undefined);
 
-function KleshNotesProvider({ children }: { children: ReactNode }) {
+function KleshNotesEditorProvider({ children }: { children: ReactNode }) {
   const [selectedNoteId, setSelectedNoteId] = useLocalStorageState<string | undefined>(
     '',
     'selected-note-id'
   );
 
   return (
-    <KleshNotesContext.Provider value={{ selectedNoteId, setSelectedNoteId }}>
+    <KleshNotesEditorContext.Provider value={{ selectedNoteId, setSelectedNoteId }}>
       {children}
-    </KleshNotesContext.Provider>
+    </KleshNotesEditorContext.Provider>
   );
 }
 
-function useKleshNotes() {
-  const context = useContext(KleshNotesContext);
+function useKleshNotesEditor() {
+  const context = useContext(KleshNotesEditorContext);
 
   if (!context) {
     throw new Error('KleshNotesContext was used outisde of a KleshNotesProvider!');
@@ -32,4 +32,4 @@ function useKleshNotes() {
   return context;
 }
 
-export { KleshNotesProvider, useKleshNotes };
+export { KleshNotesEditorProvider, useKleshNotesEditor };

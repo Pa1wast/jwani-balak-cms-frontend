@@ -1,6 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-'use client';
-
 import * as React from 'react';
 import {
   ColumnDef,
@@ -14,16 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import {
-  AlertCircle,
-  ArrowRight,
-  ArrowUpDown,
-  ChevronDown,
-  Copy,
-  FilePlus,
-  MoreHorizontal,
-  Trash,
-} from 'lucide-react';
+import { ArrowUpDown, ChevronDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -31,9 +20,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -50,13 +36,11 @@ import { currencyTypes, Transaction, transactionTypes } from '@/types/transactio
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectGroup, SelectItem } from '../ui/select';
 import { SelectTrigger } from '@radix-ui/react-select';
-import { Link } from 'react-router-dom';
 import { useTransactions } from '@/features/transaction/useTransactions';
 import Loader from '../ui/loader';
 import { formatDate } from '@/lib/date';
 import { Product } from '@/types/product';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import AddInvoiceForm from '../invoice/add-invoice-form';
+import TransactionRowActions from './transaction-row-actions';
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -160,7 +144,15 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const product = row.getValue('product') as Product;
       return (
-        <div className="capitalize font-bold truncate max-w-[200px]">{product?.productName}</div>
+        <div className="capitalize font-bold truncate max-w-[200px]">
+          {product?.productName ? (
+            product.productName
+          ) : (
+            <p className="bg-red-500/20 font-medium text-red-500 px-2 rounded-lg w-max">
+              Unavailable
+            </p>
+          )}
+        </div>
       );
     },
     filterFn: (row, _, filterValue) => {
@@ -230,74 +222,10 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const transaction = row.original;
-      const transactionId = row.getValue('_id') as string;
 
       return (
         <>
-          <Dialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0 hidden md:flex">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-                <DropdownMenuItem asChild>
-                  <Link to={`/dashboard/transactions/${transactionId}`}>View details</Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(transactionId)}>
-                  Copy transaction ID
-                </DropdownMenuItem>
-
-                {transaction.product && (
-                  <DialogTrigger asChild>
-                    <DropdownMenuItem>Generate invoice</DropdownMenuItem>
-                  </DialogTrigger>
-                )}
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem>
-                  Delete transaction
-                  <AlertCircle className="ml-auto dark:text-red-500 text-destructive" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Generate invoice</DialogTitle>
-              </DialogHeader>
-
-              <AddInvoiceForm product={transaction.product} />
-            </DialogContent>
-          </Dialog>
-
-          <div className="md:hidden flex justify-between w-full">
-            <div className="flex gap-2 items-center">
-              <Button variant="outline" size="icon">
-                <Copy />
-              </Button>
-
-              <Button variant="outline" size="icon">
-                <FilePlus />
-              </Button>
-
-              <Button variant="outline" asChild>
-                <Link to={`/dashboard/transactions/${transactionId}`}>
-                  View detials <ArrowRight />
-                </Link>
-              </Button>
-            </div>
-
-            <Button variant="destructive" size="icon" className="">
-              <Trash />
-            </Button>
-          </div>
+          <TransactionRowActions transaction={transaction} />
         </>
       );
     },

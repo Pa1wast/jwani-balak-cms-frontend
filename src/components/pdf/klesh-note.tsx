@@ -1,16 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { kleshNotes } from '@/pages/klesh-notes';
 import { useRef } from 'react';
+import { useKleshNote } from '@/features/klesh/useKleshNote';
+import Loader from '../ui/loader';
 
 function KleshNote() {
-  const { noteId } = useParams();
-  const note = kleshNotes.find(invoice => invoice.id === Number(noteId));
+  const { isLoading, kleshNote } = useKleshNote();
   const pdfRef = useRef(null);
+
+  if (isLoading)
+    return (
+      <div className="h-full w-full grid items-center">
+        <Loader size="lg" />
+      </div>
+    );
 
   async function handleClick() {
     const html2pdf = (await import('html2pdf.js')).default as any;
@@ -20,7 +27,7 @@ function KleshNote() {
     const element = pdfRef.current;
     const options = {
       margin: 0,
-      filename: `klesh-${noteId}.pdf`,
+      filename: `klesh-${kleshNote._id}.pdf`,
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
@@ -68,14 +75,14 @@ function KleshNote() {
 
         <CardContent className="space-y-0">
           <div className="p-6 flex flex-col gap-2">
-            <p>No : {noteId}</p>
+            <p>No : {kleshNote._id}</p>
             <p>
               Date:
               {` ${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate()}`}
             </p>
           </div>
 
-          <p className="flex gap-1 h-[675px]">{note?.content}</p>
+          <p className="flex gap-1 h-[675px]">{kleshNote.note}</p>
         </CardContent>
 
         <CardFooter className="flex justify-around space-y-0 mb-8">
