@@ -137,13 +137,12 @@ export function calculateFinancials(
 export function calculateTransactionData(
   transactions: Transaction[],
   months: number,
-  showDataFor: transactionTypes // 'SELL' | 'BUY' | 'ALL'
+  showDataFor: transactionTypes
 ) {
   const buyTransactions: number[] = [];
   const sellTransactions: number[] = [];
   const totalTransactions: number[] = [];
 
-  // Loop through the past `months` and group transactions by month
   for (let i = months; i >= 0; i--) {
     const monthStart = new Date();
     monthStart.setMonth(monthStart.getMonth() - i);
@@ -153,13 +152,11 @@ export function calculateTransactionData(
     monthEnd.setMonth(monthStart.getMonth() + 1);
     monthEnd.setDate(0);
 
-    // Filter transactions within the month
     const monthlyTransactions = transactions.filter(transaction => {
       const transactionDate = new Date(transaction.createdAt);
       return transactionDate >= monthStart && transactionDate <= monthEnd;
     });
 
-    // Count transactions based on type
     const monthlyBuy = monthlyTransactions.filter(
       transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY
     ).length;
@@ -170,7 +167,6 @@ export function calculateTransactionData(
 
     const monthlyTotal = monthlyTransactions.length;
 
-    // Populate results based on `showDataFor`
     if (showDataFor === transactionTypes.BUY || showDataFor === transactionTypes.ALL) {
       buyTransactions.push(monthlyBuy);
     }
