@@ -5,9 +5,12 @@ import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
 import { useInvoice } from '@/features/invoice.ts/useInvoice';
+import Loader from '../ui/loader';
+import ErrorMessage from '../ui/error-message';
 
 function Invoice() {
-  const { invoice } = useInvoice();
+  const { isLoading, invoice } = useInvoice();
+
   const pdfRef = useRef(null);
 
   async function handleClick() {
@@ -27,7 +30,19 @@ function Invoice() {
     html2pdf().set(options).from(element).save();
   }
 
-  if (!invoice) return <p className="mt-32 mx-auto w-max text-xl">Failed to get invoice</p>;
+  if (isLoading)
+    return (
+      <div className="h-full w-full grid items-center">
+        <Loader />
+      </div>
+    );
+
+  if (!invoice)
+    return (
+      <div className="h-full w-full grid items-center">
+        <ErrorMessage message="Failed getting invoice" goBack />
+      </div>
+    );
 
   return (
     <div className="w-max mx-auto relative">
@@ -89,8 +104,8 @@ function Invoice() {
         <CardContent className="space-y-0">
           <div className="p-6 flex flex-row justify-between items-end">
             <div className="space-y-2 ">
-              <p>No : {invoice._id}</p>
-              <p>
+              <p className="font-medium">No : {invoice._id}</p>
+              <p className="font-medium">
                 Date:
                 {` ${new Date().getFullYear()}/${
                   new Date().getMonth() + 1
@@ -99,8 +114,8 @@ function Invoice() {
             </div>
 
             <div className="flex gap-2 items-center">
-              <p className="text-lg">{invoice.addressedTo}</p>
-              <p className="text-xl font-bold">: بەڕێز </p>
+              <p className="text-lg font-bold">{invoice.addressedTo}</p>
+              <p className="text-xl font-semibold">: بەڕێز </p>
             </div>
           </div>
 
