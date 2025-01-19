@@ -1,4 +1,4 @@
-import { BadgeInfo, CircleAlert, Pen, Trash, TriangleAlert, X } from 'lucide-react';
+import { BadgeInfo, CircleAlert, FilePlus, Pen, Trash, TriangleAlert, X } from 'lucide-react';
 import { Card, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { CardContent } from '@mui/material';
 import { Badge } from '../ui/badge';
@@ -31,6 +31,8 @@ import { Separator } from '../ui/separator';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useCompaniesView } from '@/contexts/companies-view-context';
+import AddInvoiceForm from '../invoice/add-invoice-form';
+import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
 
 function TransactionDetails() {
   const navigate = useNavigate();
@@ -40,6 +42,8 @@ function TransactionDetails() {
   const { isLoading: isLoadingTransactions, transactions } = useTransactionsByProductId(
     transaction?.product?._id
   );
+
+  const { isUpdating, updateTransaction } = useUpdateTransaction();
 
   const { isDeleting, deleteTransaction } = useDeleteTransaction();
 
@@ -75,7 +79,6 @@ function TransactionDetails() {
   const totalAmountPaid = totalAmountExpenses ? totalAmountExpenses + totalBuyCost : totalBuyCost;
   const breakEvenQuantity = Math.ceil(totalAmountPaid / sellingPricePerUnit);
   const breakEvenRevenue = breakEvenQuantity * sellingPricePerUnit;
-
   const estimatedProfitAmount = calculateProfit(
     profitMargin,
     sellingPricePerUnit * transaction.quantity,
@@ -83,28 +86,31 @@ function TransactionDetails() {
   );
   const revenueNeeded = totalAmountPaid + estimatedProfitAmount.value;
 
-  // SELL Transaction Calculation
-
-  // 1. Get all sell expenses (if any)
+  // SELL Transaction
   const allSellExpenses = !isLoadingTransactions
     ? transactions.flatMap(transaction => transaction.expenses ?? [])
     : [];
-
   const totalBuyTransactionsCost = !isLoadingTransactions
     ? transactions
         .filter(buyTransaction => buyTransaction.currency === transaction.currency)
         .reduce((acc, cur) => acc + cur.pricePerUnit * cur.quantity, 0)
     : 0;
-
   const totalSellAmountExpenses = allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0);
-
   const totalCost = totalBuyTransactionsCost + totalSellAmountExpenses;
-
   const totalRevenue = transaction.pricePerUnit * transaction.quantity;
-
   const profitAmount = totalRevenue - totalCost;
-
   const actualProfitMargin = totalRevenue > 0 ? (profitAmount / totalRevenue) * 100 : 0;
+
+  function handleDeleteExpense(expenseId: string) {
+    const updatedExpenses = transaction.expenses?.filter(expense => expense._id !== expenseId);
+    console.log(updatedExpenses);
+    updateTransaction({
+      transactionId: transaction._id,
+      updatedTransaction: {
+        expenses: updatedExpenses,
+      },
+    });
+  }
 
   return (
     <div>
@@ -175,6 +181,22 @@ function TransactionDetails() {
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className="w-full" variant="outline">
+                    <FilePlus />
+                    Generate Invoice
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Generate invoice</DialogTitle>
+                  </DialogHeader>
+
+                  <AddInvoiceForm product={transaction.product} />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full" variant="outline">
                     <Pen />
                     Edit
                   </Button>
@@ -240,9 +262,9 @@ function TransactionDetails() {
               <CardTitle>All Expenses</CardTitle>
             </CardHeader>
             <CardContent className="gap-2 flex mr-2 flex-col lg:grid lg:grid-cols-2 overflow-auto h-[150px]">
-              {transaction.expenses?.map((expense, index) => (
+              {transaction.expenses?.map(expense => (
                 <Badge
-                  key={index}
+                  key={expense._id}
                   variant="outline"
                   className="w-full lg:h-max flex justify-between rounded-md"
                 >
@@ -251,7 +273,13 @@ function TransactionDetails() {
                     <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
                   </div>
 
-                  <Button size="icon" variant="ghost" className=" h-6 w-6 m-2">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className=" h-6 w-6 m-2"
+                    onClick={() => handleDeleteExpense(expense._id as string)}
+                    disabled={isUpdating}
+                  >
                     <X />
                   </Button>
                 </Badge>

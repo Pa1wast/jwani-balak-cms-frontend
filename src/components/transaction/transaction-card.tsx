@@ -4,8 +4,9 @@ import { cn } from '@/lib/utils';
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Transaction, transactionTypes } from '@/types/transaction';
+import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
 import { formatDate } from '@/lib/date';
+import { formatPrice } from '@/lib/price';
 
 interface TransactionCardProps {
   transaction: Transaction;
@@ -35,7 +36,9 @@ function TransactionCard({ transaction }: TransactionCardProps) {
 
           <p className="text-xs">
             Price / Unit:
-            <span className="font-bold inline-block ml-2">{transaction.pricePerUnit}</span>
+            <span className="font-bold inline-block ml-2">
+              {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
+            </span>
           </p>
 
           <p className="text-xs">
@@ -50,7 +53,10 @@ function TransactionCard({ transaction }: TransactionCardProps) {
           <p className="col-span-2 text-xs">
             Total Cost:
             <span className="inline-block ml-2 font-bold">
-              {transaction.pricePerUnit * transaction.quantity}
+              {formatPrice(
+                transaction.pricePerUnit * transaction.quantity,
+                transaction.currency as currencyTypes
+              )}
             </span>
           </p>
 

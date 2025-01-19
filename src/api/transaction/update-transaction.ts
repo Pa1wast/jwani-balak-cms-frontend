@@ -18,6 +18,7 @@ export async function updateTransactionApi({
   });
 
   if (!response.ok) {
+    console.log(response);
     throw new Error('Could not update transaction');
   }
 

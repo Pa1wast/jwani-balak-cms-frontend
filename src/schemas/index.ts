@@ -34,3 +34,9 @@ export const addExpenseSchema = z.object({
   name: z.string().min(1, 'Expense name is required'),
   amount: z.number().min(1, 'Expense amount is required'),
 });
+
+export const addInvoiceSchema = z.object({
+  product: z.string().min(1, 'Product is required'),
+  company: z.string().min(1, 'Company is required'),
+  addressedTo: z.string().min(1, 'Addressed To is required'),
+});

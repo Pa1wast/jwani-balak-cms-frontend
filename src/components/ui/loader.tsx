@@ -22,7 +22,7 @@ function Loader({ className, size = 'md' }: LoaderProps) {
           'rotate size-4',
           size === 'sm' && 'size-4',
           size === 'md' && 'size-6',
-          size === 'lg' && 'size-12'
+          size === 'lg' && 'size-8'
         )}
       />
       Loading...

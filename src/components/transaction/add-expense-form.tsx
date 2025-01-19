@@ -24,11 +24,13 @@ function AddExpenseForm({ transaction }: AddExpenseFormProps) {
   function onSubmit(values: z.infer<typeof addExpenseSchema>) {
     const { success, data } = addExpenseSchema.safeParse(values);
 
-    if (success)
+    if (success) {
+      const updatedExpenses = transaction.expenses ? [...transaction.expenses, data] : [data];
       updateTransaction({
         transactionId: transaction._id,
-        updatedTransaction: { expenses: [data] },
+        updatedTransaction: { expenses: updatedExpenses },
       });
+    }
   }
 
   return (

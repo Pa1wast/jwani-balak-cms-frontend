@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { invoices } from '@/pages/invoices';
 import { useRef } from 'react';
+import { useInvoice } from '@/features/invoice.ts/useInvoice';
 
 function Invoice() {
-  const { invoiceId } = useParams();
-  const invoice = invoices.find(invoice => invoice.id === Number(invoiceId));
+  const { invoice } = useInvoice();
   const pdfRef = useRef(null);
 
   async function handleClick() {
@@ -19,7 +18,7 @@ function Invoice() {
     const element = pdfRef.current;
     const options = {
       margin: 0,
-      filename: `invoice-${invoiceId}.pdf`,
+      filename: `invoice-${invoice._id}.pdf`,
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
@@ -90,7 +89,7 @@ function Invoice() {
         <CardContent className="space-y-0">
           <div className="p-6 flex flex-row justify-between items-end">
             <div className="space-y-2 ">
-              <p>No : {invoiceId}</p>
+              <p>No : {invoice._id}</p>
               <p>
                 Date:
                 {` ${new Date().getFullYear()}/${
@@ -100,7 +99,7 @@ function Invoice() {
             </div>
 
             <div className="flex gap-2 items-center">
-              <p className="text-lg">{invoice.to}</p>
+              <p className="text-lg">{invoice.addressedTo}</p>
               <p className="text-xl font-bold">: بەڕێز </p>
             </div>
           </div>
@@ -110,36 +109,28 @@ function Invoice() {
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
+                  {/* <p>{invoice.pricePerUniT}</p> */}
                 </div>
               </div>
 
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">نرخ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
+                  {/* <p>{invoice.pricePerUniT}</p> */}
                 </div>
               </div>
 
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">دانە</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
+                  {/* <p>{invoice.pricePerUniT}</p> */}
                 </div>
               </div>
 
               <div className="flex flex-col flex-[40%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">جۆر</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
-                  <p>{invoice.pricePerUniT}</p>
+                  {/* <p>{invoice.pricePerUniT}</p> */}
                 </div>
               </div>
             </div>

@@ -55,6 +55,8 @@ import { useTransactions } from '@/features/transaction/useTransactions';
 import Loader from '../ui/loader';
 import { formatDate } from '@/lib/date';
 import { Product } from '@/types/product';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import AddInvoiceForm from '../invoice/add-invoice-form';
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -161,6 +163,10 @@ export const columns: ColumnDef<Transaction>[] = [
         <div className="capitalize font-bold truncate max-w-[200px]">{product.productName}</div>
       );
     },
+    filterFn: (row, _, filterValue) => {
+      const product = row.getValue('product') as Product;
+      return product.productName.toLowerCase().includes(filterValue.toLowerCase());
+    },
   },
   {
     accessorKey: 'pricePerUnit',
@@ -223,39 +229,51 @@ export const columns: ColumnDef<Transaction>[] = [
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const product = row.original;
-      const transactionId = row.getValue('_id');
+      const transaction = row.original;
+      const transactionId = row.getValue('_id') as string;
 
       return (
         <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0 hidden md:flex">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0 hidden md:flex">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuItem asChild>
-                <Link to={`/dashboard/transactions/${transactionId}`}>View details</Link>
-              </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to={`/dashboard/transactions/${transactionId}`}>View details</Link>
+                </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(product._id)}>
-                Copy transaction ID
-              </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(transactionId)}>
+                  Copy transaction ID
+                </DropdownMenuItem>
 
-              <DropdownMenuItem>Generate invoice</DropdownMenuItem>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Generate invoice</DropdownMenuItem>
+                </DialogTrigger>
 
-              <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
 
-              <DropdownMenuItem>
-                Delete transaction
-                <AlertCircle className="ml-auto dark:text-red-500 text-destructive" />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem>
+                  Delete transaction
+                  <AlertCircle className="ml-auto dark:text-red-500 text-destructive" />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Generate invoice</DialogTitle>
+              </DialogHeader>
+
+              <AddInvoiceForm product={transaction.product} />
+            </DialogContent>
+          </Dialog>
 
           <div className="md:hidden flex justify-between w-full">
             <div className="flex gap-2 items-center">
