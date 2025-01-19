@@ -30,17 +30,18 @@ import { useTransactionsByProductId } from '@/features/transaction/useTransactio
 import { Separator } from '../ui/separator';
 import { Input } from '../ui/input';
 import { useState } from 'react';
+import { useCompaniesView } from '@/contexts/companies-view-context';
 
 function TransactionDetails() {
+  const navigate = useNavigate();
   const { isLoading, error, transaction } = useTransaction();
+  const { selectedCompanyId } = useCompaniesView();
 
   const { isLoading: isLoadingTransactions, transactions } = useTransactionsByProductId(
     transaction?.product?._id
   );
 
   const { isDeleting, deleteTransaction } = useDeleteTransaction();
-
-  const navigate = useNavigate();
 
   const [sellingPricePerUnit, setSellingPricePerUnit] = useState(0);
   const [profitMargin, setProfitMargin] = useState(0);
@@ -56,6 +57,13 @@ function TransactionDetails() {
     return (
       <div className="h-full grid items-center">
         <ErrorMessage message={error?.message ?? 'Something went wrong'} />
+      </div>
+    );
+
+  if (transaction?.company._id !== selectedCompanyId)
+    return (
+      <div className="h-full grid items-center">
+        <ErrorMessage message={'Could not find transaction'} goBack />
       </div>
     );
 
@@ -82,9 +90,11 @@ function TransactionDetails() {
     ? transactions.flatMap(transaction => transaction.expenses ?? [])
     : [];
 
-  const totalBuyTransactionsCost = transactions
-    .filter(buyTransaction => buyTransaction.currency === transaction.currency)
-    .reduce((acc, cur) => acc + cur.pricePerUnit * cur.quantity, 0);
+  const totalBuyTransactionsCost = !isLoadingTransactions
+    ? transactions
+        .filter(buyTransaction => buyTransaction.currency === transaction.currency)
+        .reduce((acc, cur) => acc + cur.pricePerUnit * cur.quantity, 0)
+    : 0;
 
   const totalSellAmountExpenses = allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0);
 
