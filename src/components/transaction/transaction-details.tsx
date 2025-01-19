@@ -302,7 +302,7 @@ function TransactionDetails() {
             <p className="text-lg font-bold">Profit Analysis</p>
             <div className="space-y-4">
               <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
-                <p className="font-semibold">Selling Price / Unit: </p>
+                <p className="font-semibold w-full">Selling Price / Unit: </p>
 
                 <div className="flex gap-1 w-full justify-end items-center">
                   <span className="text-sm font-semibold">{currency}</span>
@@ -319,7 +319,7 @@ function TransactionDetails() {
               </div>
 
               <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
-                <p className="font-semibold">Profit Margin: </p>
+                <p className="font-semibold w-full">Profit Margin: </p>
                 <div className="flex gap-1 w-full justify-end items-center">
                   <span className="text-sm font-semibold">%</span>
                   <Input
@@ -367,7 +367,7 @@ function TransactionDetails() {
                 </div>
                 <p
                   className={cn(
-                    'font-semibold text-green-500',
+                    'font-semibold text-green-500 w-max text-nowrap',
                     estimatedProfitAmount.warn && 'text-orange-500',
                     estimatedProfitAmount.error && 'text-red-500'
                   )}
@@ -386,7 +386,7 @@ function TransactionDetails() {
             <p className="text-lg font-bold flex items-center flex-wrap gap-1">
               Break-even Analysis
               {!sellingPricePerUnit && (
-                <span className="bg-secondary/40  font-normal dark:bg-secondary/60 text-sm sm:py-1 sm:px-2 rounded-lg flex gap-1 items-center">
+                <span className="bg-secondary/40  font-normal dark:bg-secondary/60 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
                   <BadgeInfo className="size-4" />
                   No selling price is set.
                 </span>
