@@ -1,6 +1,5 @@
 import { BarChart, barElementClasses } from '@mui/x-charts/BarChart';
 import { axisClasses } from '@mui/x-charts/ChartsAxis';
-import { getPastMonths } from '@/lib/date';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { Button } from './button';
@@ -21,12 +20,10 @@ interface FinanceChartProps {
 export default function FinanceChart({ transactions }: FinanceChartProps) {
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
-  const [month, setMonth] = useState(6); // Default to 6 months
-  const months = getPastMonths(6); // Get past 6 months names
+  const [month, setMonth] = useState(12);
 
   const [showDataFor, setShowDataFor] = useState(dataTypes.ALL);
 
-  // Calculate financial data
   const { expensesData, revenueData, profitsData } = calculateFinancials(
     transactions,
     month,
