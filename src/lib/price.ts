@@ -134,47 +134,53 @@ export function calculateFinancials(
   };
 }
 
-export function calculateTransactionData(transactions: Transaction[], months: number) {
-  const currentDate = new Date();
-  const startDate = new Date();
-  startDate.setMonth(currentDate.getMonth() - months);
-
-  const filteredTransactions = transactions.filter(transaction => {
-    const transactionDate = new Date(transaction.createdAt);
-    return transactionDate >= startDate && transactionDate <= currentDate;
-  });
-
+export function calculateTransactionData(
+  transactions: Transaction[],
+  months: number,
+  showDataFor: transactionTypes // 'SELL' | 'BUY' | 'ALL'
+) {
   const buyTransactions: number[] = [];
   const sellTransactions: number[] = [];
   const totalTransactions: number[] = [];
 
-  const monthMap = new Map<number, { buy: number; sell: number; total: number }>();
+  // Loop through the past `months` and group transactions by month
+  for (let i = months; i >= 0; i--) {
+    const monthStart = new Date();
+    monthStart.setMonth(monthStart.getMonth() - i);
+    monthStart.setDate(1);
 
-  filteredTransactions.forEach(transaction => {
-    const transactionDate = new Date(transaction.createdAt);
-    const monthKey = transactionDate.getFullYear() * 12 + transactionDate.getMonth();
+    const monthEnd = new Date(monthStart);
+    monthEnd.setMonth(monthStart.getMonth() + 1);
+    monthEnd.setDate(0);
 
-    if (!monthMap.has(monthKey)) {
-      monthMap.set(monthKey, { buy: 0, sell: 0, total: 0 });
-    }
-
-    const monthData = monthMap.get(monthKey)!;
-
-    if (transaction.transactionType.toUpperCase() === transactionTypes.BUY) {
-      monthData.buy++;
-    } else if (transaction.transactionType.toUpperCase() === transactionTypes.SELL) {
-      monthData.sell++;
-    }
-    monthData.total++;
-  });
-
-  Array.from(monthMap.entries())
-    .sort(([a], [b]) => a - b)
-    .forEach(([_, { buy, sell, total }]) => {
-      buyTransactions.push(buy);
-      sellTransactions.push(sell);
-      totalTransactions.push(total);
+    // Filter transactions within the month
+    const monthlyTransactions = transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.createdAt);
+      return transactionDate >= monthStart && transactionDate <= monthEnd;
     });
+
+    // Count transactions based on type
+    const monthlyBuy = monthlyTransactions.filter(
+      transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY
+    ).length;
+
+    const monthlySell = monthlyTransactions.filter(
+      transaction => transaction.transactionType.toUpperCase() === transactionTypes.SELL
+    ).length;
+
+    const monthlyTotal = monthlyTransactions.length;
+
+    // Populate results based on `showDataFor`
+    if (showDataFor === transactionTypes.BUY || showDataFor === transactionTypes.ALL) {
+      buyTransactions.push(monthlyBuy);
+    }
+    if (showDataFor === transactionTypes.SELL || showDataFor === transactionTypes.ALL) {
+      sellTransactions.push(monthlySell);
+    }
+    if (showDataFor === transactionTypes.ALL) {
+      totalTransactions.push(monthlyTotal);
+    }
+  }
 
   return { buyTransactions, sellTransactions, totalTransactions };
 }
