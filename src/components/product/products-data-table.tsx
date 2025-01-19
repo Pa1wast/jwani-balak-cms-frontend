@@ -39,6 +39,7 @@ import { Product } from '@/types/product';
 import { useProducts } from '@/features/product/useProducts';
 import Loader from '../ui/loader';
 import ProductRowActions from './product-row-actions';
+import ProductStockQuantity from './product-stock-quantity';
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -59,16 +60,11 @@ export const columns: ColumnDef<Product>[] = [
     ),
     cell: ({ row }) => <div className="capitalize">{row.getValue('productName')}</div>,
   },
-  // {
-  //   accessorKey: 'quantity',
-  //   header: ({ column }) => (
-  //     <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-  //       Stock Quantity
-  //       <ArrowUpDown />
-  //     </Button>
-  //   ),
-  //   cell: ({ row }) => <div>{row.getValue('quantity')}</div>,
-  // },
+  {
+    accessorKey: 'quantity',
+    header: 'Stock Quantity',
+    cell: ({ row }) => <div>{row.getValue('quantity')}</div>,
+  },
   {
     id: 'actions',
     enableHiding: false,
@@ -185,7 +181,11 @@ export default function ProductsDataTable() {
                       key={cell.id}
                       className={cell.id.includes('_id') ? 'hidden sm:table-cell' : ''}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {cell.id.includes('quantity') ? (
+                        <ProductStockQuantity productId={row.original._id} />
+                      ) : (
+                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

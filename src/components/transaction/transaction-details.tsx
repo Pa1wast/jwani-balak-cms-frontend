@@ -87,14 +87,16 @@ function TransactionDetails() {
   const revenueNeeded = totalAmountPaid + estimatedProfitAmount.value;
 
   // SELL Transaction
-  const allSellExpenses = !isLoadingTransactions
-    ? transactions.flatMap(transaction => transaction.expenses ?? [])
-    : [];
-  const totalBuyTransactionsCost = !isLoadingTransactions
-    ? transactions
-        .filter(buyTransaction => buyTransaction.currency === transaction.currency)
-        .reduce((acc, cur) => acc + cur.pricePerUnit * cur.quantity, 0)
-    : 0;
+  const allSellExpenses =
+    !isLoadingTransactions && transactions
+      ? transactions.flatMap(transaction => transaction.expenses ?? [])
+      : [];
+  const totalBuyTransactionsCost =
+    !isLoadingTransactions && transactions
+      ? transactions
+          .filter(buyTransaction => buyTransaction.currency === transaction.currency)
+          .reduce((acc, cur) => acc + cur.pricePerUnit * cur.quantity, 0)
+      : 0;
   const totalSellAmountExpenses = allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0);
   const totalCost = totalBuyTransactionsCost + totalSellAmountExpenses;
   const totalRevenue = transaction.pricePerUnit * transaction.quantity;
@@ -103,7 +105,7 @@ function TransactionDetails() {
 
   function handleDeleteExpense(expenseId: string) {
     const updatedExpenses = transaction.expenses?.filter(expense => expense._id !== expenseId);
-    console.log(updatedExpenses);
+
     updateTransaction({
       transactionId: transaction._id,
       updatedTransaction: {
@@ -137,11 +139,16 @@ function TransactionDetails() {
         <div className="flex gap-1 flex-wrap sm:flex-nowrap">
           <Card className="overflow-hidden w-full">
             <CardContent className="flex gap-10 flex-row flex-wrap">
-              <div className="flex flex-1 items-center gap-4">
+              <div className="flex flex-wrap flex-1 items-center gap-4">
                 <p className="text-lg text-foreground/60 min-w-max">Product name:</p>
-                <p className="md:text-lg font-semibold truncate max-w-[200px] md:max-w-[500px]">
-                  {transaction.product.productName}
-                </p>
+
+                {transaction.product ? (
+                  <p className="md:text-lg font-semibold truncate max-w-[200px] md:max-w-[500px]">
+                    {transaction.product?.productName}
+                  </p>
+                ) : (
+                  <ErrorMessage message="Could not find product data" />
+                )}
               </div>
 
               <div className="flex items-center gap-4">
@@ -179,12 +186,14 @@ function TransactionDetails() {
           <Card className="w-full sm:w-max">
             <CardContent className="flex flex-col gap-1">
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="w-full" variant="outline">
-                    <FilePlus />
-                    Generate Invoice
-                  </Button>
-                </DialogTrigger>
+                {transaction.product && (
+                  <DialogTrigger asChild>
+                    <Button className="w-full" variant="outline">
+                      <FilePlus />
+                      Generate Invoice
+                    </Button>
+                  </DialogTrigger>
+                )}
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Generate invoice</DialogTitle>

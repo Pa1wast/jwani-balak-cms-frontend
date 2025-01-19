@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export function useTransactionsByProductId(productId: string) {
   const { isLoading, data, error } = useQuery({
-    queryKey: ['transactions'],
+    queryKey: ['transactions', productId],
     queryFn: () => getTransactionsByProductId(productId as string),
   });
 

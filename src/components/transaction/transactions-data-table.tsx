@@ -160,12 +160,12 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const product = row.getValue('product') as Product;
       return (
-        <div className="capitalize font-bold truncate max-w-[200px]">{product.productName}</div>
+        <div className="capitalize font-bold truncate max-w-[200px]">{product?.productName}</div>
       );
     },
     filterFn: (row, _, filterValue) => {
       const product = row.getValue('product') as Product;
-      return product.productName.toLowerCase().includes(filterValue.toLowerCase());
+      return product?.productName.toLowerCase().includes(filterValue.toLowerCase());
     },
   },
   {
@@ -253,9 +253,11 @@ export const columns: ColumnDef<Transaction>[] = [
                   Copy transaction ID
                 </DropdownMenuItem>
 
-                <DialogTrigger asChild>
-                  <DropdownMenuItem>Generate invoice</DropdownMenuItem>
-                </DialogTrigger>
+                {transaction.product && (
+                  <DialogTrigger asChild>
+                    <DropdownMenuItem>Generate invoice</DropdownMenuItem>
+                  </DialogTrigger>
+                )}
 
                 <DropdownMenuSeparator />
 

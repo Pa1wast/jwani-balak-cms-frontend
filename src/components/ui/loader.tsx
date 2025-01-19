@@ -3,10 +3,11 @@ import { LoaderCircle } from 'lucide-react';
 
 interface LoaderProps {
   className?: string;
+  text?: boolean;
   size?: 'sm' | 'md' | 'lg';
 }
 
-function Loader({ className, size = 'md' }: LoaderProps) {
+function Loader({ className, size = 'md', text = true }: LoaderProps) {
   return (
     <div
       className={cn(
@@ -25,7 +26,7 @@ function Loader({ className, size = 'md' }: LoaderProps) {
           size === 'lg' && 'size-8'
         )}
       />
-      Loading...
+      {text && 'Loading...'}
     </div>
   );
 }

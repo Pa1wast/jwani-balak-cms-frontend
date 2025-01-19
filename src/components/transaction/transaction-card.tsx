@@ -31,7 +31,13 @@ function TransactionCard({ transaction }: TransactionCardProps) {
         <CardContent className="p-2 bg-secondary/30 rounded-lg grid grid-cols-2 gap-y-4 truncate">
           <p className="text-xs col-span-2 ">
             Product Name:
-            <span className="font-bold inline-block ml-2">{transaction.product.productName}</span>
+            {transaction.product ? (
+              <span className="font-bold inline-block ml-2">{transaction.product.productName}</span>
+            ) : (
+              <span className="font-medium inline-block ml-2 bg-red-200 text-red-500 px-1 rounded-lg">
+                Unavailable
+              </span>
+            )}
           </p>
 
           <p className="text-xs">
