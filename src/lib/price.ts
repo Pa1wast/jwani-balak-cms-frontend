@@ -180,3 +180,18 @@ export function calculateTransactionData(
 
   return { buyTransactions, sellTransactions, totalTransactions };
 }
+
+export function getStockQuantity(transactions: Transaction[]) {
+  const buyTransactions = transactions.filter(
+    transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY
+  );
+
+  const sellTransactions = transactions.filter(
+    transaction => transaction.transactionType.toUpperCase() === transactionTypes.SELL
+  );
+
+  const quantityBought = buyTransactions.reduce((acc, cur) => acc + cur.quantity, 0);
+  const quantitySold = sellTransactions.reduce((acc, cur) => acc + cur.quantity, 0);
+
+  return quantityBought - quantitySold;
+}

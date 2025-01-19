@@ -35,6 +35,9 @@ import { Product } from '@/types/product';
 import Loader from '../ui/loader';
 import { useAddTransaction } from '@/features/transaction/useAddTransaction';
 import { useCompaniesView } from '@/contexts/companies-view-context';
+import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
+import { getStockQuantity } from '@/lib/price';
+import { toast } from 'sonner';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
@@ -62,6 +65,17 @@ function AddTransactionForm() {
       addTransaction(newTransaction);
     }
   }
+
+  const [selectedProductId, setSelectedProductId] = useState('');
+  const { isLoading: isLoadingTransactions, transactions } =
+    useTransactionsByProductId(selectedProductId);
+
+  const availableQuantity =
+    form.getValues('transactionType') === transactionTypes.SELL && !isLoadingTransactions
+      ? getStockQuantity(transactions)
+      : 0;
+
+  const [quantityError, setQuantityError] = useState(false);
 
   const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
 
@@ -126,6 +140,7 @@ function AddTransactionForm() {
                               key={product._id}
                               onSelect={() => {
                                 form.setValue('product', product._id);
+                                setSelectedProductId(product._id);
                               }}
                             >
                               {product.productName}
@@ -256,15 +271,31 @@ function AddTransactionForm() {
           name="quantity"
           render={({ field }) => (
             <FormItem className="space-y-3 flex-1">
-              <FormLabel>Quantity</FormLabel>
-
+              <div className="flex gap-1 items-center">
+                <FormLabel>Quantity</FormLabel>
+                {quantityError && (
+                  <span className="bg-red-50 text-red-500 px-1 rounded-lg text-xs font-semibold">
+                    The available quantity is {availableQuantity}!
+                  </span>
+                )}
+              </div>
               <FormControl>
                 <Input
                   type="text"
                   {...field}
                   onChange={e => {
                     const value = e.target.value;
-                    if (!isNaN(Number(value))) field.onChange(Number(value));
+                    if (!isNaN(Number(value))) {
+                      if (
+                        form.getValues('transactionType') === transactionTypes.SELL &&
+                        Number(value) > availableQuantity
+                      ) {
+                        setQuantityError(true);
+                      } else {
+                        setQuantityError(false);
+                        field.onChange(Number(value));
+                      }
+                    }
                   }}
                 />
               </FormControl>
