@@ -1,4 +1,4 @@
-export async function getInvoices(invoiceId: string) {
+export async function getInvoice(invoiceId: string) {
   const apiUrl = `http://localhost:8080/invoice/${invoiceId}`;
   const response = await fetch(apiUrl);
 
