@@ -1,4 +1,4 @@
-import { BadgeInfo, CircleAlert, Currency, Pen, Trash, TriangleAlert, X } from 'lucide-react';
+import { BadgeInfo, CircleAlert, Pen, Trash, TriangleAlert, X } from 'lucide-react';
 import { Card, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { CardContent } from '@mui/material';
 import { Badge } from '../ui/badge';
