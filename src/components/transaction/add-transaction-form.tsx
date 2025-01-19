@@ -37,7 +37,6 @@ import { useAddTransaction } from '@/features/transaction/useAddTransaction';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
 import { getStockQuantity } from '@/lib/price';
-import { toast } from 'sonner';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
