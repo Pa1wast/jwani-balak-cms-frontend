@@ -34,7 +34,7 @@ import { useState } from 'react';
 function TransactionDetails() {
   const { isLoading, error, transaction } = useTransaction();
 
-  const { isLoading: isLoading2, transactions } = useTransactionsByProductId(
+  const { isLoading: isLoadingTransactions, transactions } = useTransactionsByProductId(
     transaction?.product?._id
   );
 
@@ -61,11 +61,10 @@ function TransactionDetails() {
 
   const currency = transaction.currency as currencyTypes;
 
+  // BUY Transaction
   const totalAmountExpenses = transaction.expenses?.reduce((acc, cur) => acc + cur.amount, 0);
-  const totalCost = transaction.pricePerUnit * transaction.quantity;
-
-  const totalAmountPaid = totalAmountExpenses ? totalAmountExpenses + totalCost : totalCost;
-
+  const totalBuyCost = transaction.pricePerUnit * transaction.quantity;
+  const totalAmountPaid = totalAmountExpenses ? totalAmountExpenses + totalBuyCost : totalBuyCost;
   const breakEvenQuantity = Math.ceil(totalAmountPaid / sellingPricePerUnit);
   const breakEvenRevenue = breakEvenQuantity * sellingPricePerUnit;
 
@@ -74,8 +73,28 @@ function TransactionDetails() {
     sellingPricePerUnit * transaction.quantity,
     totalAmountPaid
   );
-
   const revenueNeeded = totalAmountPaid + estimatedProfitAmount.value;
+
+  // SELL Transaction Calculation
+
+  // 1. Get all sell expenses (if any)
+  const allSellExpenses = !isLoadingTransactions
+    ? transactions.flatMap(transaction => transaction.expenses ?? [])
+    : [];
+
+  const totalBuyTransactionsCost = transactions
+    .filter(buyTransaction => buyTransaction.currency === transaction.currency)
+    .reduce((acc, cur) => acc + cur.pricePerUnit * cur.quantity, 0);
+
+  const totalSellAmountExpenses = allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0);
+
+  const totalCost = totalBuyTransactionsCost + totalSellAmountExpenses;
+
+  const totalRevenue = transaction.pricePerUnit * transaction.quantity;
+
+  const profitAmount = totalRevenue - totalCost;
+
+  const actualProfitMargin = totalRevenue > 0 ? (profitAmount / totalRevenue) * 100 : 0;
 
   return (
     <div>
@@ -136,7 +155,7 @@ function TransactionDetails() {
                     : 'text-red-500'
                 )}
               >
-                {formatPrice(transaction.pricePerUnit * transaction.quantity, currency)}
+                {formatPrice(totalBuyCost, currency)}
               </p>
             </CardFooter>
           </Card>
@@ -205,33 +224,41 @@ function TransactionDetails() {
           </Card>
         )}
 
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>All Expenses</CardTitle>
-          </CardHeader>
-          <CardContent className="gap-2 flex mr-2 flex-col lg:grid lg:grid-cols-2 overflow-auto h-[150px]">
-            {transaction.expenses?.map((expense, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="w-full lg:h-max flex justify-between rounded-md"
-              >
-                <div className="flex justify-between w-full gap-4">
-                  <p className="p-2">{expense.name}</p>
-                  <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
-                </div>
+        {transaction.transactionType.toUpperCase() === transactionTypes.BUY && (
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>All Expenses</CardTitle>
+            </CardHeader>
+            <CardContent className="gap-2 flex mr-2 flex-col lg:grid lg:grid-cols-2 overflow-auto h-[150px]">
+              {transaction.expenses?.map((expense, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="w-full lg:h-max flex justify-between rounded-md"
+                >
+                  <div className="flex justify-between w-full gap-4">
+                    <p className="p-2">{expense.name}</p>
+                    <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
+                  </div>
 
-                <Button size="icon" variant="ghost" className=" h-6 w-6 m-2">
-                  <X />
-                </Button>
-              </Badge>
-            ))}
+                  <Button size="icon" variant="ghost" className=" h-6 w-6 m-2">
+                    <X />
+                  </Button>
+                </Badge>
+              ))}
 
-            {!transaction.expenses?.length && (
-              <p className="text-foreground/60">There are no expenses!</p>
-            )}
-          </CardContent>
-        </Card>
+              {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+                !transaction.expenses?.length && (
+                  <p className="text-foreground/60">There are no expenses!</p>
+                )}
+
+              {transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
+                !allSellExpenses?.length && (
+                  <p className="text-foreground/60">There are no expenses!</p>
+                )}
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Card className="flex-1 mb-2">
@@ -247,197 +274,261 @@ function TransactionDetails() {
           </p>
 
           <div className="space-y-1">
-            {transaction.expenses?.map((expense, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
-              >
-                <p className="p-2">{expense.name}</p>
+            {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+              transaction.expenses?.map((expense, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
+                >
+                  <p className="p-2">{expense.name}</p>
 
-                <div className="flex gap-1">
-                  <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
+                  <div className="flex gap-1">
+                    <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
 
-                  <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
+                    <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
 
-                  <p className="p-2">{formatPercentage(expense.amount, totalCost)} </p>
-                </div>
-              </Badge>
-            ))}
+                    <p className="p-2">{formatPercentage(expense.amount, totalBuyCost)} </p>
+                  </div>
+                </Badge>
+              ))}
+
+            {transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
+              allSellExpenses?.map((expense, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
+                >
+                  <p className="p-2">{expense.name}</p>
+                  <div className="flex gap-1">
+                    <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
+
+                    <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
+
+                    <p className="p-2">{formatPercentage(expense.amount, totalBuyCost)} </p>
+                  </div>
+                </Badge>
+              ))}
           </div>
 
           <div className="w-full flex font-medium  p-2 rounded-md justify-between">
             <p>Total Expenses: </p>
 
             <p className=" font-bold">
-              {formatPrice(!totalAmountExpenses ? 0 : totalAmountExpenses, currency)}
+              {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+                formatPrice(!totalAmountExpenses ? 0 : totalAmountExpenses, currency)}
+              {transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
+                formatPrice(!totalSellAmountExpenses ? 0 : totalSellAmountExpenses, currency)}
             </p>
           </div>
         </CardContent>
 
-        <Separator />
+        {transaction.transactionType.toUpperCase() === transactionTypes.BUY && <Separator />}
 
-        <CardFooter className="flex flex-col gap-1 pt-4">
-          <div className="w-full flex bg-blue-500/20 dark:bg-blue-500/50 font-semibold p-2 rounded-md justify-between">
-            <p>Total Cost (w/o) expenses: </p>
+        {transaction.transactionType.toUpperCase() === transactionTypes.BUY && (
+          <CardFooter className="flex flex-col gap-1 pt-4">
+            <div className="w-full flex bg-blue-500/10 dark:bg-blue-500/30 font-semibold p-2 rounded-md justify-between">
+              <p>Total Cost (w/o) expenses: </p>
 
-            <p className="text-lg font-bold">{formatPrice(totalCost, currency)}</p>
-          </div>
+              <p className="text-lg font-bold">{formatPrice(totalBuyCost, currency)}</p>
+            </div>
 
-          <div className="w-full flex bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
-            <p>Total Amount Paid: </p>
+            <div className="w-full flex bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
+              <p>Total Amount Paid: </p>
 
-            <p className="text-lg font-bold">{formatPrice(totalAmountPaid, currency)}</p>
-          </div>
-        </CardFooter>
+              <p className="text-lg font-bold">{formatPrice(totalAmountPaid, currency)}</p>
+            </div>
+          </CardFooter>
+        )}
       </Card>
 
-      <Card className="flex-1">
-        <CardHeader>
-          <CardTitle>Insights & Estimations</CardTitle>
-        </CardHeader>
+      {transaction.transactionType.toUpperCase() === transactionTypes.BUY ? (
+        <Card className="flex-1">
+          <CardHeader>
+            <CardTitle>Insights & Estimations</CardTitle>
+          </CardHeader>
 
-        <CardContent className="gap-2 flex flex-col flex-wrap">
-          <div className="space-y-8 ">
-            <p className="text-lg font-bold">Profit Analysis</p>
-            <div className="space-y-4">
-              <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
-                <p className="font-semibold w-full">Selling Price / Unit: </p>
+          <CardContent className="gap-2 flex flex-col flex-wrap">
+            <div className="space-y-8 ">
+              <p className="text-lg font-bold">Profit Analysis</p>
+              <div className="space-y-4">
+                <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
+                  <p className="font-semibold w-full">Selling Price / Unit: </p>
 
-                <div className="flex gap-1 w-full justify-end items-center">
-                  <span className="text-sm font-semibold">{currency}</span>
-                  <Input
-                    type="text"
-                    value={sellingPricePerUnit}
-                    onChange={e => {
-                      const value = e.target.value;
-                      if (!isNaN(Number(value))) setSellingPricePerUnit(Number(value));
-                    }}
-                    className="sm:w-max"
-                  />
+                  <div className="flex gap-1 w-full justify-end items-center">
+                    <span className="text-sm font-semibold">{currency}</span>
+                    <Input
+                      type="text"
+                      value={sellingPricePerUnit}
+                      onChange={e => {
+                        const value = e.target.value;
+                        if (!isNaN(Number(value))) setSellingPricePerUnit(Number(value));
+                      }}
+                      className="sm:w-max"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
-                <p className="font-semibold w-full">Profit Margin: </p>
-                <div className="flex gap-1 w-full justify-end items-center">
-                  <span className="text-sm font-semibold">%</span>
-                  <Input
-                    type="text"
-                    value={profitMargin}
-                    onChange={e => {
-                      const value = e.target.value;
-                      if (!isNaN(Number(value))) setProfitMargin(Number(value));
-                    }}
-                    className="sm:w-max"
-                  />
+                <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
+                  <p className="font-semibold w-full">Profit Margin: </p>
+                  <div className="flex gap-1 w-full justify-end items-center">
+                    <span className="text-sm font-semibold">%</span>
+                    <Input
+                      type="text"
+                      value={profitMargin}
+                      onChange={e => {
+                        const value = e.target.value;
+                        if (!isNaN(Number(value))) setProfitMargin(Number(value));
+                      }}
+                      className="sm:w-max"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex gap-1 w-full items-center">
-                  <p className="font-semibold">Estimated Profit Amount({transaction.currency}): </p>
-                  {estimatedProfitAmount.info && (
-                    <p className="bg-secondary/40 dark:bg-secondary/60 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                      <BadgeInfo className="size-4" />
-                      {estimatedProfitAmount.info}
+                <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex gap-1 w-full items-center">
+                    <p className="font-semibold">
+                      Estimated Profit Amount({transaction.currency}):{' '}
                     </p>
-                  )}
+                    {estimatedProfitAmount.info && (
+                      <p className="bg-secondary/40 dark:bg-secondary/60 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                        <BadgeInfo className="size-4" />
+                        {estimatedProfitAmount.info}
+                      </p>
+                    )}
 
-                  {estimatedProfitAmount.warn && (
-                    <p className=" bg-orange-500/10 text-orange-500 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                      <TriangleAlert className="size-4" />
-                      {estimatedProfitAmount.warn}
-                    </p>
-                  )}
+                    {estimatedProfitAmount.warn && (
+                      <p className=" bg-orange-500/10 text-orange-500 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                        <TriangleAlert className="size-4" />
+                        {estimatedProfitAmount.warn}
+                      </p>
+                    )}
 
-                  {estimatedProfitAmount.error && (
-                    <p className=" bg-red-500/10 text-red-500 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                      <CircleAlert className="size-4" />
-                      {estimatedProfitAmount.error}
-                    </p>
-                  )}
+                    {estimatedProfitAmount.error && (
+                      <p className=" bg-red-500/10 text-red-500 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                        <CircleAlert className="size-4" />
+                        {estimatedProfitAmount.error}
+                      </p>
+                    )}
 
-                  {!sellingPricePerUnit && profitMargin > 0 && (
-                    <p className=" bg-red-500/10 text-red-500 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                      <CircleAlert className="size-4" />
-                      Selling price must be set.
-                    </p>
-                  )}
+                    {!sellingPricePerUnit && profitMargin > 0 && (
+                      <p className=" bg-red-500/10 text-red-500 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                        <CircleAlert className="size-4" />
+                        Selling price must be set.
+                      </p>
+                    )}
+                  </div>
+                  <p
+                    className={cn(
+                      'font-semibold text-green-500 w-max text-nowrap',
+                      estimatedProfitAmount.warn && 'text-orange-500',
+                      estimatedProfitAmount.error && 'text-red-500'
+                    )}
+                  >
+                    {sellingPricePerUnit > 0
+                      ? formatPrice(estimatedProfitAmount.value, currency)
+                      : '_'}
+                  </p>
                 </div>
-                <p
-                  className={cn(
-                    'font-semibold text-green-500 w-max text-nowrap',
-                    estimatedProfitAmount.warn && 'text-orange-500',
-                    estimatedProfitAmount.error && 'text-red-500'
-                  )}
-                >
-                  {sellingPricePerUnit > 0
-                    ? formatPrice(estimatedProfitAmount.value, currency)
-                    : '_'}
-                </p>
               </div>
             </div>
-          </div>
+
+            <Separator />
+
+            <div className="space-y-8">
+              <p className="text-lg font-bold flex items-center flex-wrap gap-1">
+                Break-even Analysis
+                {!sellingPricePerUnit && (
+                  <span className="bg-secondary/40  font-normal dark:bg-secondary/60 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                    <BadgeInfo className="size-4" />
+                    No selling price is set.
+                  </span>
+                )}
+              </p>
+              <div className="space-y-1">
+                <div className="flex flex-wrap bg-secondary/20 p-1 rounded-md items-center justify-between gap-1">
+                  <div className="flex gap-1 items-center flex-wrap">
+                    <p className="font-semibold">Break-even quantity: </p>
+                    {sellingPricePerUnit > 0 && breakEvenQuantity > transaction.quantity && (
+                      <span className="font-normal bg-red-500/10 text-red-500 text-xs sm:text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                        <CircleAlert className="size-4" />
+                        Insufficient stock to reach the break-even point.
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="font-semibold">
+                    {sellingPricePerUnit > 0 ? breakEvenQuantity : '_'}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between bg-secondary/20 p-1 rounded-md gap-1">
+                  <p className="font-semibold">Break-even revenue: </p>
+
+                  <p className="font-semibold">
+                    {sellingPricePerUnit > 0 ? formatPrice(breakEvenRevenue, currency) : '_'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
 
           <Separator />
 
-          <div className="space-y-8">
-            <p className="text-lg font-bold flex items-center flex-wrap gap-1">
-              Break-even Analysis
-              {!sellingPricePerUnit && (
-                <span className="bg-secondary/40  font-normal dark:bg-secondary/60 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                  <BadgeInfo className="size-4" />
-                  No selling price is set.
-                </span>
-              )}
-            </p>
-            <div className="space-y-1">
-              <div className="flex flex-wrap bg-secondary/20 p-1 rounded-md items-center justify-between gap-1">
-                <div className="flex gap-1 items-center flex-wrap">
-                  <p className="font-semibold">Break-even quantity: </p>
-                  {sellingPricePerUnit > 0 && breakEvenQuantity > transaction.quantity && (
-                    <span className="font-normal bg-red-500/10 text-red-500 text-xs sm:text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                      <CircleAlert className="size-4" />
-                      Insufficient stock to reach the break-even point.
-                    </span>
-                  )}
-                </div>
+          <CardFooter className="flex flex-row justify-between gap-1 pt-4">
+            <div className="w-full flex flex-wrap bg-green-500/10 dark:bg-green-500/30 font-semibold p-2 rounded-md justify-between">
+              <p className="text-lg font-bold flex flex-wrap items-center gap-1">
+                Revenue To Achieve Target Profit:
+                {!profitMargin && (
+                  <span className="bg-secondary/20 font-normal dark:bg-secondary/40 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                    <BadgeInfo className="size-4" />
+                    No profit margin is set.
+                  </span>
+                )}
+              </p>
 
-                <p className="font-semibold">{sellingPricePerUnit > 0 ? breakEvenQuantity : '_'}</p>
-              </div>
-
-              <div className="flex items-center justify-between bg-secondary/20 p-1 rounded-md gap-1">
-                <p className="font-semibold">Break-even revenue: </p>
-
-                <p className="font-semibold">
-                  {sellingPricePerUnit > 0 ? formatPrice(breakEvenRevenue, currency) : '_'}
-                </p>
-              </div>
+              <p className="text-lg font-bold text-green-500">
+                {sellingPricePerUnit > 0 && profitMargin
+                  ? formatPrice(revenueNeeded, currency)
+                  : '_'}
+              </p>
             </div>
-          </div>
-        </CardContent>
+          </CardFooter>
+        </Card>
+      ) : (
+        <Card className="flex-1">
+          <CardHeader>
+            <CardTitle>Insights</CardTitle>
+          </CardHeader>
 
-        <Separator />
+          <CardContent className="gap-2 flex flex-col flex-wrap">
+            <div className="w-full flex flex-wrap bg-blue-500/20 dark:bg-blue-500/50 font-semibold p-2 rounded-md justify-between">
+              <p className="text-lg font-bold">Total Revenue:</p>
 
-        <CardFooter className="flex flex-row justify-between gap-1 pt-4">
-          <div className="w-full flex flex-wrap bg-green-500/10 dark:bg-green-500/30 font-semibold p-2 rounded-md justify-between">
-            <p className="text-lg font-bold flex flex-wrap items-center gap-1">
-              Revenue To Achieve Target Profit:
-              {!profitMargin && (
-                <span className="bg-secondary/20 font-normal dark:bg-secondary/40 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                  <BadgeInfo className="size-4" />
-                  No profit margin is set.
+              <p className="text-lg font-bold text-blue-500">
+                {formatPrice(totalRevenue, currency)}
+              </p>
+            </div>
+
+            <Separator />
+
+            <div className="w-full flex flex-wrap items-center bg-green-500/10 dark:bg-green-500/30 font-semibold p-2 rounded-md justify-between">
+              <p className="text-lg font-bold">Profit:</p>
+
+              <p className="text-lg font-bold flex flex-col gap-2">
+                <span className="text-green-500">
+                  Amount: {formatPrice(profitAmount, currency)}
                 </span>
-              )}
-            </p>
-
-            <p className="text-lg font-bold text-green-500">
-              {sellingPricePerUnit > 0 && profitMargin ? formatPrice(revenueNeeded, currency) : '_'}
-            </p>
-          </div>
-        </CardFooter>
-      </Card>
+                <span className="text-green-700 dark:text-green-200">
+                  {' '}
+                  Margin: {actualProfitMargin.toFixed(2)}%
+                </span>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
