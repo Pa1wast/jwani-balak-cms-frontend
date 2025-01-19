@@ -82,7 +82,7 @@ function Dashboard() {
 
         {!isLoadingTransactions && <FinanceChart transactions={transactions} />}
 
-        <TransactionsChart />
+        {!isLoadingTransactions && <TransactionsChart transactions={transactions} />}
       </div>
     </div>
   );
