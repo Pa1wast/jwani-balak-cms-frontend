@@ -9,32 +9,40 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { dataTypes } from '@/types/finance';
+import { Transaction } from '@/types/transaction';
+import { calculateFinancials } from '@/lib/price';
 
-const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const profitsData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const months = getPastMonths(6);
 const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
 
-function FinanceChart() {
+interface FinanceChartProps {
+  transactions: Transaction[];
+}
+
+export default function FinanceChart({ transactions }: FinanceChartProps) {
   const navigate = useNavigate();
-  console.log(navigate);
   const { isDarkMode } = useDarkMode();
-  const [month, setMonth] = useState(0);
+  const [month, setMonth] = useState(6); // Default to 6 months
+  const months = getPastMonths(6); // Get past 6 months names
+
   const [showDataFor, setShowDataFor] = useState(dataTypes.ALL);
 
+  // Calculate financial data
+  const { expensesData, revenueData, profitsData } = calculateFinancials(
+    transactions,
+    month,
+    showDataFor
+  );
+
   function handleSetMonth(month: number) {
-    if (month !== 0 && !month) return;
     setMonth(month);
   }
 
   function handleSetShowDataFor(dataType: dataTypes) {
-    if (!dataType) return;
     setShowDataFor(dataType);
   }
 
   function handleGenerateReport() {
-    toast.success('Report genereated successfully', {
+    toast.success('Report generated successfully', {
       action: { label: 'View', onClick: () => navigate('/dashboard/reports') },
     });
   }
@@ -42,7 +50,7 @@ function FinanceChart() {
   return (
     <Card className="my-10 p-2 border">
       <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
-        <CardTitle className="text-base md:text-xl">Exepenses, Revenue, & Profits</CardTitle>
+        <CardTitle className="text-base md:text-xl">Expenses, Revenue, & Profits</CardTitle>
 
         <Button variant="outline" size="sm" onClick={handleGenerateReport}>
           <FilePlus /> Generate Report
@@ -91,7 +99,6 @@ function FinanceChart() {
             backgroundSize: '35px 35px',
             backgroundPosition: '20px 20px, 20px 20px',
           }}
-          xAxis={[{ scaleType: 'band', data: months }]}
           series={[
             { data: expensesData, label: 'Expenses', id: 'expensesData' },
             { data: revenueData, label: 'Revenue', id: 'revenueData' },
@@ -144,9 +151,9 @@ function ChartFilters({
         </Button>
 
         <Button
-          variant={month === 0 ? 'secondary' : 'ghost'}
+          variant={month === 12 ? 'secondary' : 'ghost'}
           size="sm"
-          onClick={() => onSetMonth(0)}
+          onClick={() => onSetMonth(12)}
         >
           1 Year
         </Button>
@@ -188,5 +195,3 @@ function ChartFilters({
     </div>
   );
 }
-
-export default FinanceChart;
