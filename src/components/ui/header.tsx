@@ -15,11 +15,20 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useCompanies } from '@/features/company/useCompanies';
 import { Company } from '@/types/company';
 import Loader from './loader';
+import { useQueryClient } from '@tanstack/react-query';
 
 function Header({ className }: { className?: string }) {
   const { pathname } = useLocation();
   const { selectedCompanyId, setSelectedCompany } = useCompaniesView();
   const { isLoading, companies } = useCompanies();
+  const queryClient = useQueryClient();
+
+  function handleSelectCompany(id: string) {
+    setSelectedCompany(id);
+    queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    queryClient.invalidateQueries({ queryKey: ['transaction'] });
+    queryClient.invalidateQueries({ queryKey: ['products'] });
+  }
 
   return (
     <div
@@ -49,7 +58,7 @@ function Header({ className }: { className?: string }) {
 
           {pathname !== '/' && (
             <Select
-              onValueChange={value => setSelectedCompany(value)}
+              onValueChange={value => handleSelectCompany(value)}
               value={selectedCompanyId as string}
             >
               <SelectTrigger className="w-32 md:w-40">
