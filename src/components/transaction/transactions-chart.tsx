@@ -1,39 +1,30 @@
-// import { getPastMonths } from '@/utils/date';
-// import { useDarkMode } from '@/contexts/dark-mode-context';
-import { axisClasses, BarChart, barElementClasses, LineChart } from '@mui/x-charts';
+import { axisClasses, BarChart, barElementClasses } from '@mui/x-charts';
 import { Transaction, transactionTypes } from '@/types/transaction';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, FilePlus } from 'lucide-react';
 import { useState } from 'react';
 import TransactionCard from '@/components/transaction/transaction-card';
-import { useTransactions } from '@/features/transaction/useTransactions';
-import Loader from '../ui/loader';
-import { getPastMonths } from '@/lib/date';
 import { calculateTransactionData } from '@/lib/price';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { Link } from 'react-router-dom';
 
-// const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-// const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-// const profitsData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-// const months = getPastMonths(6);
 const colors = ['#0080ff4c', '#00ffaa46'];
 
-function TransactionsChart({ transactions }) {
+interface TransactionsChartProps {
+  transactions: Transaction[];
+}
+
+function TransactionsChart({ transactions }: TransactionsChartProps) {
   const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(12);
   const [showDataFor, setShowDataFor] = useState(transactionTypes.ALL);
 
-  // const months = getPastMonths(month);
-
-  const { buyTransactions, sellTransactions, totalTransactions } = calculateTransactionData(
+  const { buyTransactions, sellTransactions } = calculateTransactionData(
     transactions,
     month,
     showDataFor
   );
-
-  console.log(buyTransactions, sellTransactions, totalTransactions);
 
   const mostRecentTransactions = transactions
     .slice()
