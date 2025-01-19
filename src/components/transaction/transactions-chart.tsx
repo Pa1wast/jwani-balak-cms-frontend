@@ -1,6 +1,6 @@
 // import { getPastMonths } from '@/utils/date';
 // import { useDarkMode } from '@/contexts/dark-mode-context';
-import { LineChart } from '@mui/x-charts';
+import { axisClasses, BarChart, barElementClasses, LineChart } from '@mui/x-charts';
 import { Transaction, transactionTypes } from '@/types/transaction';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,28 +9,39 @@ import { useState } from 'react';
 import TransactionCard from '@/components/transaction/transaction-card';
 import { useTransactions } from '@/features/transaction/useTransactions';
 import Loader from '../ui/loader';
+import { getPastMonths } from '@/lib/date';
+import { calculateTransactionData } from '@/lib/price';
+import { useDarkMode } from '@/contexts/dark-mode-context';
+import { Link } from 'react-router-dom';
 
 // const expensesData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
 // const revenueData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
 // const profitsData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
 // const months = getPastMonths(6);
-// const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
+const colors = ['#0080ff4c', '#00ffaa46'];
 
-function TransactionsChart() {
-  // const { isDarkMode } = useDarkMode();
-  const [month, setMonth] = useState(0);
+function TransactionsChart({ transactions }) {
+  const { isDarkMode } = useDarkMode();
+  const [month, setMonth] = useState(12);
   const [showDataFor, setShowDataFor] = useState(transactionTypes.ALL);
-  const { isLoading, transactions } = useTransactions();
 
-  const mostRecentTransactions = !isLoading
-    ? transactions
-        .slice()
-        .sort(
-          (a: Transaction, b: Transaction) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-        .slice(0, 2)
-    : [];
+  // const months = getPastMonths(month);
+
+  const { buyTransactions, sellTransactions, totalTransactions } = calculateTransactionData(
+    transactions,
+    month,
+    showDataFor
+  );
+
+  console.log(buyTransactions, sellTransactions, totalTransactions);
+
+  const mostRecentTransactions = transactions
+    .slice()
+    .sort(
+      (a: Transaction, b: Transaction) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 2);
 
   function handleSetMonth(month: number) {
     if (month !== 0 && !month) return;
@@ -61,16 +72,42 @@ function TransactionsChart() {
             onSetShowDataFor={handleSetShowDataFor}
           />
 
-          <LineChart
-            xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+          <BarChart
+            sx={{
+              [`.${barElementClasses.root}`]: {
+                strokeWidth: 2,
+              },
+              [`.MuiBarElement-series-buyTransactionsData`]: {
+                stroke: colors[0],
+              },
+              [`.MuiBarElement-series-sellTransactionsData`]: {
+                stroke: colors[1],
+              },
+              [`.MuiChartsLegend-itemBackground`]: {
+                fill: isDarkMode ? '#c7c7c7' : undefined,
+              },
+              [`.${axisClasses.root}`]: {
+                [`.${axisClasses.tick}, .${axisClasses.line}`]: {
+                  stroke: isDarkMode ? '#ffffff' : '#000',
+                  strokeWidth: 2,
+                },
+                [`.${axisClasses.tickLabel}`]: {
+                  fill: isDarkMode ? '#fff' : '#000',
+                },
+              },
+              border: '1px solid',
+              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+              backgroundImage: isDarkMode
+                ? 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)'
+                : 'linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)',
+              backgroundSize: '35px 35px',
+              backgroundPosition: '20px 20px, 20px 20px',
+            }}
             series={[
-              {
-                data: [2, 5.5, 2, 8.5, 1.5, 5],
-              },
-              {
-                data: [6, 50.5, 2, 8.5, 1.5, 5],
-              },
+              { data: buyTransactions, label: 'Buy Transactions', id: 'buyTransactionsData' },
+              { data: sellTransactions, label: 'Sell Transactions', id: 'sellTransactionsData' },
             ]}
+            colors={colors}
             height={300}
           />
         </div>
@@ -83,19 +120,19 @@ function TransactionsChart() {
               variant="ghost"
               size="sm"
               className="text-xs px-2 py-1 hover:bg-transparent text-foreground/60 hover:text-foreground w-max h-max"
+              asChild
             >
-              View all <ArrowRight />
+              <Link to="/dashboard/transactions">
+                {' '}
+                View all <ArrowRight />
+              </Link>
             </Button>
           </div>
 
           <div className="space-y-1">
-            {!isLoading ? (
-              mostRecentTransactions.map((transaction: Transaction) => (
-                <TransactionCard transaction={transaction} />
-              ))
-            ) : (
-              <Loader />
-            )}
+            {mostRecentTransactions.map((transaction: Transaction) => (
+              <TransactionCard transaction={transaction} />
+            ))}
           </div>
         </div>
       </CardContent>
@@ -142,9 +179,9 @@ function ChartFilters({
         </Button>
 
         <Button
-          variant={month === 0 ? 'secondary' : 'ghost'}
+          variant={month === 12 ? 'secondary' : 'ghost'}
           size="sm"
-          onClick={() => onSetMonth(0)}
+          onClick={() => onSetMonth(12)}
         >
           1 Year
         </Button>
