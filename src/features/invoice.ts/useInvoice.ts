@@ -1,4 +1,4 @@
-import { getInvoices } from '@/api/invoice.ts/get-invoices';
+import { getInvoice } from '@/api/invoice.ts/get-invoice';
 import { Invoice } from '@/types/invoice';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
@@ -8,7 +8,7 @@ export function useInvoice() {
 
   const { isLoading, data, error } = useQuery({
     queryKey: ['invoice'],
-    queryFn: () => getInvoices(invoiceId as string),
+    queryFn: () => getInvoice(invoiceId as string),
   });
 
   const invoice: Invoice = data?.data?.invoice;
