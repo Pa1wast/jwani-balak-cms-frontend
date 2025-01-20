@@ -47,7 +47,7 @@ function AddTransactionForm() {
   const form = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
-      transactionType: 'SELL',
+      transactionType: 'BUY',
       currency: 'IQD',
       product: '',
       company: selectedCompanyId as string,
@@ -178,16 +178,6 @@ function AddTransactionForm() {
                     defaultValue={field.value}
                     className="flex items-center gap-6"
                   >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem
-                          value={transactionTypes.SELL}
-                          className="text-green-500 border-green-500"
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">Sell</FormLabel>
-                    </FormItem>
-
                     <FormItem className="flex items-center space-x-3 space-y-0 ">
                       <FormControl>
                         <RadioGroupItem
@@ -196,6 +186,16 @@ function AddTransactionForm() {
                         />
                       </FormControl>
                       <FormLabel className="font-normal">Buy</FormLabel>
+                    </FormItem>
+
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem
+                          value={transactionTypes.SELL}
+                          className="text-green-500 border-green-500"
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal">Sell</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>

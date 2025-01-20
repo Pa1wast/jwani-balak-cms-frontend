@@ -42,7 +42,7 @@ function InvoiceRowActions({ invoiceId }: InvoiceRowActionsProps) {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem asChild>
-            <Link to={`/pdf/invoice/${invoiceId}`}>View details</Link>
+            <Link to={`/pdf/invoice/${invoiceId}`}>Download</Link>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

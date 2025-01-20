@@ -93,7 +93,7 @@ function Dashboard() {
         <div className="flex gap-1 flex-col md:flex-row">
           <Card className="flex gap-1 items-center  p-3 h-max flex-1 flex-wrap">
             <SquareArrowDown className="text-destructive" />
-            <span className="text-sm text-foreground/60">Total Expenses</span>
+            <span className="text-sm text-foreground/60">Total Cost/Expenses</span>
             <p className="ml-auto text-lg font-semibold ">{formatPrice(totalExpenses, currency)}</p>
           </Card>
 

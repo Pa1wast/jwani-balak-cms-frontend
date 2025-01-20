@@ -28,6 +28,9 @@ function Header({ className }: { className?: string }) {
     queryClient.invalidateQueries({ queryKey: ['transactions'] });
     queryClient.invalidateQueries({ queryKey: ['transaction'] });
     queryClient.invalidateQueries({ queryKey: ['products'] });
+    queryClient.invalidateQueries({ queryKey: ['invoices'] });
+    queryClient.invalidateQueries({ queryKey: ['klesh-notes'] });
+    queryClient.invalidateQueries({ queryKey: ['klesh-note'] });
   }
 
   return (
