@@ -60,7 +60,7 @@ function CompanyDetails({ company }: CompanyDetailsProps) {
       <Card className="sm:col-span-2 md:col-span-1">
         <CardContent className="p-2 grid grid-cols-1 justify-between items-center h-full sm:grid-cols-[1fr_max-content_1fr] gap-2 md:flex md:flex-col">
           <Button size="sm" variant="ghost" className="w-full  h-full">
-            <FilePlus /> Generate Full Report
+            <FilePlus /> Generate Report
           </Button>
 
           <div className="w-full h-[1px] sm:h-full sm:w-[1px] bg-foreground/20 md:w-full md:h-[1px]" />

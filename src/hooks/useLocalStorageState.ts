@@ -4,6 +4,8 @@ export function useLocalStorageState<T>(initialState: T, key: string) {
   const [value, setValue] = useState(function () {
     const storedValue = localStorage.getItem(key);
 
+    if (storedValue === 'undefined') return initialState;
+
     return storedValue ? JSON.parse(storedValue) : initialState;
   });
 

@@ -38,20 +38,10 @@ export default function FinanceChart({ transactions }: FinanceChartProps) {
     setShowDataFor(dataType);
   }
 
-  function handleGenerateReport() {
-    toast.success('Report generated successfully', {
-      action: { label: 'View', onClick: () => navigate('/dashboard/reports') },
-    });
-  }
-
   return (
     <Card className="my-10 p-2 border">
       <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
         <CardTitle className="text-base md:text-xl">Expenses, Revenue, & Profits</CardTitle>
-
-        <Button variant="outline" size="sm" onClick={handleGenerateReport}>
-          <FilePlus /> Generate Report
-        </Button>
       </CardHeader>
 
       <CardContent className="space-y-2 p-2">

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
 import { useKleshNote } from '@/features/klesh/useKleshNote';
 import Loader from '../ui/loader';
+import ErrorMessage from '../ui/error-message';
 
 function KleshNote() {
   const { isLoading, kleshNote } = useKleshNote();
@@ -16,6 +17,13 @@ function KleshNote() {
     return (
       <div className="h-full w-full grid items-center">
         <Loader size="lg" />
+      </div>
+    );
+
+  if (!kleshNote)
+    return (
+      <div className="h-full w-full grid items-center">
+        <ErrorMessage message="Faild getting klesh note" goBack />
       </div>
     );
 

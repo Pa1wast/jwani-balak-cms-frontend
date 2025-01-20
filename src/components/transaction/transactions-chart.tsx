@@ -48,10 +48,6 @@ function TransactionsChart({ transactions }: TransactionsChartProps) {
     <Card className="my-10 p-2 border">
       <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
         <CardTitle className="text-base md:text-xl">Transactions</CardTitle>
-
-        <Button variant="outline" size="sm">
-          <FilePlus /> Generate Report
-        </Button>
       </CardHeader>
 
       <CardContent className="p-2 grid grid-cols-1 lg:grid-cols-[1fr_max-content] gap-4">
@@ -114,7 +110,6 @@ function TransactionsChart({ transactions }: TransactionsChartProps) {
               asChild
             >
               <Link to="/dashboard/transactions">
-                {' '}
                 View all <ArrowRight />
               </Link>
             </Button>

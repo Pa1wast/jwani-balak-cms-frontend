@@ -92,12 +92,8 @@ function KleshNotes() {
   function handleNoteChange(newContent: string) {
     const filterContent = newContent.replace(/<p>|<\/p>|<br>/gim, '');
 
-    if (!filterContent) {
-      toast.error('Could not save note! Nothing to save');
-    } else {
-      setContent(filterContent);
-      setHasChanges(true);
-    }
+    setContent(filterContent);
+    setHasChanges(true);
   }
 
   function handleNoteSelection(noteId: string) {
@@ -312,7 +308,7 @@ function DesktopKleshTextEditor({
           </Button>
         )}
 
-        <Button disabled={content === '' || isAddingNote} onClick={onSaveNote}>
+        <Button disabled={content === '' || !content || isAddingNote} onClick={onSaveNote}>
           <Save /> Save Note
         </Button>
       </div>
@@ -381,7 +377,11 @@ function MobileKleshTextEditor({
             </Button>
           )}
 
-          <Button size="sm" disabled={content === '' || isAddingNote} onClick={onSaveNote}>
+          <Button
+            size="sm"
+            disabled={content === '' || !content || isAddingNote}
+            onClick={onSaveNote}
+          >
             <Save /> Save Note
           </Button>
         </div>

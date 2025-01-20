@@ -1,5 +1,4 @@
 import { addKleshNoteApi } from '@/api/klesh/add-klesh-note';
-import { useKleshNotesEditor } from '@/contexts/klesh-notes-context';
 import { KleshNote, NewKleshNote } from '@/types/klesh-note';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';

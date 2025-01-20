@@ -296,6 +296,7 @@ function AddTransactionForm() {
                       }
                     }
                   }}
+                  disabled={!form.getValues('product')}
                 />
               </FormControl>
               <FormMessage />
