@@ -12,6 +12,7 @@ export function useProducts() {
   });
 
   const products: Product[] = data?.data?.products;
+  const productsCount: number = data?.results;
 
-  return { isLoading, error, products };
+  return { isLoading, error, products, productsCount };
 }

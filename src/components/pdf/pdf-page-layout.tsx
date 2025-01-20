@@ -9,11 +9,7 @@ function PdfPageLayout() {
     setIsDarkMode(false);
   }, [setIsDarkMode]);
 
-  return (
-    <div className="h-screen w-screen">
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 }
 
 export default PdfPageLayout;

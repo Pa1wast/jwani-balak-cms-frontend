@@ -5,10 +5,11 @@ import RegisterCompanyForm from '@/components/company/register-company-form';
 import { useCompanies } from '@/features/company/useCompanies';
 import { cn } from '@/lib/utils';
 import SelectListView from '@/components/company/select-list-view';
-import { Company, listViewTypes } from '@/types/company';
+import { listViewTypes } from '@/types/company';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 
 import { useState } from 'react';
+import Loader from '@/components/ui/loader';
 
 function Home() {
   const { listView } = useCompaniesView();
@@ -16,11 +17,11 @@ function Home() {
 
   const [searchValue, setSearchVale] = useState('');
 
-  const filteredCompanies =
-    !isLoading &&
-    companies.filter((company: Company) =>
-      company.companyName.toLowerCase().includes(searchValue.toLowerCase())
-    );
+  const filteredCompanies = !isLoading
+    ? companies?.filter(company =>
+        company.companyName.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    : [];
 
   const displayedCompanies = filteredCompanies;
 
@@ -56,18 +57,22 @@ function Home() {
               listView === listViewTypes.ROW && 'flex flex-col'
             )}
           >
-            {!isLoading &&
-              displayedCompanies?.map((company: Company) => (
+            {!isLoading ? (
+              displayedCompanies?.map(company => (
                 <CompanyCard key={company._id} company={company} />
-              ))}
-            {searchValue && !displayedCompanies.length && (
-              <p className="mx-auto text-lg font-semibold text-foreground/60 mt-5">
+              ))
+            ) : (
+              <Loader className="col-span-4 mt-32" size="lg" />
+            )}
+
+            {!isLoading && searchValue && !displayedCompanies?.length && (
+              <p className="mx-auto text-lg font-semibold text-foreground/60 mt-32">
                 No results found!
               </p>
             )}
 
-            {!isLoading && !displayedCompanies.length && !searchValue && (
-              <p className="mx-auto text-lg font-semibold text-foreground/60 mt-5">
+            {!isLoading && !displayedCompanies?.length && !searchValue && (
+              <p className="mx-auto text-lg font-semibold text-foreground/60 mt-32 col-span-4">
                 No companies are registered
               </p>
             )}

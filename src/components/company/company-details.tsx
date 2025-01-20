@@ -19,7 +19,7 @@ import {
 import UpdateCompanyForm from './update-company-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { useDeleteCompany } from '@/features/company/useDeleteCompany';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface CompanyDetailsProps {
   company: Company;
@@ -59,8 +59,10 @@ function CompanyDetails({ company }: CompanyDetailsProps) {
 
       <Card className="sm:col-span-2 md:col-span-1">
         <CardContent className="p-2 grid grid-cols-1 justify-between items-center h-full sm:grid-cols-[1fr_max-content_1fr] gap-2 md:flex md:flex-col">
-          <Button size="sm" variant="ghost" className="w-full  h-full">
-            <FilePlus /> Generate Report
+          <Button size="sm" variant="ghost" className="w-full  h-full" asChild>
+            <Link to="/pdf/report/:reportId">
+              <FilePlus /> Generate Summary Report
+            </Link>
           </Button>
 
           <div className="w-full h-[1px] sm:h-full sm:w-[1px] bg-foreground/20 md:w-full md:h-[1px]" />

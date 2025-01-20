@@ -8,14 +8,25 @@ import TransactionCard from '@/components/transaction/transaction-card';
 import { calculateTransactionData } from '@/lib/price';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 const colors = ['#0080ff4c', '#00ffaa46'];
 
 interface TransactionsChartProps {
   transactions: Transaction[];
+  showRecentTransactions?: boolean;
+  className?: string;
+  enabelFilters?: boolean;
+  showTitle?: boolean;
 }
 
-function TransactionsChart({ transactions }: TransactionsChartProps) {
+function TransactionsChart({
+  transactions,
+  showRecentTransactions = true,
+  className,
+  enabelFilters = true,
+  showTitle = true,
+}: TransactionsChartProps) {
   const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(12);
   const [showDataFor, setShowDataFor] = useState(transactionTypes.ALL);
@@ -45,19 +56,23 @@ function TransactionsChart({ transactions }: TransactionsChartProps) {
   }
 
   return (
-    <Card className="my-10 p-2 border">
-      <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
-        <CardTitle className="text-base md:text-xl">Transactions</CardTitle>
-      </CardHeader>
+    <Card className={cn('my-10 p-2 border', className)}>
+      {showTitle && (
+        <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
+          <CardTitle className="text-base md:text-xl">Transactions</CardTitle>
+        </CardHeader>
+      )}
 
       <CardContent className="p-2 grid grid-cols-1 lg:grid-cols-[1fr_max-content] gap-4">
         <div className="space-y-2">
-          <ChartFilters
-            month={month}
-            showDataFor={showDataFor}
-            onSetMonth={handleSetMonth}
-            onSetShowDataFor={handleSetShowDataFor}
-          />
+          {enabelFilters && (
+            <ChartFilters
+              month={month}
+              showDataFor={showDataFor}
+              onSetMonth={handleSetMonth}
+              onSetShowDataFor={handleSetShowDataFor}
+            />
+          )}
 
           <BarChart
             sx={{
@@ -99,28 +114,30 @@ function TransactionsChart({ transactions }: TransactionsChartProps) {
           />
         </div>
 
-        <div className="space-y-4">
-          <div className="flex gap-2 justify-between items-center">
-            <h4 className="font-semibold text-sm text-foreground/60">Recent Transactions</h4>
+        {showRecentTransactions && (
+          <div className="space-y-4">
+            <div className="flex gap-2 justify-between items-center">
+              <h4 className="font-semibold text-sm text-foreground/60">Recent Transactions</h4>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs px-2 py-1 hover:bg-transparent text-foreground/60 hover:text-foreground w-max h-max"
-              asChild
-            >
-              <Link to="/dashboard/transactions">
-                View all <ArrowRight />
-              </Link>
-            </Button>
-          </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs px-2 py-1 hover:bg-transparent text-foreground/60 hover:text-foreground w-max h-max"
+                asChild
+              >
+                <Link to="/dashboard/transactions">
+                  View all <ArrowRight />
+                </Link>
+              </Button>
+            </div>
 
-          <div className="space-y-1">
-            {mostRecentTransactions.map((transaction: Transaction) => (
-              <TransactionCard key={transaction._id} transaction={transaction} />
-            ))}
+            <div className="space-y-1">
+              {mostRecentTransactions.map((transaction: Transaction) => (
+                <TransactionCard key={transaction._id} transaction={transaction} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -138,7 +155,7 @@ function ChartFilters({
   onSetShowDataFor: (dataType: transactionTypes) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2 justify-between">
+    <div className="flex flex-wrap gap-2 justify-between" data-html2canvas-ignore>
       <div className="border border-border w-max rounded-lg overflow-hidden">
         <Button
           variant={month === 1 ? 'secondary' : 'ghost'}

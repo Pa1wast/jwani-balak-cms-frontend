@@ -7,14 +7,23 @@ import { useState } from 'react';
 import { dataTypes } from '@/types/finance';
 import { Transaction } from '@/types/transaction';
 import { calculateFinancials } from '@/lib/price';
+import { cn } from '@/lib/utils';
 
 const colors = ['#ff00593c', '#0080ff4c', '#00ffaa46'];
 
 interface FinanceChartProps {
   transactions: Transaction[];
+  className?: string;
+  enableFilters?: boolean;
+  showTitle?: boolean;
 }
 
-export default function FinanceChart({ transactions }: FinanceChartProps) {
+export default function FinanceChart({
+  transactions,
+  className,
+  enableFilters = true,
+  showTitle = true,
+}: FinanceChartProps) {
   const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(12);
 
@@ -35,18 +44,22 @@ export default function FinanceChart({ transactions }: FinanceChartProps) {
   }
 
   return (
-    <Card className="my-10 p-2 border">
-      <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
-        <CardTitle className="text-base md:text-xl">Expenses, Revenue, & Profits</CardTitle>
-      </CardHeader>
+    <Card className={cn('my-10 p-2 border', className)}>
+      {showTitle && (
+        <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
+          <CardTitle className="text-base md:text-xl">Expenses, Revenue, & Profits</CardTitle>
+        </CardHeader>
+      )}
 
       <CardContent className="space-y-2 p-2">
-        <ChartFilters
-          month={month}
-          showDataFor={showDataFor}
-          onSetMonth={handleSetMonth}
-          onSetShowDataFor={handleSetShowDataFor}
-        />
+        {enableFilters && (
+          <ChartFilters
+            month={month}
+            showDataFor={showDataFor}
+            onSetMonth={handleSetMonth}
+            onSetShowDataFor={handleSetShowDataFor}
+          />
+        )}
 
         <BarChart
           sx={{
@@ -107,7 +120,7 @@ function ChartFilters({
   onSetShowDataFor: (dataType: dataTypes) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2 justify-between">
+    <div className="flex flex-wrap gap-2 justify-between" data-html2canvas-ignore>
       <div className="border border-border w-max rounded-lg overflow-hidden">
         <Button
           variant={month === 1 ? 'secondary' : 'ghost'}
