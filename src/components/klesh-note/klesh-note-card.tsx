@@ -26,7 +26,7 @@ import {
 
 interface KleshNoteCardProps {
   kleshNote: KleshNote;
-  selectedNoteId?: string;
+  selectedNoteId: string | undefined;
   onClick: () => void;
 }
 

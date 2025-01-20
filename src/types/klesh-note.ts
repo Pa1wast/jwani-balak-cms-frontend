@@ -12,3 +12,7 @@ export interface NewKleshNote {
   note: string;
   company: string;
 }
+
+export interface UpdatedKleshNote {
+  note: string;
+}

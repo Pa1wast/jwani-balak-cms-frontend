@@ -20,12 +20,13 @@ import Search from '@/components/navigation/search';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import useIsMobile from '@/hooks/useIsMobile';
-import { KleshNote, NewKleshNote } from '@/types/klesh-note';
+import { KleshNote, NewKleshNote, UpdatedKleshNote } from '@/types/klesh-note';
 import { Separator } from '@/components/ui/separator';
 import Loader from '@/components/ui/loader';
 import { useKleshNotes } from '@/features/klesh/useKleshNotes';
 import { useAddKleshNote } from '@/features/klesh/useAddKleshNote';
 import { useCompaniesView } from '@/contexts/companies-view-context';
+import { useUpdateKleshNote } from '@/features/klesh/useUpdateKleshNote';
 
 const editorModules = {
   toolbar: [
@@ -58,21 +59,23 @@ interface Props {
 
 function KleshNotes() {
   const isMobile = useIsMobile();
-  const [isMobileEditorOpen, setIsMobileEditorOpen] = useState(false);
   const { isDarkMode } = useDarkMode();
-  const { selectedNoteId, setSelectedNoteId } = useKleshNotesEditor();
+
   const { selectedCompanyId } = useCompaniesView();
+
+  const { selectedNoteId, setSelectedNoteId } = useKleshNotesEditor();
+
   const { isLoading, kleshNotes } = useKleshNotes();
 
-  const { isAdding, addKleshNote } = useAddKleshNote();
+  const { isAdding, asyncAddKleshNote } = useAddKleshNote();
+  const { isUpdating, updateKleshNote } = useUpdateKleshNote();
 
   const [searchValue, setSearchValue] = useState('');
   const [sort, setSort] = useState<'asc' | 'desc'>('asc');
 
-  const selectedNote = selectedNoteId
-    ? kleshNotes?.find(note => note._id === selectedNoteId)
-    : undefined;
+  const selectedNote = kleshNotes?.find(note => note._id === selectedNoteId);
 
+  const [isMobileEditorOpen, setIsMobileEditorOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [content, setContent] = useState(selectedNote?.note ?? '');
 
@@ -87,8 +90,14 @@ function KleshNotes() {
   const displayedNotes = filteredNotes;
 
   function handleNoteChange(newContent: string) {
-    setContent(newContent.replace(/<p>|<\/p>/gim, ''));
-    setHasChanges(true);
+    const filterContent = newContent.replace(/<p>|<\/p>|<br>/gim, '');
+
+    if (!filterContent) {
+      toast.error('Could not save note! Nothing to save');
+    } else {
+      setContent(filterContent);
+      setHasChanges(true);
+    }
   }
 
   function handleNoteSelection(noteId: string) {
@@ -106,17 +115,22 @@ function KleshNotes() {
     }
   }
 
-  function handleSaveNote() {
+  async function handleSaveNote() {
     if (!selectedCompanyId) {
       toast.error('Something went wrong! Please try again');
     } else {
-      const kleshNote: NewKleshNote = { company: selectedCompanyId as string, note: content };
-      addKleshNote(kleshNote);
+      if (selectedNoteId) {
+        const updatedKleshNote: UpdatedKleshNote = { note: content };
+        updateKleshNote({ kleshNoteId: selectedNoteId, updatedKleshNote });
+      } else {
+        const kleshNote: NewKleshNote = { company: selectedCompanyId as string, note: content };
+        await asyncAddKleshNote(kleshNote).then(data => setSelectedNoteId(data?.data?.klesh._id));
+      }
     }
   }
 
   function handleCreateNewNote() {
-    setSelectedNoteId('');
+    setSelectedNoteId(undefined);
     setContent('');
 
     if (isMobile) {
@@ -134,7 +148,7 @@ function KleshNotes() {
 
   useEffect(() => {
     if (selectedNote) {
-      setContent(selectedNote.note || '');
+      setContent(selectedNote.note);
     }
   }, [selectedNoteId, selectedNote]);
 
@@ -189,7 +203,7 @@ function KleshNotes() {
       isMobileEditorOpen={isMobileEditorOpen}
       setIsMobileEditorOpen={setIsMobileEditorOpen}
       isLoading={isLoading}
-      isAddingNote={isAdding}
+      isAddingNote={isAdding || isUpdating}
     />
   ) : (
     <DesktopKleshTextEditor
@@ -205,7 +219,7 @@ function KleshNotes() {
       onCreateNewNote={handleCreateNewNote}
       onNoteSelection={handleNoteSelection}
       isLoading={isLoading}
-      isAddingNote={isAdding}
+      isAddingNote={isAdding || isUpdating}
     />
   );
 }
@@ -256,7 +270,7 @@ function DesktopKleshTextEditor({
                 key={note._id}
                 kleshNote={note}
                 selectedNoteId={selectedNoteId}
-                onClick={() => onNoteSelection(note._id.toString())}
+                onClick={() => onNoteSelection(note._id)}
               />
             ))
           ) : (
@@ -290,7 +304,7 @@ function DesktopKleshTextEditor({
       </div>
 
       <div className="col-span-2 justify-self-end fixed bottom-5 space-x-3 right-5">
-        {selectedNoteId !== '' && (
+        {selectedNoteId && (
           <Button variant="outline" asChild>
             <Link to={`/pdf/klesh/${selectedNoteId}`}>
               <Download /> Download
@@ -359,7 +373,7 @@ function MobileKleshTextEditor({
         </Button>
 
         <div className="flex gap-2">
-          {selectedNoteId !== '' && (
+          {selectedNoteId && (
             <Button size="sm" variant="outline" asChild>
               <Link to={`/pdf/klesh/${selectedNoteId}`}>
                 <Download /> Download
@@ -410,13 +424,13 @@ function MobileKleshTextEditor({
           <Loader />
         )}
 
-        {!notes.length && !searchValue && (
+        {!isLoading && !notes.length && !searchValue && (
           <div className="w-full  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
             <BookDashed /> You have no notes
           </div>
         )}
 
-        {!notes.length && searchValue && (
+        {!isLoading && !notes.length && searchValue && (
           <div className="w-full  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
             <SearchX /> No notes found!
           </div>

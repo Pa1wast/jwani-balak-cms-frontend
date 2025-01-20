@@ -4,16 +4,15 @@ import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 
 interface KleshNotesEditorProvider {
   selectedNoteId: string | undefined;
-  setSelectedNoteId: (id: string) => void;
+  setSelectedNoteId: (id: string | undefined) => void;
 }
 
 const KleshNotesEditorContext = createContext<KleshNotesEditorProvider | undefined>(undefined);
 
 function KleshNotesEditorProvider({ children }: { children: ReactNode }) {
-  const [selectedNoteId, setSelectedNoteId] = useLocalStorageState<string | undefined>(
-    '',
-    'selected-note-id'
-  );
+  const [selectedNoteId, setSelectedNoteId] = useLocalStorageState<
+    KleshNotesEditorProvider['selectedNoteId']
+  >(undefined, 'selected-note-id');
 
   return (
     <KleshNotesEditorContext.Provider value={{ selectedNoteId, setSelectedNoteId }}>

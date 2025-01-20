@@ -1,5 +1,5 @@
 import { updateKleshNoteApi } from '@/api/klesh/update-klesh-note';
-import { NewKleshNote } from '@/types/klesh-note';
+import { UpdatedKleshNote } from '@/types/klesh-note';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -12,10 +12,10 @@ export function useUpdateKleshNote() {
       updatedKleshNote,
     }: {
       kleshNoteId: string;
-      updatedKleshNote: NewKleshNote;
+      updatedKleshNote: UpdatedKleshNote;
     }) => updateKleshNoteApi({ kleshNoteId, updatedKleshNote }),
     onSuccess: () => {
-      toast.success('Company successfully updated');
+      toast.success('Klesh note successfully updated');
       queryClient.invalidateQueries({ queryKey: ['klesh-notes'] });
       queryClient.invalidateQueries({ queryKey: ['klesh-note'] });
     },

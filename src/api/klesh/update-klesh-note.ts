@@ -1,11 +1,11 @@
-import { NewKleshNote } from '@/types/klesh-note';
+import { UpdatedKleshNote } from '@/types/klesh-note';
 
 export async function updateKleshNoteApi({
   kleshNoteId,
   updatedKleshNote,
 }: {
   kleshNoteId: string;
-  updatedKleshNote: NewKleshNote;
+  updatedKleshNote: UpdatedKleshNote;
 }) {
   const apiUrl = `http://localhost:8080/klesh/${kleshNoteId}`;
 
