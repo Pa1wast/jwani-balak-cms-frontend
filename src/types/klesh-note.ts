@@ -1,7 +1,7 @@
 import { Company } from './company';
 
 export interface KleshNote {
-  _id: number;
+  _id: string;
   company: Company;
   note: string;
   createdAt: string;

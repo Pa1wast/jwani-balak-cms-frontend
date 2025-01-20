@@ -13,7 +13,5 @@ export function useKleshNotes() {
 
   const kleshNotes: KleshNote[] = data?.data?.kleshes;
 
-  console.log(kleshNotes, 'lol');
-
   return { isLoading, error, kleshNotes };
 }

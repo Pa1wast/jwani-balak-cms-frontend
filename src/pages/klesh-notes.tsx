@@ -70,11 +70,11 @@ function KleshNotes() {
   const [sort, setSort] = useState<'asc' | 'desc'>('asc');
 
   const selectedNote = selectedNoteId
-    ? kleshNotes?.find(note => note._id === Number(selectedNoteId))
+    ? kleshNotes?.find(note => note._id === selectedNoteId)
     : undefined;
 
   const [hasChanges, setHasChanges] = useState(false);
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(selectedNote?.note ?? '');
 
   const filteredNotes = kleshNotes
     ?.filter(note => note.note?.includes(searchValue))
