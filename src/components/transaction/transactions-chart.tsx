@@ -2,7 +2,7 @@ import { axisClasses, BarChart, barElementClasses } from '@mui/x-charts';
 import { Transaction, transactionTypes } from '@/types/transaction';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, FilePlus } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import TransactionCard from '@/components/transaction/transaction-card';
 import { calculateTransactionData } from '@/lib/price';
@@ -117,7 +117,7 @@ function TransactionsChart({ transactions }: TransactionsChartProps) {
 
           <div className="space-y-1">
             {mostRecentTransactions.map((transaction: Transaction) => (
-              <TransactionCard transaction={transaction} />
+              <TransactionCard key={transaction._id} transaction={transaction} />
             ))}
           </div>
         </div>

@@ -6,7 +6,7 @@ import {
   LayoutDashboard,
   NotebookPen,
 } from 'lucide-react';
-import SidebarItem from './sidebar-item';
+import SidebarItem from '@/components/sidebar/sidebar-item';
 import { cn } from '@/lib/utils';
 
 const items = [

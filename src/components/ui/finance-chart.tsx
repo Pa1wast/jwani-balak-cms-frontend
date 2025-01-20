@@ -3,10 +3,7 @@ import { axisClasses } from '@mui/x-charts/ChartsAxis';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { useDarkMode } from '@/contexts/dark-mode-context';
 import { Button } from './button';
-import { FilePlus } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 import { dataTypes } from '@/types/finance';
 import { Transaction } from '@/types/transaction';
 import { calculateFinancials } from '@/lib/price';
@@ -18,7 +15,6 @@ interface FinanceChartProps {
 }
 
 export default function FinanceChart({ transactions }: FinanceChartProps) {
-  const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
   const [month, setMonth] = useState(12);
 

@@ -1,7 +1,7 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import Header from '@/components/ui/header';
-import Sidebar from '@/components/ui/sidebar';
+import Sidebar from '@/components/sidebar/sidebar';
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
 import { useCompaniesView } from '@/contexts/companies-view-context';
