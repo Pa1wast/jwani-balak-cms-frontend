@@ -3,6 +3,8 @@ import { NewKleshNote } from '@/types/klesh-note';
 export async function addKleshNoteApi(newKleshNote: NewKleshNote) {
   const apiUrl = 'http://localhost:8080/klesh';
 
+  console.log(newKleshNote);
+
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {

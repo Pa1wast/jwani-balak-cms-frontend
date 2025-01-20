@@ -22,7 +22,7 @@ function KleshNoteCard({ kleshNote, selectedNoteId, onClick }: KleshNoteCardProp
       )}
     >
       <CardHeader className="p-0 pb-2 space-y-0 flex-row justify-between items-center">
-        <p className="text-xs font-semibold pl-2">#{kleshNote._id}</p>
+        <p className="text-xs font-semibold pl-2 truncate">#{kleshNote._id}</p>
 
         <Button variant="ghost" size="icon">
           <Ellipsis />

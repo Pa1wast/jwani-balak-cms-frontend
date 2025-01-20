@@ -1,4 +1,4 @@
-import { getProducts } from '@/api/product/get-products';
+import { getKleshNotes } from '@/api/klesh/get-klesh-notes';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { KleshNote } from '@/types/klesh-note';
 import { useQuery } from '@tanstack/react-query';
@@ -8,10 +8,12 @@ export function useKleshNotes() {
 
   const { isLoading, data, error } = useQuery({
     queryKey: ['klesh-notes'],
-    queryFn: () => getProducts(selectedCompanyId as string),
+    queryFn: () => getKleshNotes(selectedCompanyId as string),
   });
 
-  const kleshNotes: KleshNote[] = data?.data?.kleshs;
+  const kleshNotes: KleshNote[] = data?.data?.kleshes;
+
+  console.log(kleshNotes, 'lol');
 
   return { isLoading, error, kleshNotes };
 }
