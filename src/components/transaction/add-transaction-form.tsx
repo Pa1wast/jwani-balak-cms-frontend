@@ -36,7 +36,7 @@ import Loader from '../ui/loader';
 import { useAddTransaction } from '@/features/transaction/useAddTransaction';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
-import { getStockQuantity } from '@/lib/price';
+import { formatPrice, getStockQuantity } from '@/lib/price';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
@@ -49,6 +49,7 @@ function AddTransactionForm() {
     defaultValues: {
       transactionType: 'BUY',
       currency: 'IQD',
+      buyTransaction: '',
       product: '',
       company: selectedCompanyId as string,
       pricePerUnit: 0,
@@ -66,8 +67,15 @@ function AddTransactionForm() {
   }
 
   const [selectedProductId, setSelectedProductId] = useState('');
+  const [selectedTransactionId, setSelectedTransactionId] = useState('');
   const { isLoading: isLoadingTransactions, transactions } =
     useTransactionsByProductId(selectedProductId);
+
+  const buyTransactions = transactions?.filter(
+    transaction =>
+      transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+      transaction?.product?._id === selectedProductId
+  );
 
   const availableQuantity =
     form.getValues('transactionType') === transactionTypes.SELL && !isLoadingTransactions
@@ -164,6 +172,84 @@ function AddTransactionForm() {
             </FormItem>
           )}
         />
+
+        {form.getValues('transactionType').toUpperCase() === transactionTypes.SELL && (
+          <FormField
+            control={form.control}
+            name="buyTransaction"
+            render={({ field }) => (
+              <FormItem className="flex flex-col space-y-3">
+                <FormLabel>Buy Transaction</FormLabel>
+                {!isLoading ? (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            ' justify-between truncate',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value
+                            ? buyTransactions.find(
+                                buyTransaction => buyTransaction._id === field.value
+                              )?._id
+                            : 'Select transaction'}
+                          <ChevronsUpDown className="opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0">
+                      <Command>
+                        <CommandInput placeholder="Search transaction..." className="h-9" />
+                        <CommandList>
+                          <CommandEmpty>
+                            No transactions with the selected product found.
+                          </CommandEmpty>
+
+                          <CommandGroup>
+                            {buyTransactions?.map(buyTransaction => (
+                              <CommandItem
+                                value={buyTransaction._id}
+                                key={buyTransaction._id}
+                                onSelect={() => {
+                                  form.setValue('buyTransaction', buyTransaction._id);
+                                  setSelectedTransactionId(buyTransaction._id);
+                                }}
+                              >
+                                <div className="flex gap-1 items-center">
+                                  <span className="font-bold">
+                                    {formatPrice(
+                                      buyTransaction.pricePerUnit,
+                                      form.getValues('currency') as currencyTypes
+                                    )}
+                                  </span>
+                                  -<span className="font-bold">x{buyTransaction.quantity}</span>
+                                </div>
+                                <Check
+                                  className={cn(
+                                    'ml-auto',
+                                    buyTransaction._id === field.value ? 'opacity-100' : 'opacity-0'
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                ) : (
+                  <Loader />
+                )}
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="flex justify-between">
           <FormField

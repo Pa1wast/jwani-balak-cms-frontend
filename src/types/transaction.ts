@@ -23,6 +23,7 @@ export interface Transaction {
   _id: string;
   transactionType: 'SELL' | 'BUY';
   currency: 'USD' | 'IQD';
+  buyTransaction?: string;
   pricePerUnit: number;
   quantity: number;
   product: Product;
