@@ -76,7 +76,7 @@ function TransactionRowActions({ transaction }: TransactionRowActionsProps) {
               <DialogTitle>Generate invoice</DialogTitle>
             </DialogHeader>
 
-            <AddInvoiceForm product={transaction.product} />
+            <AddInvoiceForm transaction={transaction} />
           </DialogContent>
 
           <AlertDialogContent>

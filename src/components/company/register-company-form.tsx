@@ -88,7 +88,19 @@ function RegisterCompanyForm() {
                   <FormControl className="cursor-pointer">
                     <Input
                       type="file"
-                      onChange={e => field.onChange(e.target.files?.[0])}
+                      accept="image/*"
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                          if (!validImageTypes.includes(file.type)) {
+                            alert('Please select a valid image file (JPEG, PNG, GIF).');
+                            return;
+                          }
+
+                          field.onChange(file);
+                        }
+                      }}
                       onBlur={field.onBlur}
                       name={field.name}
                       ref={field.ref}

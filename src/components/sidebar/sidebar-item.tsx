@@ -14,7 +14,7 @@ interface SidebarItemProps {
 function SidebarItem({ name, href, icon: Icon }: SidebarItemProps) {
   const { pathname } = useLocation();
 
-  const isActive = pathname === href;
+  const isActive = pathname === href || (pathname.startsWith(href) && href !== '/dashboard');
 
   return (
     <Button

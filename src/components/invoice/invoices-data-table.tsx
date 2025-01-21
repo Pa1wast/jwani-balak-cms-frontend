@@ -33,11 +33,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { Product } from '@/types/product';
 import Loader from '../ui/loader';
 import { useInvoices } from '@/features/invoice.ts/useInvoices';
 import { Invoice } from '@/types/invoice';
 import InvoiceRowActions from './invoice-row-actions';
+import { Transaction } from '@/types/transaction';
 
 export const columns: ColumnDef<Invoice>[] = [
   {
@@ -48,7 +48,7 @@ export const columns: ColumnDef<Invoice>[] = [
     ),
   },
   {
-    accessorKey: 'product',
+    accessorKey: 'transaction',
     enableHiding: false,
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
@@ -57,11 +57,11 @@ export const columns: ColumnDef<Invoice>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const product = row.getValue('product') as Product;
+      const transaction = row.getValue('transaction') as Transaction;
       return (
         <div className="capitalize">
-          {product?.productName ? (
-            product.productName
+          {transaction.product?.productName ? (
+            transaction.product.productName
           ) : (
             <p className="bg-red-500/20 font-medium text-red-500 px-2 rounded-lg w-max">
               Unavailable
@@ -71,8 +71,8 @@ export const columns: ColumnDef<Invoice>[] = [
       );
     },
     filterFn: (row, _, filterValue) => {
-      const product = row.getValue('product') as Product;
-      return product?.productName.toLowerCase().includes(filterValue.toLowerCase());
+      const transaction = row.getValue('product') as Transaction;
+      return transaction.product?.productName?.toLowerCase()?.includes(filterValue?.toLowerCase());
     },
   },
   {

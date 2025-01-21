@@ -44,6 +44,7 @@ export interface NewTransaction {
 }
 
 export interface UpdatedTransaction {
+  transactionType: 'SELL' | 'BUY';
   currency?: 'USD' | 'IQD';
   pricePerUnit?: number;
   quantity?: number;

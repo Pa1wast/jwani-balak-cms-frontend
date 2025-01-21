@@ -7,6 +7,8 @@ import { useRef } from 'react';
 import { useInvoice } from '@/features/invoice.ts/useInvoice';
 import Loader from '../ui/loader';
 import ErrorMessage from '../ui/error-message';
+import { formatPrice } from '@/lib/price';
+import { currencyTypes } from '@/types/transaction';
 
 function Invoice() {
   const { isLoading, invoice } = useInvoice();
@@ -124,28 +126,38 @@ function Invoice() {
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {/* <p>{invoice.pricePerUniT}</p> */}
+                  <p>
+                    {formatPrice(
+                      invoice.transaction.pricePerUnit * invoice.transaction.quantity,
+                      invoice.transaction.currency as currencyTypes
+                    )}
+                  </p>
                 </div>
               </div>
 
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">نرخ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {/* <p>{invoice.pricePerUniT}</p> */}
+                  <p>
+                    {formatPrice(
+                      invoice.transaction.pricePerUnit,
+                      invoice.transaction.currency as currencyTypes
+                    )}
+                  </p>
                 </div>
               </div>
 
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">دانە</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {/* <p>{invoice.pricePerUniT}</p> */}
+                  <p>{invoice.transaction.quantity}</p>
                 </div>
               </div>
 
               <div className="flex flex-col flex-[40%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">جۆر</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {/* <p>{invoice.pricePerUniT}</p> */}
+                  <p>{invoice.transaction.transactionType}</p>
                 </div>
               </div>
             </div>
@@ -158,8 +170,8 @@ function Invoice() {
         </CardContent>
 
         <CardFooter className="flex justify-around space-y-0 mb-8">
-          <p className="text-xl font-semibold">فرۆشیار</p>
-          <p className="text-xl font-semibold">کریار</p>
+          <p className="text-xl font-semibold">{invoice.seller} :فرۆشیار</p>
+          <p className="text-xl font-semibold">{invoice.buyer} :کریار</p>
         </CardFooter>
         <div className="w-full h-12 flex">
           <div className="bg-red-400 h-full flex-1" />

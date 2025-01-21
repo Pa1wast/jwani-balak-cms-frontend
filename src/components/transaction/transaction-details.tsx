@@ -109,6 +109,7 @@ function TransactionDetails() {
     updateTransaction({
       transactionId: transaction._id,
       updatedTransaction: {
+        transactionType: transaction.transactionType,
         expenses: updatedExpenses,
       },
     });
@@ -199,7 +200,7 @@ function TransactionDetails() {
                     <DialogTitle>Generate invoice</DialogTitle>
                   </DialogHeader>
 
-                  <AddInvoiceForm product={transaction.product} />
+                  <AddInvoiceForm transaction={transaction} />
                 </DialogContent>
               </Dialog>
 
@@ -214,7 +215,6 @@ function TransactionDetails() {
                   <DialogHeader>
                     <DialogTitle>Update transaction</DialogTitle>
                   </DialogHeader>
-
                   <UpdateTransactionForm transaction={transaction} />
                 </DialogContent>
               </Dialog>

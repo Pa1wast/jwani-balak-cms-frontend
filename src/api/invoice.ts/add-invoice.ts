@@ -3,6 +3,8 @@ import { NewInvoice } from '@/types/invoice';
 export async function addInvoiceApi(newInvoice: NewInvoice) {
   const apiUrl = 'http://localhost:8080/invoice';
 
+  console.log(newInvoice);
+
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {

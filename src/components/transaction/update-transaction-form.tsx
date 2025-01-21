@@ -14,11 +14,12 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { currencyTypes, Transaction } from '@/types/transaction';
+import { Transaction, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
 
 import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
+import { useTransactions } from '@/features/transaction/useTransactions';
+import { useState } from 'react';
 
 interface AddTransactionFormProps {
   transaction: Transaction;
@@ -26,65 +27,49 @@ interface AddTransactionFormProps {
 
 function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
   const { isUpdating, updateTransaction } = useUpdateTransaction();
+  const { isLoading: isLoadingTransactions, transactions } = useTransactions();
+  const [quantityError, setQuantityError] = useState(false);
 
   const form = useForm<z.infer<typeof updateTransactionSchema>>({
     resolver: zodResolver(updateTransactionSchema),
     defaultValues: {
-      currency: transaction.currency,
       pricePerUnit: transaction.pricePerUnit,
       quantity: transaction.quantity,
     },
   });
 
+  // SELL Transaction
+  const buyTransaction = transactions.find(item => item._id === transaction.buyTransaction);
+
+  const availableQuantity =
+    transaction.transactionType.toUpperCase() === transactionTypes.SELL && !isLoadingTransactions
+      ? buyTransaction
+        ? buyTransaction!.quantity
+        : 0
+      : 0;
+
+  console.log(availableQuantity);
+
   function onSubmit(values: z.infer<typeof updateTransactionSchema>) {
     const { success, data } = updateTransactionSchema.safeParse(values);
 
-    if (success) updateTransaction({ transactionId: transaction._id, updatedTransaction: data });
+    if (success) {
+      updateTransaction({
+        transactionId: transaction._id,
+        updatedTransaction: { ...data, transactionType: transaction.transactionType },
+      });
+    }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="flex justify-between">
-          <FormField
-            control={form.control}
-            name="currency"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Currency</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex items-center gap-6"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem
-                          value={currencyTypes.IQD}
-                          className="text-orange-500 border-orange-500"
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">IQD</FormLabel>
-                    </FormItem>
-
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem
-                          value={currencyTypes.USD}
-                          className="text-cyan-500 border-cyan-500"
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">USD</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          onSubmit(form.getValues());
+        }}
+        className="space-y-8"
+      >
         <FormField
           control={form.control}
           name="pricePerUnit"
@@ -113,15 +98,31 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
           name="quantity"
           render={({ field }) => (
             <FormItem className="space-y-3 flex-1">
-              <FormLabel>Quantity</FormLabel>
-
+              <div className="flex gap-1 items-center">
+                <FormLabel>Quantity</FormLabel>
+                {quantityError && (
+                  <span className="bg-red-50 text-red-500 px-1 rounded-lg text-xs font-semibold">
+                    The available quantity is {availableQuantity}!
+                  </span>
+                )}
+              </div>
               <FormControl>
                 <Input
                   type="text"
                   {...field}
                   onChange={e => {
                     const value = e.target.value;
-                    if (!isNaN(Number(value))) field.onChange(Number(value));
+                    if (!isNaN(Number(value))) {
+                      if (
+                        transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
+                        Number(value) > availableQuantity
+                      ) {
+                        setQuantityError(true);
+                      } else {
+                        setQuantityError(false);
+                        field.onChange(Number(value));
+                      }
+                    }
                   }}
                 />
               </FormControl>

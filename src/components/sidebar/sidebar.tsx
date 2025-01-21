@@ -1,11 +1,4 @@
-import {
-  ArrowUpDown,
-  BookOpenText,
-  Boxes,
-  FileText,
-  LayoutDashboard,
-  NotebookPen,
-} from 'lucide-react';
+import { ArrowUpDown, Boxes, FileText, LayoutDashboard, NotebookPen } from 'lucide-react';
 import SidebarItem from '@/components/sidebar/sidebar-item';
 import { cn } from '@/lib/utils';
 
@@ -15,7 +8,6 @@ const items = [
   { name: 'Transactions', href: '/dashboard/transactions', icon: ArrowUpDown },
   { name: 'Invoices', href: '/dashboard/invoices', icon: FileText },
   { name: 'Klesh Notes', href: '/dashboard/klesh-notes', icon: NotebookPen },
-  { name: 'Reports', href: '/dashboard/reports', icon: BookOpenText },
 ];
 
 function Sidebar({ className }: { className?: string }) {

@@ -6,20 +6,27 @@ import { useAddInvoice } from '@/features/invoice.ts/useAddInvoice';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Product } from '@/types/product';
 import { useCompaniesView } from '@/contexts/companies-view-context';
+import { Transaction } from '@/types/transaction';
 
 interface AddInvoiceFormProps {
-  product: Product;
+  transaction: Transaction;
 }
 
-function AddInvoiceForm({ product }: AddInvoiceFormProps) {
+function AddInvoiceForm({ transaction }: AddInvoiceFormProps) {
   const { selectedCompanyId } = useCompaniesView();
 
   const { isAdding, addInvoice } = useAddInvoice();
   const form = useForm<z.infer<typeof addInvoiceSchema>>({
     resolver: zodResolver(addInvoiceSchema),
-    defaultValues: { product: product._id, company: selectedCompanyId as string, addressedTo: '' },
+    defaultValues: {
+      transaction: transaction._id,
+      product: transaction.product._id,
+      company: selectedCompanyId as string,
+      addressedTo: '',
+      buyer: '',
+      seller: '',
+    },
   });
 
   function onSubmit(values: z.infer<typeof addInvoiceSchema>) {
@@ -36,6 +43,36 @@ function AddInvoiceForm({ product }: AddInvoiceFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Addressed to</FormLabel>
+
+              <FormControl>
+                <Input type="text" {...field} placeholder=".....بەڕێز" className="text-right" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="buyer"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Buyer</FormLabel>
+
+              <FormControl>
+                <Input type="text" {...field} placeholder=".....بەڕێز" className="text-right" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="seller"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Seller</FormLabel>
 
               <FormControl>
                 <Input type="text" {...field} placeholder=".....بەڕێز" className="text-right" />

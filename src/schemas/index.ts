@@ -26,7 +26,6 @@ export const addTransactionSchema = z.object({
 });
 
 export const updateTransactionSchema = z.object({
-  currency: z.enum(['IQD', 'USD']),
   pricePerUnit: z.number().min(1, 'Price Per Unit is required'),
   quantity: z.number().min(1, 'Quantity is required'),
 });
@@ -37,7 +36,10 @@ export const addExpenseSchema = z.object({
 });
 
 export const addInvoiceSchema = z.object({
+  transaction: z.string().min(1, 'Transaction is required'),
   product: z.string().min(1, 'Product is required'),
   company: z.string().min(1, 'Company is required'),
   addressedTo: z.string().min(1, 'Addressed To is required'),
+  buyer: z.string().min(1, 'Addressed To is required'),
+  seller: z.string().min(1, 'Addressed To is required'),
 });

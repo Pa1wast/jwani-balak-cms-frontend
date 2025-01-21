@@ -28,7 +28,10 @@ function AddExpenseForm({ transaction }: AddExpenseFormProps) {
       const updatedExpenses = transaction.expenses ? [...transaction.expenses, data] : [data];
       updateTransaction({
         transactionId: transaction._id,
-        updatedTransaction: { expenses: updatedExpenses },
+        updatedTransaction: {
+          transactionType: transaction.transactionType,
+          expenses: updatedExpenses,
+        },
       });
     }
   }

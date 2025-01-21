@@ -3,8 +3,6 @@ import { NewTransaction } from '@/types/transaction';
 export async function addTransactionApi(newTransaction: NewTransaction) {
   const apiUrl = 'http://localhost:8080/transaction';
 
-  console.log(newTransaction);
-
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {

@@ -36,7 +36,7 @@ import Loader from '../ui/loader';
 import { useAddTransaction } from '@/features/transaction/useAddTransaction';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
-import { formatPrice, getStockQuantity } from '@/lib/price';
+import { formatPrice } from '@/lib/price';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
@@ -57,15 +57,6 @@ function AddTransactionForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof addTransactionSchema>) {
-    const { success, data } = addTransactionSchema.safeParse(values);
-
-    if (success) {
-      const newTransaction = { ...data, expenses };
-      addTransaction(newTransaction);
-    }
-  }
-
   const [selectedProductId, setSelectedProductId] = useState('');
   const [selectedTransactionId, setSelectedTransactionId] = useState('');
   const { isLoading: isLoadingTransactions, transactions } =
@@ -79,7 +70,9 @@ function AddTransactionForm() {
 
   const availableQuantity =
     form.getValues('transactionType') === transactionTypes.SELL && !isLoadingTransactions
-      ? getStockQuantity(transactions)
+      ? transactions.find(transaction => transaction._id === selectedTransactionId)
+        ? transactions.find(transaction => transaction._id === selectedTransactionId)!.quantity
+        : 0
       : 0;
 
   const [quantityError, setQuantityError] = useState(false);
@@ -104,6 +97,20 @@ function AddTransactionForm() {
     const updatedExpenses = expenses.filter((_, i) => i !== index);
     setExpenses(updatedExpenses);
   };
+
+  function onSubmit(values: z.infer<typeof addTransactionSchema>) {
+    const { success, data } = addTransactionSchema.safeParse(values);
+
+    if (success) {
+      const newTransaction = { ...data, expenses };
+
+      if (newTransaction.transactionType === transactionTypes.SELL) {
+        newTransaction.buyTransaction = selectedTransactionId;
+      }
+
+      addTransaction(newTransaction);
+    }
+  }
 
   return (
     <Form {...form}>
@@ -192,11 +199,32 @@ function AddTransactionForm() {
                             !field.value && 'text-muted-foreground'
                           )}
                         >
-                          {field.value
-                            ? buyTransactions.find(
-                                buyTransaction => buyTransaction._id === field.value
-                              )?._id
-                            : 'Select transaction'}
+                          {field.value ? (
+                            <div className="flex gap-1 w-full items-center justify-between">
+                              <span className="font-bold">
+                                {formatPrice(
+                                  buyTransactions.find(
+                                    buyTransaction => buyTransaction._id === field.value
+                                  )?.pricePerUnit as number,
+                                  buyTransactions.find(
+                                    buyTransaction => buyTransaction._id === field.value
+                                  )?.currency as currencyTypes
+                                )}
+                              </span>
+                              -
+                              <span className="font-bold">
+                                x
+                                {
+                                  buyTransactions.find(
+                                    buyTransaction => buyTransaction._id === field.value
+                                  )?.quantity as number
+                                }
+                              </span>
+                            </div>
+                          ) : (
+                            'Select transaction'
+                          )}
+
                           <ChevronsUpDown className="opacity-50" />
                         </Button>
                       </FormControl>
@@ -219,11 +247,11 @@ function AddTransactionForm() {
                                   setSelectedTransactionId(buyTransaction._id);
                                 }}
                               >
-                                <div className="flex gap-1 items-center">
+                                <div className="flex gap-1 items-center justify-between w-full">
                                   <span className="font-bold">
                                     {formatPrice(
                                       buyTransaction.pricePerUnit,
-                                      form.getValues('currency') as currencyTypes
+                                      buyTransaction.currency as currencyTypes
                                     )}
                                   </span>
                                   -<span className="font-bold">x{buyTransaction.quantity}</span>
@@ -290,43 +318,45 @@ function AddTransactionForm() {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="currency"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Currency</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex items-center gap-6"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem
-                          value={currencyTypes.IQD}
-                          className="text-orange-500 border-orange-500"
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">IQD</FormLabel>
-                    </FormItem>
+          {form.getValues('transactionType').toUpperCase() === transactionTypes.BUY && (
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex items-center gap-6"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem
+                            value={currencyTypes.IQD}
+                            className="text-orange-500 border-orange-500"
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">IQD</FormLabel>
+                      </FormItem>
 
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem
-                          value={currencyTypes.USD}
-                          className="text-cyan-500 border-cyan-500"
-                        />
-                      </FormControl>
-                      <FormLabel className="font-normal">USD</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem
+                            value={currencyTypes.USD}
+                            className="text-cyan-500 border-cyan-500"
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">USD</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
         <FormField
           control={form.control}
