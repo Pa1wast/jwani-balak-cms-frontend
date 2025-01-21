@@ -3,7 +3,7 @@ import * as z from 'zod';
 export const registerCompnaySchema = z.object({
   companyName: z.string().min(1, 'Name is required'),
   address: z.string().min(1, 'Address is required'),
-  logoPath: z.string().min(1, 'Logo is required'),
+  logo: z.instanceof(File),
 });
 
 export const addProductSchema = z.object({

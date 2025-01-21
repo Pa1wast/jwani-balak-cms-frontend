@@ -15,7 +15,6 @@ import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 import { useProducts } from '@/features/product/useProducts';
-import { Product } from '@/types/product';
 
 function Report() {
   const { selectedCompanyId } = useCompaniesView();

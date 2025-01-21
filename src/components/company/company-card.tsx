@@ -7,13 +7,14 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import EditCompany from '@/components/company/edit-company';
 import useIsMobile from '@/hooks/useIsMobile';
 import { Company, listViewTypes } from '@/types/company';
+import { getImgLocalPath } from '@/lib/getImgLocalPath';
 
 interface CompanyCardProps {
   company: Company;
 }
 
 function CompanyCard({ company }: CompanyCardProps) {
-  const { _id, companyName, address, logoPath } = company;
+  const { _id, companyName, address, logo } = company;
   const { setSelectedCompany, listView } = useCompaniesView();
 
   const isMobile = useIsMobile();
@@ -23,7 +24,7 @@ function CompanyCard({ company }: CompanyCardProps) {
       <Card className="flex h-40 justify-between">
         <CardContent className="p-3 flex flex-1 gap-8">
           <div className="flex justify-center items-center px-4 py-2 h-full dark:bg-white w-32 rounded-md">
-            <img src={logoPath} alt={companyName} />
+            <img src={getImgLocalPath(logo)} alt={companyName} />
           </div>
 
           <div className="bg-slate-100 dark:bg-primary/20 p-4 w-full flex flex-col justify-between rounded-lg max-w-[400px] md:max-w-none">
@@ -66,7 +67,7 @@ function CompanyCard({ company }: CompanyCardProps) {
             ratio={16 / 9}
             className="flex justify-center dark:bg-white h-32 p-2 rounded-md  w-full"
           >
-            <img src={logoPath} alt={companyName} />
+            <img src={getImgLocalPath(logo)} alt={companyName} />
           </AspectRatio>
         </CardHeader>
 

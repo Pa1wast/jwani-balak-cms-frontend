@@ -11,7 +11,6 @@ import Dashboard from '@/pages/dashboard';
 import Products from '@/pages/products';
 import Transactions from '@/pages/transactions';
 import Invoices from '@/pages/invoices';
-import Reports from '@/pages/reports';
 import KleshNotes from '@/pages/klesh-notes';
 
 import Invoice from '@/components/pdf/invoice';
@@ -47,7 +46,6 @@ function App() {
                   <Route path="/dashboard/invoices" element={<Invoices />} />
 
                   <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
-                  <Route path="/dashboard/reports" element={<Reports />} />
                 </Route>
                 <Route path="/pdf" element={<PdfPageLayout />}>
                   <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />

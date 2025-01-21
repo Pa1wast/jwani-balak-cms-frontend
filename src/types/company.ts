@@ -6,14 +6,14 @@ export enum listViewTypes {
 export interface NewCompany {
   companyName: string;
   address: string;
-  logoPath: string;
+  logo: File;
 }
 
 export interface Company {
   _id: string;
   companyName: string;
   address: string;
-  logoPath: string;
+  logo: string;
   createdAt: string;
   updatedAt: string;
 }

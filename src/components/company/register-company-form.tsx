@@ -22,11 +22,12 @@ function RegisterCompanyForm() {
   const { isAdding, addCompany } = useAddCompany();
   const form = useForm<z.infer<typeof registerCompnaySchema>>({
     resolver: zodResolver(registerCompnaySchema),
-    defaultValues: { companyName: '', address: '', logoPath: '' },
+    defaultValues: { companyName: '', address: '' },
   });
 
   function onSubmit(values: z.infer<typeof registerCompnaySchema>) {
     const { success, data } = registerCompnaySchema.safeParse(values);
+
     if (success) addCompany(data);
   }
 
@@ -79,13 +80,19 @@ function RegisterCompanyForm() {
 
             <FormField
               control={form.control}
-              name="logoPath"
+              name="logo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-semibold">Logo</FormLabel>
 
                   <FormControl className="cursor-pointer">
-                    <Input {...field} type="file" />
+                    <Input
+                      type="file"
+                      onChange={e => field.onChange(e.target.files?.[0])}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    />
                   </FormControl>
 
                   <FormMessage />

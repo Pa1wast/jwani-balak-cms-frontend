@@ -20,6 +20,7 @@ import UpdateCompanyForm from './update-company-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { useDeleteCompany } from '@/features/company/useDeleteCompany';
 import { Link, useNavigate } from 'react-router-dom';
+import { getImgLocalPath } from '@/lib/getImgLocalPath';
 
 interface CompanyDetailsProps {
   company: Company;
@@ -34,12 +35,16 @@ function CompanyDetails({ company }: CompanyDetailsProps) {
       <Card
         className={cn(
           'overflow-hidden flex items-center justify-center',
-          company.logoPath && 'dark:bg-white'
+          company.logo && 'dark:bg-white'
         )}
       >
         <CardContent className="p-2 w-60 h-40 flex items-center justify-center">
-          {company.logoPath ? (
-            <img src={company.logoPath} alt={company.companyName} className="max-w-56 max-h-32" />
+          {company.logo ? (
+            <img
+              src={getImgLocalPath(company.logo)}
+              alt={company.companyName}
+              className="max-w-56 max-h-32"
+            />
           ) : (
             <Image className="size-24 text-secondary" />
           )}
