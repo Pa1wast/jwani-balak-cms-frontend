@@ -511,10 +511,20 @@ function TransactionDetails() {
                 </div>
 
                 <div className="flex items-center justify-between bg-secondary/20 p-1 rounded-md gap-1">
-                  <p className="font-semibold">Break-even revenue: </p>
+                  <p className="font-semibold">(Break-even quantity) revenue: </p>
 
                   <p className="font-semibold">
                     {sellingPricePerUnit > 0 ? formatPrice(breakEvenRevenue, currency) : '_'}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between bg-secondary/20 p-1 rounded-md gap-1">
+                  <p className="font-semibold">(Break-even quantity) profit: </p>
+
+                  <p className="font-semibold">
+                    {sellingPricePerUnit > 0
+                      ? formatPrice(breakEvenRevenue - totalAmountPaid, currency)
+                      : '_'}
                   </p>
                 </div>
               </div>
