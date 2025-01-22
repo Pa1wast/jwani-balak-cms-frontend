@@ -9,12 +9,17 @@ export async function updateCompanyApi({
 }) {
   const apiUrl = `http://localhost:8080/company/${companyId}`;
 
+  const formData = new FormData();
+  formData.append('companyName', updatedCompany.companyName);
+  formData.append('address', updatedCompany.address);
+
+  if (updatedCompany.logo) {
+    formData.append('logo', updatedCompany.logo);
+  }
+
   const response = await fetch(apiUrl, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(updatedCompany),
+    body: formData,
   });
 
   if (!response.ok) {
