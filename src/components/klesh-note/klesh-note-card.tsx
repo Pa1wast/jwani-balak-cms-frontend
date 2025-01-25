@@ -1,16 +1,9 @@
-import { CircleAlert, Ellipsis, Eye, Trash } from 'lucide-react';
+import { Eye, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { cn } from '@/lib/utils';
 import { KleshNote } from '@/types/klesh-note';
 import { formatDate } from '@/lib/date';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-} from '../ui/dropdown-menu';
 import { useDeleteKleshNote } from '@/features/klesh/useDeleteKleshNote';
 import {
   AlertDialog,
@@ -23,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../ui/alert-dialog';
+import { stripHtmlTags } from '@/lib/pdf';
 
 interface KleshNoteCardProps {
   kleshNote: KleshNote;
@@ -77,8 +71,15 @@ function KleshNoteCard({ kleshNote, onClick, setContent, setSelectedNoteId }: Kl
         </AlertDialog>
       </CardHeader>
 
-      <CardContent className="p-2 bg-secondary/80 truncate flex-1 text-sm rounded-lg text-right">
-        {kleshNote?.note?.replace(/<p>|<\/p>|<br>/gim, '').slice(0, 100)}
+      <CardContent className="p-2 bg-secondary/80  flex-1 text-sm rounded-lg text-right">
+        {stripHtmlTags(
+          kleshNote?.note?.length > 100
+            ? kleshNote?.note
+                ?.replace(/<p>|<\/p>|<br>/gim, '')
+                .slice(0, 100)
+                .concat('... ')
+            : kleshNote?.note?.replace(/<p>|<\/p>|<br>/gim, '')
+        )}
       </CardContent>
 
       <CardFooter className="p-1 flex justify-between gap-1 flex-row text-xs">

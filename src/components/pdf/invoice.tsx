@@ -145,7 +145,9 @@ function Invoice() {
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
                   {transactionsWithTotal?.map(transaction => (
-                    <p>{formatPrice(transaction.total, transaction.currency as currencyTypes)}</p>
+                    <p className="text-sm font-semibold">
+                      {formatPrice(transaction.total, transaction.currency as currencyTypes)}
+                    </p>
                   ))}
                 </div>
               </div>
@@ -154,7 +156,7 @@ function Invoice() {
                 <p className="bg-black/80 text-white text-center p-2">نرخ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
                   {transactionsWithTotal?.map(transaction => (
-                    <p>
+                    <p className="text-sm font-semibold text-secondary-foreground/60">
                       {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
                     </p>
                   ))}
@@ -165,8 +167,8 @@ function Invoice() {
                 <p className="bg-black/80 text-white text-center p-2">دانە</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
                   {transactionsWithTotal?.map(transaction => (
-                    <p>
-                      {formatPrice(transaction.quantity, transaction.currency as currencyTypes)}
+                    <p className="text-sm font-semibold text-secondary-foreground/60">
+                      {transaction.quantity}
                     </p>
                   ))}
                 </div>
@@ -183,7 +185,7 @@ function Invoice() {
             </div>
 
             <div className="flex gap-[1px] self-end w-full">
-              <p className="text-right p-2 border flex-[20%]">
+              <p className="text-right p-2 border flex-[20%] font-semibold">
                 {formatPrice(totalAmount, transactionsWithTotal[0]?.currency as currencyTypes)}
               </p>
               <p className="text-right font-bold text-lg p-2 border flex-[80%]">: کۆی گشتی</p>
@@ -192,8 +194,15 @@ function Invoice() {
         </CardContent>
 
         <CardFooter className="flex justify-around space-y-0 mb-8">
-          <p className="text-xl font-semibold">{invoice.seller} :فرۆشیار</p>
-          <p className="text-xl font-semibold">{invoice.buyer} :کریار</p>
+          <div className="flex gap-1 items-center" dir="rtl" lang="ku">
+            <p className="text-xl font-semibold text-secondary-foreground/60">فرۆشیار:</p>
+            <p className="text-xl font-bold">{invoice.seller}</p>
+          </div>
+
+          <div className="flex gap-1 items-center" dir="rtl" lang="ku">
+            <p className="text-xl font-semibold text-secondary-foreground/60">کریار:</p>
+            <p className="text-xl font-bold">{invoice.buyer}</p>
+          </div>
         </CardFooter>
         <div className="w-full h-12 flex">
           <div className="bg-red-400 h-full flex-1" />

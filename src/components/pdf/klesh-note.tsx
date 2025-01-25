@@ -8,16 +8,11 @@ import { useRef } from 'react';
 import { useKleshNote } from '@/features/klesh/useKleshNote';
 import Loader from '../ui/loader';
 import ErrorMessage from '../ui/error-message';
+import { stripHtmlTags } from '@/lib/pdf';
 
 function KleshNote() {
   const { isLoading, kleshNote } = useKleshNote();
   const pdfRef = useRef(null);
-
-  function stripHtmlTags(content: string) {
-    const div = document.createElement('div');
-    div.innerHTML = content;
-    return div.innerText || div.textContent || '';
-  }
 
   if (isLoading)
     return (
