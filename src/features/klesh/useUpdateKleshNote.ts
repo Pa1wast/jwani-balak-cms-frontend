@@ -15,11 +15,11 @@ export function useUpdateKleshNote() {
       updatedKleshNote: UpdatedKleshNote;
     }) => updateKleshNoteApi({ kleshNoteId, updatedKleshNote }),
     onSuccess: () => {
-      toast.success('Klesh note successfully updated');
+      toast.success('Klesh note successfully updated', { position: 'bottom-center' });
       queryClient.invalidateQueries({ queryKey: ['klesh-notes'] });
       queryClient.invalidateQueries({ queryKey: ['klesh-note'] });
     },
-    onError: err => toast.error(err.message),
+    onError: err => toast.error(err.message, { position: 'bottom-center' }),
   });
 
   return { updateKleshNote, isUpdating };

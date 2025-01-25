@@ -1,4 +1,4 @@
-import { CircleAlert, Ellipsis, Eye, Pen } from 'lucide-react';
+import { CircleAlert, Ellipsis, Eye, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { cn } from '@/lib/utils';
@@ -44,23 +44,15 @@ function KleshNoteCard({ kleshNote, onClick, setContent, setSelectedNoteId }: Kl
         <p className="text-xs font-semibold pl-2 truncate">#{kleshNote._id}</p>
 
         <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Ellipsis />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-              <AlertDialogTrigger asChild>
-                <DropdownMenuItem>
-                  Delete <CircleAlert className="ml-auto text-red-500" />
-                </DropdownMenuItem>
-              </AlertDialogTrigger>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-destructive dark:text-red-500 hover:text-destructive dark:hover:text-red-500"
+            >
+              <Trash />
+            </Button>
+          </AlertDialogTrigger>
 
           <AlertDialogContent>
             <AlertDialogHeader>

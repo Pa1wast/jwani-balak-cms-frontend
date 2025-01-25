@@ -28,11 +28,7 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useUpdateKleshNote } from '@/features/klesh/useUpdateKleshNote';
 
 const editorModules = {
-  toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline'],
-    [{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
-  ],
+  toolbar: [[{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }]],
   clipboard: {
     matchVisual: false,
     matchers: [
@@ -40,6 +36,7 @@ const editorModules = {
         '*',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (node: any) => {
+          console.log(node);
           const plainText = node.innerText || node.textContent || '';
           return { ops: [{ insert: plainText }] };
         },
@@ -68,8 +65,6 @@ function KleshNotes() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [content, setContent] = useState(selectedNote?.note ?? '');
-
-  console.log(content);
 
   const filteredNotes = kleshNotes
     ?.filter(note => note.note?.includes(searchValue))
@@ -240,7 +235,6 @@ function KleshNotes() {
             <KleshNoteCard
               key={note._id}
               kleshNote={note}
-              selectedNoteId={selectedNoteId}
               onClick={() => handleNoteSelection(note._id.toString())}
               setContent={setContent}
               setSelectedNoteId={setSelectedNoteId}
@@ -251,13 +245,13 @@ function KleshNotes() {
         )}
 
         {!isLoading && !displayedNotes.length && !searchValue && (
-          <div className="w-full  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
+          <div className="w-full col-span-4 h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
             <BookDashed /> You have no notes
           </div>
         )}
 
         {!isLoading && !displayedNotes.length && searchValue && (
-          <div className="w-full  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
+          <div className="w-full col-span-4  h-max bg-secondary/40 rounded-lg text-sm justify-center flex gap-2 items-center p-4 font-medium text-foreground/80">
             <SearchX /> No notes found!
           </div>
         )}

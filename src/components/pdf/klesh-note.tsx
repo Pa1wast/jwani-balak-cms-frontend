@@ -13,6 +13,12 @@ function KleshNote() {
   const { isLoading, kleshNote } = useKleshNote();
   const pdfRef = useRef(null);
 
+  function stripHtmlTags(content: string) {
+    const div = document.createElement('div');
+    div.innerHTML = content;
+    return div.innerText || div.textContent || '';
+  }
+
   if (isLoading)
     return (
       <div className="h-full w-full grid items-center">
@@ -23,7 +29,7 @@ function KleshNote() {
   if (!kleshNote)
     return (
       <div className="h-full w-full grid items-center">
-        <ErrorMessage message="Faild getting klesh note" goBack />
+        <ErrorMessage message="Failed getting Klesh note" goBack />
       </div>
     );
 
@@ -34,7 +40,7 @@ function KleshNote() {
 
     const element = pdfRef.current;
     const options = {
-      margin: 0,
+      margin: [10, 10, 10, 10],
       filename: `klesh-${kleshNote._id}.pdf`,
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
@@ -45,8 +51,8 @@ function KleshNote() {
   }
 
   return (
-    <div className="w-max mx-auto relative">
-      <div className=" flex gap-2 top-2 left-2 p-4 ml-auto justify-between">
+    <div className="w-full max-w-3xl mx-auto relative">
+      <div className="flex gap-2 p-4 justify-between">
         <Button variant="outline" size="sm" asChild>
           <Link to="/dashboard/klesh-notes">
             <ArrowLeft /> Back to Klesh Notes
@@ -54,23 +60,23 @@ function KleshNote() {
         </Button>
 
         <Button size="sm" onClick={handleClick}>
-          <Download /> Download klesh
+          <Download /> Download Klesh
         </Button>
       </div>
 
-      <Card className="p-0 w-full flex flex-col border-0 shadow-none" ref={pdfRef}>
+      <Card className="p-6 border-0 shadow-none" ref={pdfRef}>
         <CardHeader className="space-y-4">
-          <div className="flex flex-row items-center justify-between">
-            <div className="space-y-2">
-              <p className="text-xl font-bold text-right">شرکە جوانی بالک</p>
-              <p className="text-lg text-right">للتجارة العامة / المحدودة</p>
+          <div className="flex items-center justify-between">
+            <div className="space-y-2 text-right">
+              <p className="text-xl font-bold">شرکە جوانی بالک</p>
+              <p className="text-lg">للتجارة العامة / المحدودة</p>
             </div>
 
-            <Hexagon className="size-28 text-red-500" />
+            <Hexagon className="w-7 h-7 text-red-500" />
 
-            <div className="space-y-2">
-              <p className="text-xl font-bold text-right">کۆمپانیای جوانی باڵەک</p>
-              <p className="text-lg text-right">بۆ بازرگانی گشتی / سنوردار</p>
+            <div className="space-y-2 text-right">
+              <p className="text-xl font-bold">کۆمپانیای جوانی باڵەک</p>
+              <p className="text-lg">بۆ بازرگانی گشتی / سنوردار</p>
             </div>
           </div>
         </CardHeader>
@@ -81,8 +87,8 @@ function KleshNote() {
           <div className="bg-red-500 h-full flex-1" />
         </div>
 
-        <CardContent className="space-y-0">
-          <div className="p-6 flex flex-col gap-2">
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
             <p>No : {kleshNote._id}</p>
             <p>
               Date:
@@ -90,20 +96,20 @@ function KleshNote() {
             </p>
           </div>
 
-          <div className="h-[675px] flex w-full justify-end">
-            <p className=" gap-1  text-right">{kleshNote.note.replace(/<p>|<\/p>|<br>/gim, '')}</p>
+          <div className="text-right leading-relaxed break-words h-[690px]" dir="rtl" lang="ku">
+            {stripHtmlTags(kleshNote.note.replace(/<p>|<\/p>|<br>/gim, ''))}
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-around space-y-0 mb-8">
-          <div className="flex flex-row items-center justify-between gap-6">
+        <CardFooter className="flex justify-around mb-6">
+          <div className="flex flex-row items-center gap-6">
             <div className="flex gap-2 items-center">
-              <Mail className="size-8 text-red-500" />
+              <Mail className="w-5 h-5 text-red-500" />
               jwanibalakco@gmail.com
             </div>
 
             <div className="flex items-center gap-2">
-              <Phone className="size-8 text-red-500" />
+              <Phone className="w-5 h-5 text-red-500" />
               <div>
                 <p>+964 750 990 4445</p>
                 <p>+964 770 990 4445</p>
@@ -111,11 +117,12 @@ function KleshNote() {
             </div>
 
             <div className="flex gap-2 items-center">
-              <MapPin className="size-8 text-red-500" />
+              <MapPin className="w-5 h-5 text-red-500" />
               Slemani / Aqary / Park Tower
             </div>
           </div>
         </CardFooter>
+
         <div className="w-full h-12 flex">
           <div className="bg-red-400 h-full flex-1" />
           <div className="bg-red-500 h-full flex-1" />
