@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useProducts } from '@/features/product/useProducts';
 import { Product } from '@/types/product';
 import Loader from '../ui/loader';
@@ -37,6 +37,7 @@ import { useAddTransaction } from '@/features/transaction/useAddTransaction';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
 import { formatPrice } from '@/lib/price';
+import { toast } from 'sonner';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
@@ -59,8 +60,7 @@ function AddTransactionForm() {
 
   const [selectedProductId, setSelectedProductId] = useState('');
   const [selectedTransactionId, setSelectedTransactionId] = useState('');
-  const { isLoading: isLoadingTransactions, transactions } =
-    useTransactionsByProductId(selectedProductId);
+  const { transactions } = useTransactionsByProductId(selectedProductId);
 
   const buyTransactions = transactions?.filter(
     transaction =>
@@ -68,12 +68,13 @@ function AddTransactionForm() {
       transaction?.product?._id === selectedProductId
   );
 
-  const availableQuantity =
-    form.getValues('transactionType') === transactionTypes.SELL && !isLoadingTransactions
-      ? transactions.find(transaction => transaction._id === selectedTransactionId)
-        ? transactions.find(transaction => transaction._id === selectedTransactionId)!.quantity
-        : 0
-      : 0;
+  const selectedBuyTransaction = buyTransactions?.find(
+    transaction => transaction._id === selectedTransactionId
+  );
+
+  const availableQuantity = selectedBuyTransaction
+    ? selectedBuyTransaction.quantity - (selectedBuyTransaction.soldQuantity as number)
+    : 0;
 
   const [quantityError, setQuantityError] = useState(false);
 
@@ -102,10 +103,18 @@ function AddTransactionForm() {
     const { success, data } = addTransactionSchema.safeParse(values);
 
     if (success) {
+      if (expenses.length && expenses.every(expense => !expense.name || !expense.amount)) {
+        toast.error('Please fill all expenses fields');
+        return;
+      }
+
       const newTransaction = { ...data, expenses };
 
       if (newTransaction.transactionType === transactionTypes.SELL) {
-        newTransaction.buyTransaction = selectedTransactionId;
+        const currency = buyTransactions.find(
+          transaction => transaction._id === newTransaction.buyTransaction
+        )!.currency;
+        newTransaction.currency = currency;
       }
 
       addTransaction(newTransaction);

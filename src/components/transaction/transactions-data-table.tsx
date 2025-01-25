@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, FilePlus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -41,8 +41,32 @@ import Loader from '../ui/loader';
 import { formatDate } from '@/lib/date';
 import { Product } from '@/types/product';
 import TransactionRowActions from './transaction-row-actions';
+import { Checkbox } from '../ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import AddInvoiceForm from '../invoice/add-invoice-form';
 
 export const columns: ColumnDef<Transaction>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={value => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: '_id',
     header: () => <div className="text-left">#ID</div>,
@@ -235,6 +259,8 @@ export const columns: ColumnDef<Transaction>[] = [
 export default function TransactionDataTable() {
   const { isLoading, transactions } = useTransactions();
 
+  console.log({ transactions });
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -259,6 +285,16 @@ export default function TransactionDataTable() {
     },
   });
 
+  const selectedIndices = Object.keys(rowSelection).map(Number);
+  const selectedTransactions = selectedIndices.map(index => transactions[index]);
+  const firstTransaction = selectedTransactions[0];
+
+  const isValid = selectedTransactions.every(
+    transaction =>
+      firstTransaction.currency === transaction.currency &&
+      firstTransaction.transactionType === transaction.transactionType
+  );
+
   if (isLoading)
     return (
       <div className="h-full w-full grid items-center">
@@ -268,6 +304,11 @@ export default function TransactionDataTable() {
 
   return (
     <div className="w-full">
+      {!isValid && selectedTransactions.length > 0 && (
+        <p className="text-destructive">
+          Transactions have to be of the same type and currency to generate invoice.
+        </p>
+      )}
       <div className="flex items-center gap-2 py-4">
         <Input
           placeholder="Filter transactions by product name..."
@@ -305,6 +346,22 @@ export default function TransactionDataTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button disabled={!isValid || selectedTransactions.length === 0}>
+              <FilePlus /> Generate Invoice
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Generate Invoice</DialogTitle>
+            </DialogHeader>
+
+            <AddInvoiceForm transactions={selectedTransactions} />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="rounded-md border">

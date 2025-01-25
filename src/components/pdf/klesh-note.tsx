@@ -90,7 +90,9 @@ function KleshNote() {
             </p>
           </div>
 
-          <p className="flex gap-1 h-[675px]">{kleshNote.note}</p>
+          <div className="h-[675px] flex w-full justify-end">
+            <p className=" gap-1  text-right">{kleshNote.note.replace(/<p>|<\/p>|<br>/gim, '')}</p>
+          </div>
         </CardContent>
 
         <CardFooter className="flex justify-around space-y-0 mb-8">

@@ -1,12 +1,10 @@
 import { Company } from './company';
-import { Product } from './product';
 import { Transaction } from './transaction';
 
 export interface Invoice {
   _id: string;
-  transaction: Transaction;
+  transactions: Transaction[];
   company: Company;
-  product: Product;
   addressedTo: string;
   buyer: string;
   seller: string;
@@ -16,8 +14,7 @@ export interface Invoice {
 
 export interface NewInvoice {
   company: string;
-  transaction: string;
-  product: string;
+  transactions: string[];
   addressedTo: string;
   buyer: string;
   seller: string;

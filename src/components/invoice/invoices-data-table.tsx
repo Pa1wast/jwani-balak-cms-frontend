@@ -37,7 +37,6 @@ import Loader from '../ui/loader';
 import { useInvoices } from '@/features/invoice.ts/useInvoices';
 import { Invoice } from '@/types/invoice';
 import InvoiceRowActions from './invoice-row-actions';
-import { Transaction } from '@/types/transaction';
 
 export const columns: ColumnDef<Invoice>[] = [
   {
@@ -47,34 +46,7 @@ export const columns: ColumnDef<Invoice>[] = [
       <div className="text-left font-medium hidden sm:block">#{row.getValue('_id')}</div>
     ),
   },
-  {
-    accessorKey: 'transaction',
-    enableHiding: false,
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Product
-        <ArrowUpDown />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const transaction = row.getValue('transaction') as Transaction;
-      return (
-        <div className="capitalize">
-          {transaction.product?.productName ? (
-            transaction.product.productName
-          ) : (
-            <p className="bg-red-500/20 font-medium text-red-500 px-2 rounded-lg w-max">
-              Unavailable
-            </p>
-          )}
-        </div>
-      );
-    },
-    filterFn: (row, _, filterValue) => {
-      const transaction = row.getValue('product') as Transaction;
-      return transaction.product?.productName?.toLowerCase()?.includes(filterValue?.toLowerCase());
-    },
-  },
+
   {
     accessorKey: 'addressedTo',
     enableHiding: false,
@@ -85,6 +57,28 @@ export const columns: ColumnDef<Invoice>[] = [
       </Button>
     ),
     cell: ({ row }) => <div className="capitalize">{row.getValue('addressedTo')}</div>,
+  },
+  {
+    accessorKey: 'buyer',
+    enableHiding: false,
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Buyer
+        <ArrowUpDown />
+      </Button>
+    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue('buyer')}</div>,
+  },
+  {
+    accessorKey: 'seller',
+    enableHiding: false,
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Seller
+        <ArrowUpDown />
+      </Button>
+    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue('seller')}</div>,
   },
   {
     id: 'actions',

@@ -28,6 +28,7 @@ export interface Transaction {
   quantity: number;
   product: Product;
   company: Company;
+  soldQuantity?: number;
   expenses?: Expense[];
   createdAt: string;
   updatedAt: string;
@@ -41,6 +42,7 @@ export interface NewTransaction {
   product: string;
   company: string;
   expenses?: Expense[];
+  soldQuantity?: number;
 }
 
 export interface UpdatedTransaction {
@@ -48,5 +50,6 @@ export interface UpdatedTransaction {
   currency?: 'USD' | 'IQD';
   pricePerUnit?: number;
   quantity?: number;
+  soldQuantity?: number;
   expenses?: Expense[];
 }

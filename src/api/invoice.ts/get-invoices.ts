@@ -3,6 +3,7 @@ export async function getInvoices(companyId: string, page = 1, limit = 10000) {
   const response = await fetch(apiUrl);
 
   if (!response.ok) {
+    console.log(response);
     throw new Error('Could not get invoices');
   }
 

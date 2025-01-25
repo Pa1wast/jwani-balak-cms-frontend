@@ -27,10 +27,18 @@ import {
 interface KleshNoteCardProps {
   kleshNote: KleshNote;
   selectedNoteId: string | undefined;
+  setSelectedNoteId: (id: string | undefined) => void;
+  setContent: (content: string) => void;
   onClick: () => void;
 }
 
-function KleshNoteCard({ kleshNote, selectedNoteId, onClick }: KleshNoteCardProps) {
+function KleshNoteCard({
+  kleshNote,
+  selectedNoteId,
+  onClick,
+  setContent,
+  setSelectedNoteId,
+}: KleshNoteCardProps) {
   const isSelected = kleshNote._id === selectedNoteId;
 
   const { isDeleting, deleteKleshNote } = useDeleteKleshNote();
@@ -39,7 +47,7 @@ function KleshNoteCard({ kleshNote, selectedNoteId, onClick }: KleshNoteCardProp
     <Card
       className={cn(
         'p-1 md:w-[200px] hover:border-foreground/50 dark:border-foreground/50 dark:hover:border-border',
-        isSelected && 'border-foreground/50 dark:border-border'
+        isSelected && 'border-primary dark:border-border bg-primary/10'
       )}
     >
       <CardHeader className="p-0 pb-2 space-y-0 flex-row justify-between items-center">
@@ -73,7 +81,11 @@ function KleshNoteCard({ kleshNote, selectedNoteId, onClick }: KleshNoteCardProp
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
-                onClick={() => deleteKleshNote(kleshNote._id)}
+                onClick={() => {
+                  deleteKleshNote(kleshNote._id);
+                  setSelectedNoteId(undefined);
+                  setContent('');
+                }}
                 disabled={isDeleting}
               >
                 Delete
@@ -84,7 +96,7 @@ function KleshNoteCard({ kleshNote, selectedNoteId, onClick }: KleshNoteCardProp
       </CardHeader>
 
       <CardContent className="p-2 bg-secondary/30 text-sm rounded-lg text-right">
-        {kleshNote?.note?.slice(0, 200)}
+        {kleshNote?.note?.replace(/<p>|<\/p>|<br>/gim, '').slice(0, 60)}
       </CardContent>
 
       <CardFooter className="p-1 flex justify-between gap-1 flex-row text-xs">

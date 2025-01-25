@@ -46,9 +46,10 @@ interface Props {
   sort: 'asc' | 'desc';
   isLoading: boolean;
   isAddingNote: boolean;
+  setContent: (content: string) => void;
   onToggleSort: () => void;
   onSearchNotes: (value: string) => void;
-  setSelectedNoteId?: (noteId: string) => void;
+  setSelectedNoteId: (noteId: string | undefined) => void;
   setHasChanges?: (hasChanges: boolean) => void;
   setIsMobileEditorOpen?: (isOpen: boolean) => void;
   onNoteChange: (newContent: string) => void;
@@ -90,9 +91,7 @@ function KleshNotes() {
   const displayedNotes = filteredNotes;
 
   function handleNoteChange(newContent: string) {
-    const filterContent = newContent.replace(/<p>|<\/p>|<br>/gim, '');
-
-    setContent(filterContent);
+    setContent(newContent);
     setHasChanges(true);
   }
 
@@ -164,7 +163,7 @@ function KleshNotes() {
     }
 
     if (container) {
-      container.style.overflowY = 'hidden';
+      container.style.overflow = 'hidden';
       container.style.paddingTop = `${toolbar.offsetHeight - 45}px`;
       container.style.borderWidth = '0';
     }
@@ -177,6 +176,7 @@ function KleshNotes() {
       editor.style.borderRadius = '5px';
       editor.style.fontSize = '24px';
       editor.style.borderWidth = '1px';
+      editor.style.textWrap = 'wrap';
     }
   }, [isDarkMode, isMobile, isMobileEditorOpen, selectedNoteId]);
 
@@ -184,9 +184,10 @@ function KleshNotes() {
     <MobileKleshTextEditor
       notes={displayedNotes}
       content={content}
+      setContent={setContent}
       onNoteChange={handleNoteChange}
       selectedNoteId={selectedNoteId}
-      setSelectedNoteId={setSelectedNoteId}
+      setSelectedNoteId={setSelectedNoteId!}
       hasChanges={hasChanges}
       setHasChanges={setHasChanges}
       onSaveNote={handleSaveNote}
@@ -205,7 +206,9 @@ function KleshNotes() {
     <DesktopKleshTextEditor
       notes={displayedNotes}
       content={content}
+      setContent={setContent}
       sort={sort}
+      setSelectedNoteId={setSelectedNoteId!}
       onNoteChange={handleNoteChange}
       searchValue={searchValue}
       onToggleSort={handleToggleSort}
@@ -225,6 +228,7 @@ function DesktopKleshTextEditor({
   content,
   onNoteChange,
   selectedNoteId,
+  setSelectedNoteId,
   onSaveNote,
   onCreateNewNote,
   onNoteSelection,
@@ -234,6 +238,7 @@ function DesktopKleshTextEditor({
   onToggleSort,
   isLoading,
   isAddingNote,
+  setContent,
 }: Props) {
   return (
     <div className="grid md:grid-cols-[max-content_1fr] md:grid-rows-[1fr_max-content] gap-4">
@@ -267,6 +272,8 @@ function DesktopKleshTextEditor({
                 kleshNote={note}
                 selectedNoteId={selectedNoteId}
                 onClick={() => onNoteSelection(note._id)}
+                setContent={setContent}
+                setSelectedNoteId={setSelectedNoteId}
               />
             ))
           ) : (
@@ -287,7 +294,7 @@ function DesktopKleshTextEditor({
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 max-w-full">
         <h1 className="text-xl text-foreground font-semibold items-center">Klesh Note Editor</h1>
 
         <ReactQuill
@@ -335,6 +342,7 @@ function MobileKleshTextEditor({
   onToggleSort,
   isLoading,
   isAddingNote,
+  setContent,
 }: Props) {
   return isMobileEditorOpen || selectedNoteId ? (
     <>
@@ -418,6 +426,8 @@ function MobileKleshTextEditor({
               kleshNote={note}
               selectedNoteId={selectedNoteId}
               onClick={() => onNoteSelection(note._id.toString())}
+              setContent={setContent}
+              setSelectedNoteId={setSelectedNoteId}
             />
           ))
         ) : (

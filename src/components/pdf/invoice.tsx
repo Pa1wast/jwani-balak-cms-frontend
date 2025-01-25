@@ -126,44 +126,59 @@ function Invoice() {
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>
-                    {formatPrice(
-                      invoice.transaction.pricePerUnit * invoice.transaction.quantity,
-                      invoice.transaction.currency as currencyTypes
-                    )}
-                  </p>
+                  {invoice.transactions.map(transaction => (
+                    <p>
+                      {formatPrice(
+                        transaction.pricePerUnit * transaction.quantity,
+                        transaction.currency as currencyTypes
+                      )}
+                    </p>
+                  ))}
                 </div>
               </div>
 
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">نرخ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>
-                    {formatPrice(
-                      invoice.transaction.pricePerUnit,
-                      invoice.transaction.currency as currencyTypes
-                    )}
-                  </p>
+                  {invoice.transactions.map(transaction => (
+                    <p>
+                      {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
+                    </p>
+                  ))}
                 </div>
               </div>
 
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">دانە</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>{invoice.transaction.quantity}</p>
+                  {invoice.transactions.map(transaction => (
+                    <p>
+                      {formatPrice(transaction.quantity, transaction.currency as currencyTypes)}
+                    </p>
+                  ))}
                 </div>
               </div>
 
               <div className="flex flex-col flex-[40%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">جۆر</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <p>{invoice.transaction.transactionType}</p>
+                  {invoice.transactions.map(transaction => (
+                    <p>{transaction.product?.productName}</p>
+                  ))}
                 </div>
               </div>
             </div>
 
             <div className="flex gap-[1px] self-end w-full">
-              <p className="text-right p-2 border flex-[20%]"></p>
+              <p className="text-right p-2 border flex-[20%]">
+                {formatPrice(
+                  invoice.transactions.reduce(
+                    (acc, cur) => acc + cur.pricePerUnit * cur.quantity,
+                    0
+                  ),
+                  invoice.transactions[0].currency as currencyTypes
+                )}
+              </p>
               <p className="text-right font-bold text-lg p-2 border flex-[80%]">: کۆی گشتی</p>
             </div>
           </div>

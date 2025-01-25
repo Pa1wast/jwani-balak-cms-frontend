@@ -10,18 +10,19 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { Transaction } from '@/types/transaction';
 
 interface AddInvoiceFormProps {
-  transaction: Transaction;
+  transactions: Transaction[];
 }
 
-function AddInvoiceForm({ transaction }: AddInvoiceFormProps) {
+function AddInvoiceForm({ transactions }: AddInvoiceFormProps) {
   const { selectedCompanyId } = useCompaniesView();
 
+  console.log({ transactions });
+
   const { isAdding, addInvoice } = useAddInvoice();
+
   const form = useForm<z.infer<typeof addInvoiceSchema>>({
     resolver: zodResolver(addInvoiceSchema),
     defaultValues: {
-      transaction: transaction._id,
-      product: transaction.product._id,
       company: selectedCompanyId as string,
       addressedTo: '',
       buyer: '',
@@ -32,7 +33,8 @@ function AddInvoiceForm({ transaction }: AddInvoiceFormProps) {
   function onSubmit(values: z.infer<typeof addInvoiceSchema>) {
     const { success, data } = addInvoiceSchema.safeParse(values);
 
-    if (success) addInvoice(data);
+    if (success)
+      addInvoice({ ...data, transactions: transactions.map(transaction => transaction._id) });
   }
   return (
     <Form {...form}>

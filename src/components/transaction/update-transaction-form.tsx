@@ -27,7 +27,7 @@ interface AddTransactionFormProps {
 
 function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
   const { isUpdating, updateTransaction } = useUpdateTransaction();
-  const { isLoading: isLoadingTransactions, transactions } = useTransactions();
+  const { transactions } = useTransactions();
   const [quantityError, setQuantityError] = useState(false);
 
   const form = useForm<z.infer<typeof updateTransactionSchema>>({
@@ -39,16 +39,11 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
   });
 
   // SELL Transaction
-  const buyTransaction = transactions.find(item => item._id === transaction.buyTransaction);
+  const buyTransaction = transactions?.find(item => item._id === transaction.buyTransaction);
 
-  const availableQuantity =
-    transaction.transactionType.toUpperCase() === transactionTypes.SELL && !isLoadingTransactions
-      ? buyTransaction
-        ? buyTransaction!.quantity
-        : 0
-      : 0;
-
-  console.log(availableQuantity);
+  const availableQuantity = buyTransaction
+    ? buyTransaction.quantity - (buyTransaction.soldQuantity as number)
+    : 0;
 
   function onSubmit(values: z.infer<typeof updateTransactionSchema>) {
     const { success, data } = updateTransactionSchema.safeParse(values);
