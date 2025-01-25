@@ -8,10 +8,28 @@ import { useInvoice } from '@/features/invoice.ts/useInvoice';
 import Loader from '../ui/loader';
 import ErrorMessage from '../ui/error-message';
 import { formatPrice } from '@/lib/price';
-import { currencyTypes } from '@/types/transaction';
+import { currencyTypes, transactionTypes } from '@/types/transaction';
 
 function Invoice() {
   const { isLoading, invoice } = useInvoice();
+
+  const transactionsWithTotal = invoice?.transactions?.map(transaction => {
+    let total = transaction.pricePerUnit * transaction.quantity;
+
+    if (
+      transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+      transaction.expenses?.length
+    ) {
+      total += transaction.expenses.reduce((acc, expense) => acc + expense.amount, 0);
+    }
+
+    return {
+      ...transaction,
+      total,
+    };
+  });
+
+  const totalAmount = transactionsWithTotal?.reduce((acc, cur) => acc + cur.total, 0);
 
   const pdfRef = useRef(null);
 
@@ -39,10 +57,10 @@ function Invoice() {
       </div>
     );
 
-  if (!invoice)
+  if (!invoice || !invoice.transactions?.length)
     return (
-      <div className="h-full w-full grid items-center">
-        <ErrorMessage message="Failed getting invoice" goBack />
+      <div className="h-screen w-full grid items-center my-auto">
+        <ErrorMessage message="Failed getting invoice information" goBack />
       </div>
     );
 
@@ -126,13 +144,8 @@ function Invoice() {
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {invoice.transactions.map(transaction => (
-                    <p>
-                      {formatPrice(
-                        transaction.pricePerUnit * transaction.quantity,
-                        transaction.currency as currencyTypes
-                      )}
-                    </p>
+                  {transactionsWithTotal?.map(transaction => (
+                    <p>{formatPrice(transaction.total, transaction.currency as currencyTypes)}</p>
                   ))}
                 </div>
               </div>
@@ -140,7 +153,7 @@ function Invoice() {
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">نرخ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {invoice.transactions.map(transaction => (
+                  {transactionsWithTotal?.map(transaction => (
                     <p>
                       {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
                     </p>
@@ -151,7 +164,7 @@ function Invoice() {
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">دانە</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {invoice.transactions.map(transaction => (
+                  {transactionsWithTotal?.map(transaction => (
                     <p>
                       {formatPrice(transaction.quantity, transaction.currency as currencyTypes)}
                     </p>
@@ -162,7 +175,7 @@ function Invoice() {
               <div className="flex flex-col flex-[40%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">جۆر</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {invoice.transactions.map(transaction => (
+                  {transactionsWithTotal?.map(transaction => (
                     <p>{transaction.product?.productName}</p>
                   ))}
                 </div>
@@ -171,13 +184,7 @@ function Invoice() {
 
             <div className="flex gap-[1px] self-end w-full">
               <p className="text-right p-2 border flex-[20%]">
-                {formatPrice(
-                  invoice.transactions.reduce(
-                    (acc, cur) => acc + cur.pricePerUnit * cur.quantity,
-                    0
-                  ),
-                  invoice.transactions[0].currency as currencyTypes
-                )}
+                {formatPrice(totalAmount, transactionsWithTotal[0]?.currency as currencyTypes)}
               </p>
               <p className="text-right font-bold text-lg p-2 border flex-[80%]">: کۆی گشتی</p>
             </div>

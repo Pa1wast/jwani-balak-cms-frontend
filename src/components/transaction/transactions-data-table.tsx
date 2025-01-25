@@ -69,6 +69,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
   {
     accessorKey: '_id',
+    enableHiding: false,
     header: () => <div className="text-left">#ID</div>,
     cell: ({ row }) => <div className="text-left font-medium">#{row.getValue('_id')}</div>,
   },
@@ -259,8 +260,6 @@ export const columns: ColumnDef<Transaction>[] = [
 export default function TransactionDataTable() {
   const { isLoading, transactions } = useTransactions();
 
-  console.log({ transactions });
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -291,8 +290,8 @@ export default function TransactionDataTable() {
 
   const isValid = selectedTransactions.every(
     transaction =>
-      firstTransaction.currency === transaction.currency &&
-      firstTransaction.transactionType === transaction.transactionType
+      firstTransaction?.currency === transaction?.currency &&
+      firstTransaction?.transactionType === transaction?.transactionType
   );
 
   if (isLoading)
@@ -332,15 +331,17 @@ export default function TransactionDataTable() {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className={cn(
-                      'capitalize',
-                      column.id === 'currency' && 'hidden lg:flex',
-                      column.id === '_id' && 'hidden lg:flex'
-                    )}
+                    className={cn('capitalize', column.id === 'currency' && 'hidden lg:flex')}
                     checked={column.getIsVisible()}
                     onCheckedChange={value => column.toggleVisibility(!!value)}
                   >
-                    {column.id === '_id' ? 'ID' : column.id}
+                    {column.id === 'createdAt'
+                      ? 'Date'
+                      : column.id === 'transactionType'
+                      ? 'Type'
+                      : column.id === 'pricePerUnit'
+                      ? 'Price / Unit'
+                      : column.id}
                   </DropdownMenuCheckboxItem>
                 );
               })}
