@@ -38,12 +38,15 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
 import { formatPrice } from '@/lib/price';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
 
   const { isLoading, products } = useProducts();
   const { isAdding, addTransaction } = useAddTransaction();
+
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
@@ -60,6 +63,7 @@ function AddTransactionForm() {
 
   const [selectedProductId, setSelectedProductId] = useState('');
   const [selectedTransactionId, setSelectedTransactionId] = useState('');
+
   const { transactions } = useTransactionsByProductId(selectedProductId);
 
   const buyTransactions = transactions?.filter(
@@ -143,7 +147,7 @@ function AddTransactionForm() {
                         )}
                       >
                         {field.value
-                          ? products.find((product: Product) => product._id === field.value)
+                          ? products?.find((product: Product) => product._id === field.value)
                               ?.productName
                           : 'Select product'}
                         <ChevronsUpDown className="opacity-50" />
@@ -157,16 +161,28 @@ function AddTransactionForm() {
                         <CommandEmpty>No products found.</CommandEmpty>
 
                         <CommandGroup>
-                          {products.map((product: Product) => (
+                          {products?.map((product: Product) => (
                             <CommandItem
                               value={product._id}
                               key={product._id}
                               onSelect={() => {
                                 form.setValue('product', product._id);
                                 setSelectedProductId(product._id);
+
+                                const hasBuyTransactions = transactions?.some(
+                                  transaction =>
+                                    transaction.transactionType.toUpperCase() ===
+                                      transactionTypes.BUY &&
+                                    transaction?.product?._id === product._id
+                                );
+
+                                if (!hasBuyTransactions) {
+                                  form.setValue('buyTransaction', '');
+                                  setSelectedTransactionId('');
+                                }
                               }}
                             >
-                              {product.productName}
+                              {product?.productName}
                               <Check
                                 className={cn(
                                   'ml-auto',
@@ -212,10 +228,10 @@ function AddTransactionForm() {
                             <div className="flex gap-1 w-full items-center justify-between">
                               <span className="font-bold">
                                 {formatPrice(
-                                  buyTransactions.find(
+                                  buyTransactions?.find(
                                     buyTransaction => buyTransaction._id === field.value
                                   )?.pricePerUnit as number,
-                                  buyTransactions.find(
+                                  buyTransactions?.find(
                                     buyTransaction => buyTransaction._id === field.value
                                   )?.currency as currencyTypes
                                 )}
@@ -224,7 +240,7 @@ function AddTransactionForm() {
                               <span className="font-bold">
                                 x
                                 {
-                                  buyTransactions.find(
+                                  buyTransactions?.find(
                                     buyTransaction => buyTransaction._id === field.value
                                   )?.quantity as number
                                 }

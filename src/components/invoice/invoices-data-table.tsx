@@ -37,6 +37,8 @@ import Loader from '../ui/loader';
 import { useInvoices } from '@/features/invoice.ts/useInvoices';
 import { Invoice } from '@/types/invoice';
 import InvoiceRowActions from './invoice-row-actions';
+import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
+import { formatPrice } from '@/lib/price';
 
 export const columns: ColumnDef<Invoice>[] = [
   {
@@ -79,6 +81,55 @@ export const columns: ColumnDef<Invoice>[] = [
       </Button>
     ),
     cell: ({ row }) => <div className="capitalize">{row.getValue('seller')}</div>,
+  },
+  {
+    accessorKey: 'transactions',
+    enableHiding: false,
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Transactions
+        <ArrowUpDown />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const transactions = row.getValue('transactions') as Transaction[];
+      return <div className="capitalize">{transactions?.length}</div>;
+    },
+  },
+  {
+    accessorKey: 'transactions',
+    enableHiding: false,
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Total
+        <ArrowUpDown />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const transactions = row.getValue('transactions') as Transaction[];
+      const transactionsWithTotal = transactions?.map(transaction => {
+        let total = transaction.pricePerUnit * transaction.quantity;
+
+        if (
+          transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+          transaction.expenses?.length
+        ) {
+          total += transaction.expenses.reduce((acc, expense) => acc + expense.amount, 0);
+        }
+
+        return {
+          ...transaction,
+          total,
+        };
+      });
+
+      const totalAmount = transactionsWithTotal?.reduce((acc, cur) => acc + cur.total, 0);
+      return (
+        <div className="capitalize font-semibold">
+          {formatPrice(totalAmount, transactions[0]?.currency as currencyTypes)}
+        </div>
+      );
+    },
   },
   {
     id: 'actions',

@@ -43,8 +43,6 @@ function TransactionDetails() {
     transaction?.product?._id
   );
 
-  console.log(transaction);
-
   const { isUpdating, updateTransaction } = useUpdateTransaction();
 
   const { isDeleting, deleteTransaction } = useDeleteTransaction();
@@ -202,7 +200,7 @@ function TransactionDetails() {
                     <DialogTitle>Generate invoice</DialogTitle>
                   </DialogHeader>
 
-                  <AddInvoiceForm transaction={transaction} />
+                  <AddInvoiceForm transactions={[transaction]} />
                 </DialogContent>
               </Dialog>
 
