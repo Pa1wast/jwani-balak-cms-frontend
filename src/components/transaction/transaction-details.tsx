@@ -26,22 +26,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import UpdateTransactionForm from './update-transaction-form';
 import { calculateProfit, formatPercentage, formatPrice } from '@/lib/price';
 import AddExpenseForm from './add-expense-form';
-import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
 import { Separator } from '../ui/separator';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import AddInvoiceForm from '../invoice/add-invoice-form';
 import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
+import { useTransactionById } from '@/features/transaction/useTransactionById';
 
 function TransactionDetails() {
   const navigate = useNavigate();
-  const { isLoading, error, transaction } = useTransaction();
   const { selectedCompanyId } = useCompaniesView();
 
-  const { isLoading: isLoadingTransactions, transactions } = useTransactionsByProductId(
-    transaction?.product?._id
-  );
+  const { isLoading, error, transaction } = useTransaction();
+
+  const { transaction: buyTransaction } = useTransactionById(transaction?.buyTransaction as string);
 
   const { isUpdating, updateTransaction } = useUpdateTransaction();
 
@@ -87,21 +86,22 @@ function TransactionDetails() {
   const revenueNeeded = totalAmountPaid + estimatedProfitAmount.value;
 
   // SELL Transaction
-  const allSellExpenses =
-    !isLoadingTransactions && transactions
-      ? transactions.flatMap(transaction => transaction.expenses ?? [])
-      : [];
-  const totalBuyTransactionsCost =
-    !isLoadingTransactions && transactions
-      ? transactions
-          .filter(buyTransaction => buyTransaction.currency === transaction.currency)
-          .reduce((acc, cur) => acc + cur.pricePerUnit * cur.quantity, 0)
-      : 0;
-  const totalSellAmountExpenses = allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0);
-  const totalCost = totalBuyTransactionsCost + totalSellAmountExpenses;
+  const allSellExpenses = buyTransaction?.expenses;
+
+  const allSellExpensesAmount = allSellExpenses
+    ? allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0)
+    : 0;
+
+  const totalCost = buyTransaction?.pricePerUnit * buyTransaction?.quantity + allSellExpensesAmount;
   const totalRevenue = transaction.pricePerUnit * transaction.quantity;
-  const profitAmount = totalRevenue - totalCost;
-  const actualProfitMargin = totalRevenue > 0 ? (profitAmount / totalRevenue) * 100 : 0;
+
+  let profitAmount = totalRevenue - totalCost;
+  let actualProfitMargin = totalRevenue > 0 ? (profitAmount / totalRevenue) * 100 : 0;
+
+  if (profitAmount <= 0) {
+    profitAmount = 0;
+    actualProfitMargin = 0;
+  }
 
   function handleDeleteExpense(expenseId: string) {
     const updatedExpenses = transaction.expenses?.filter(expense => expense._id !== expenseId);
@@ -366,7 +366,7 @@ function TransactionDetails() {
               {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
                 formatPrice(!totalAmountExpenses ? 0 : totalAmountExpenses, currency)}
               {transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
-                formatPrice(!totalSellAmountExpenses ? 0 : totalSellAmountExpenses, currency)}
+                formatPrice(!allSellExpensesAmount ? 0 : allSellExpensesAmount, currency)}
             </p>
           </div>
         </CardContent>
@@ -571,7 +571,21 @@ function TransactionDetails() {
             <Separator />
 
             <div className="w-full flex flex-wrap items-center bg-green-500/10 dark:bg-green-500/30 font-semibold p-2 rounded-md justify-between">
-              <p className="text-lg font-bold">Profit:</p>
+              <div className="flex gap-1 items-center">
+                <p className="text-lg font-bold">Profit:</p>
+
+                {profitAmount === 0 && (
+                  <span className=" font-normal dark:bg-secondary/40 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
+                    <BadgeInfo className="size-4" />
+                    No profit has been made. Quantity bought is{' '}
+                    <span className="font-semibold">x{buyTransaction?.quantity}</span> at{' '}
+                    <span className="font-semibold">
+                      {formatPrice(buyTransaction?.pricePerUnit, currency)}
+                    </span>{' '}
+                    Per Unit.
+                  </span>
+                )}
+              </div>
 
               <p className="text-lg font-bold flex flex-col gap-2">
                 <span className="text-green-500">

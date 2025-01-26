@@ -49,10 +49,30 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
     const { success, data } = updateTransactionSchema.safeParse(values);
 
     if (success) {
-      updateTransaction({
-        transactionId: transaction._id,
-        updatedTransaction: { ...data, transactionType: transaction.transactionType },
-      });
+      if (transaction.transactionType.toUpperCase() === transactionTypes.SELL) {
+        const buyTransaction = transactions.find(
+          item =>
+            item.transactionType.toUpperCase() === transactionTypes.BUY &&
+            item._id === transaction.buyTransaction
+        ) as Transaction;
+
+        updateTransaction({
+          transactionId: transaction._id,
+          updatedTransaction: {
+            ...data,
+            transactionType: transaction.transactionType,
+            buyTransaction: buyTransaction._id,
+          },
+        });
+      } else {
+        updateTransaction({
+          transactionId: transaction._id,
+          updatedTransaction: {
+            ...data,
+            transactionType: transaction.transactionType,
+          },
+        });
+      }
     }
   }
 
