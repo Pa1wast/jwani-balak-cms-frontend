@@ -26,6 +26,7 @@ import { useKleshNotes } from '@/features/klesh/useKleshNotes';
 import { useAddKleshNote } from '@/features/klesh/useAddKleshNote';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useUpdateKleshNote } from '@/features/klesh/useUpdateKleshNote';
+import { stripHtmlTags } from '@/lib/pdf';
 
 const editorModules = {
   toolbar: [[{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }]],
@@ -187,7 +188,7 @@ function KleshNotes() {
         </Button>
 
         <div className="flex gap-2">
-          {selectedNoteId && (
+          {selectedNoteId && stripHtmlTags(content) && !hasChanges && (
             <Button size="sm" variant="outline" asChild>
               <Link to={`/pdf/klesh/${selectedNoteId}`}>
                 <Download /> Download
@@ -197,7 +198,7 @@ function KleshNotes() {
 
           <Button
             size="sm"
-            disabled={content === '' || !content || !hasChanges || isAdding || isUpdating}
+            disabled={!stripHtmlTags(content) || !hasChanges || isAdding || isUpdating}
             onClick={handleSaveNote}
           >
             <Save /> Save Note
