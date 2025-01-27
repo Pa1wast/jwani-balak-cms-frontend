@@ -66,7 +66,7 @@ function Home() {
             )}
 
             {!isLoading && searchValue && !displayedCompanies?.length && (
-              <p className="mx-auto text-lg font-semibold text-foreground/60 mt-32">
+              <p className="mx-auto text-lg font-semibold text-foreground/60 mt-32 col-span-4">
                 No results found!
               </p>
             )}
