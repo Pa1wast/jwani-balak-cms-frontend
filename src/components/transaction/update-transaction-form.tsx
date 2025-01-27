@@ -36,10 +36,15 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
 
   // SELL Transaction
   const buyTransaction = transactions?.find(item => item._id === transaction.buyTransaction);
+  const allSellTransactionsWithoutCur = transactions?.filter(
+    item => item.buyTransaction === transaction.buyTransaction && item._id !== transaction._id
+  );
 
-  const availableQuantity = buyTransaction
-    ? buyTransaction.quantity - (buyTransaction.soldQuantity as number)
-    : 0;
+  const soldQuantity = allSellTransactionsWithoutCur?.reduce((acc, item) => acc + item.quantity, 0);
+
+  console.log(soldQuantity);
+
+  const availableQuantity = buyTransaction ? buyTransaction.quantity - soldQuantity : 0;
 
   function onSubmit(values: z.infer<typeof updateTransactionSchema>) {
     const { success, data } = updateTransactionSchema.safeParse(values);
