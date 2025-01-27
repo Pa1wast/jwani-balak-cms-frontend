@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useProducts } from '@/features/product/useProducts';
 import { Product } from '@/types/product';
 import Loader from '../ui/loader';
@@ -38,15 +38,12 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
 import { formatPrice } from '@/lib/price';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
 
   const { isLoading, products } = useProducts();
   const { isAdding, addTransaction } = useAddTransaction();
-
-  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),

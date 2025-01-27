@@ -58,7 +58,7 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
             ...data,
             transactionType: transaction.transactionType,
             buyTransaction: buyTransaction._id,
-            oldSoldQuantity: buyTransaction.soldQuantity,
+            oldQuantity: transaction.quantity,
           },
         });
       } else {
