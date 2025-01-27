@@ -140,7 +140,7 @@ function Invoice() {
           </div>
 
           <div className="flex flex-col gap-1 ">
-            <div className="flex gap-1 h-[582px]">
+            <div className="flex gap-1 h-[560px]">
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">

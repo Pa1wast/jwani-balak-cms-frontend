@@ -93,6 +93,7 @@ function TransactionDetails() {
     : 0;
 
   const totalCost = buyTransaction?.pricePerUnit * buyTransaction?.quantity + allSellExpensesAmount;
+
   const totalRevenue = transaction.pricePerUnit * transaction.quantity;
 
   let profitAmount = totalRevenue - totalCost;
@@ -375,10 +376,10 @@ function TransactionDetails() {
 
         {transaction.transactionType.toUpperCase() === transactionTypes.BUY && (
           <CardFooter className="flex flex-col gap-1 pt-4">
-            <div className="w-full flex bg-blue-500/10 dark:bg-blue-500/30 font-semibold p-2 rounded-md justify-between">
+            <div className="w-full flex bg-blue-500/30 dark:bg-blue-500/30 font-semibold p-2 rounded-md justify-between">
               <p>Total Cost (w/o) expenses: </p>
 
-              <p className="text-lg font-bold">{formatPrice(totalBuyCost, currency)}</p>
+              <p className="text-lg font-bold ">{formatPrice(totalBuyCost, currency)}</p>
             </div>
 
             <div className="w-full flex bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
@@ -410,7 +411,8 @@ function TransactionDetails() {
                       value={sellingPricePerUnit}
                       onChange={e => {
                         const value = e.target.value;
-                        if (!isNaN(Number(value))) setSellingPricePerUnit(Number(value));
+                        if (!isNaN(Number(value)) && value.length <= 20)
+                          setSellingPricePerUnit(Number(value));
                       }}
                       className="sm:w-max"
                     />
@@ -426,7 +428,8 @@ function TransactionDetails() {
                       value={profitMargin}
                       onChange={e => {
                         const value = e.target.value;
-                        if (!isNaN(Number(value))) setProfitMargin(Number(value));
+                        if (!isNaN(Number(value)) && value.length <= 20)
+                          setProfitMargin(Number(value));
                       }}
                       className="sm:w-max"
                     />
@@ -560,17 +563,29 @@ function TransactionDetails() {
           </CardHeader>
 
           <CardContent className="gap-2 flex flex-col flex-wrap">
+            <div className="w-full flex flex-wrap bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
+              <p className="text-lg font-bold">Total Cost (with) Expenses:</p>
+
+              <p className="text-lg font-bold text-red-500 dark:text-foreground">
+                {formatPrice(totalCost, currency)}
+
+                <span className="text-xs ml-2 text-foreground">x{buyTransaction?.quantity}</span>
+              </p>
+            </div>
+
             <div className="w-full flex flex-wrap bg-blue-500/20 dark:bg-blue-500/50 font-semibold p-2 rounded-md justify-between">
               <p className="text-lg font-bold">Total Revenue:</p>
 
-              <p className="text-lg font-bold text-blue-500">
+              <p className="text-lg font-bold text-blue-500 dark:text-foreground">
                 {formatPrice(totalRevenue, currency)}
+
+                <span className="text-xs ml-2 text-foreground">x{transaction?.quantity}</span>
               </p>
             </div>
 
             <Separator />
 
-            <div className="w-full flex flex-wrap items-center bg-green-500/10 dark:bg-green-500/30 font-semibold p-2 rounded-md justify-between">
+            <div className="w-full flex flex-wrap items-center bg-green-500/40 dark:bg-green-500/30 font-semibold p-2 rounded-md justify-between">
               <div className="flex gap-1 items-center">
                 <p className="text-lg font-bold">Profit:</p>
 

@@ -53,4 +53,5 @@ export interface UpdatedTransaction {
   soldQuantity?: number;
   expenses?: Expense[];
   buyTransaction?: string;
+  oldSoldQuantity?: number;
 }

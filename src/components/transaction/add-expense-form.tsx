@@ -66,7 +66,8 @@ function AddExpenseForm({ transaction }: AddExpenseFormProps) {
                     {...field}
                     onChange={e => {
                       const value = e.target.value;
-                      if (!isNaN(Number(value))) field.onChange(Number(value));
+                      if (!isNaN(Number(value)) && value.length <= 20)
+                        field.onChange(Number(value));
                     }}
                   />
                 </FormControl>

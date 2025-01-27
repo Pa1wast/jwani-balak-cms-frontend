@@ -1,9 +1,7 @@
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-
 import { useForm } from 'react-hook-form';
 import { updateTransactionSchema } from '@/schemas';
-
 import {
   Form,
   FormControl,
@@ -13,10 +11,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-
 import { Transaction, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
-
 import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
 import { useTransactions } from '@/features/transaction/useTransactions';
 import { useState } from 'react';
@@ -62,6 +58,7 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
             ...data,
             transactionType: transaction.transactionType,
             buyTransaction: buyTransaction._id,
+            oldSoldQuantity: buyTransaction.soldQuantity,
           },
         });
       } else {
