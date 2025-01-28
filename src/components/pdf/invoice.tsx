@@ -1,17 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useInvoice } from '@/features/invoice.ts/useInvoice';
 import Loader from '../ui/loader';
 import ErrorMessage from '../ui/error-message';
 import { formatPrice } from '@/lib/price';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
+import { WhatsappShareButton} from 'react-share'
+import { formatDate } from '@/lib/date';
+import { Invoice as InvoiceType } from '@/types/invoice';
 
 function Invoice() {
   const { isLoading, invoice } = useInvoice();
+
+  const [shareUrl, setShareUrl] = useState<string>('');
 
   const transactionsWithTotal = invoice?.transactions?.map(transaction => {
     let total = transaction.pricePerUnit * transaction.quantity;
@@ -33,6 +38,8 @@ function Invoice() {
 
   const pdfRef = useRef(null);
 
+  console.log(shareUrl)
+
   async function handleClick() {
     const html2pdf = (await import('html2pdf.js')).default as any;
 
@@ -49,6 +56,65 @@ function Invoice() {
 
     html2pdf().set(options).from(element).save();
   }
+
+  useEffect(() => {
+    if (invoice) {
+      const message = getFormattedInvoiceMessage(invoice);
+
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      setShareUrl(whatsappUrl);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoice]);
+
+  function getFormattedInvoiceMessage(invoice: InvoiceType): string {
+    const transactions = invoice.transactions
+      ?.map((transaction: any, index: number) => {
+        return `#${index + 1} - Product: *${transaction.product?.productName || 'N/A'}*
+  Quantity: *${transaction.quantity}*
+  Price Per Unit: *${formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}*
+  Total: *${formatPrice(transaction.pricePerUnit * transaction.quantity, transaction.currency as currencyTypes)}*`;
+      })
+      .join('\n\n');
+
+    const totalAmount = transactionsWithTotal
+      ?.reduce((acc: number, transaction: any) => acc + transaction.total, 0);
+
+      
+
+    return `
+
+*Jwani Balak Company - کۆمپانیای جوانی باڵەک*
+
+--------------------------------------------
+
+ *📄 Invoice Details* ${invoice._id}
+
+--------------------------------------------
+
+👤 Addressed To: *${invoice.addressedTo}*
+
+💼 Seller: *${invoice.seller}*
+🏢 Buyer: *${invoice.buyer}*
+
+📅 Date: ${formatDate(invoice.createdAt)}
+
+----------------------
+
+🛍 Transactions:
+
+${transactions}
+
+----------------------
+
+💵 Total Amount: *${formatPrice(totalAmount, invoice.transactions[0]?.currency as currencyTypes)}*
+
+----------------------
+
+📍 Address: Slemani / Aqary / Park Tower
+📞 Contact: +964 750 990 4445`;
+  }
+  
 
   if (isLoading)
     return (
@@ -73,10 +139,23 @@ function Invoice() {
           </Link>
         </Button>
 
+    
+<div className='flex items-center gap-2'>
+
+        <WhatsappShareButton
+          url={getFormattedInvoiceMessage(invoice)}
+         
+          children={<Button size='sm' variant='outline'><Share2/> Share via WhatsApp</Button>}
+          windowWidth={1000}
+          windowHeight={800}
+          />
+
+
         <Button size="sm" onClick={handleClick}>
           <Download /> Download invoice
         </Button>
       </div>
+          </div>
 
       <Card className="p-0 w-full flex flex-col  border-0 shadow-none" ref={pdfRef}>
         <CardHeader className="space-y-4">
