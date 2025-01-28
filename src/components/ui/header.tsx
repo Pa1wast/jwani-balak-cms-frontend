@@ -15,25 +15,16 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useCompanies } from '@/features/company/useCompanies';
 import { Company } from '@/types/company';
 import Loader from './loader';
-import { useQueryClient } from '@tanstack/react-query';
 import { getImgLocalPath } from '@/lib/getImgLocalPath';
 
 function Header({ className }: { className?: string }) {
   const { pathname } = useLocation();
   const { selectedCompanyId, setSelectedCompany } = useCompaniesView();
   const { isLoading, companies } = useCompanies();
-  const queryClient = useQueryClient();
 
   function handleSelectCompany(id: string) {
     setSelectedCompany(id);
-    queryClient.invalidateQueries({ queryKey: ['transactions'] });
-    queryClient.invalidateQueries({ queryKey: ['transaction'] });
-    queryClient.invalidateQueries({ queryKey: ['products'] });
-    queryClient.invalidateQueries({ queryKey: ['product'] });
-    queryClient.invalidateQueries({ queryKey: ['invoices'] });
-    queryClient.invalidateQueries({ queryKey: ['invoice'] });
-    queryClient.invalidateQueries({ queryKey: ['klesh-notes'] });
-    queryClient.invalidateQueries({ queryKey: ['klesh-note'] });
+    window.location.reload();
   }
 
   return (
