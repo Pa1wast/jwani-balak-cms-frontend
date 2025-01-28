@@ -150,6 +150,7 @@ export default function InvoicesDataTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [globalFilter, setGlobalFilter] = React.useState(''); // Added state for global filter
 
   const table = useReactTable({
     data: invoices,
@@ -168,6 +169,17 @@ export default function InvoicesDataTable() {
       columnVisibility,
       rowSelection,
     },
+    filterFns: {
+      globalFilterFn: (row, filterValue) => {
+        const idMatch = (row.getValue('_id') as string)
+          .toLowerCase()
+          .includes(filterValue.toLowerCase());
+        const addressedToMatch = (row.getValue('addressedTo') as string)
+          .toLowerCase()
+          .includes(filterValue.toLowerCase());
+        return idMatch || addressedToMatch;
+      },
+    },
   });
 
   if (isLoading)
@@ -181,9 +193,12 @@ export default function InvoicesDataTable() {
     <div className="w-full">
       <div className="flex items-center gap-2 py-4">
         <Input
-          placeholder="Filter invoice by addressed to..."
-          value={(table.getColumn('product')?.getFilterValue() as string) ?? ''}
-          onChange={event => table.getColumn('product')?.setFilterValue(event.target.value)}
+          placeholder="Filter invoice by ID or addressed to..."
+          value={globalFilter}
+          onChange={e => {
+            setGlobalFilter(e.target.value);
+            table.setGlobalFilter(e.target.value);
+          }}
           className="max-w-sm"
         />
 
@@ -219,18 +234,16 @@ export default function InvoicesDataTable() {
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={header.id === '_id' ? 'hidden sm:table-cell' : ''}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map(header => (
+                  <TableHead
+                    key={header.id}
+                    className={header.id === '_id' ? 'hidden sm:table-cell' : ''}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -261,24 +274,22 @@ export default function InvoicesDataTable() {
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );
