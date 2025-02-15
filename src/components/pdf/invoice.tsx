@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone, Share2 } from 'lucide-react';
+import { ArrowLeft, Download, Mail, MapPin, Pen, Phone, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
 import { useInvoice } from '@/features/invoice.ts/useInvoice';
@@ -153,7 +153,11 @@ ${transactions}
               <p className="text-lg text-right">للتجارة العامة / المحدودة</p>
             </div>
 
-            <Hexagon className="size-28 text-red-500" />
+            <img
+              src="../../../public/jwani-balak-logo.jpg"
+              alt="Jwani Balak Logo"
+              className="w-40"
+            />
 
             <div className="space-y-2">
               <p className="text-xl font-bold text-right">کۆمپانیای جوانی باڵەک</p>
@@ -190,8 +194,14 @@ ${transactions}
 
         <CardContent className="space-y-0">
           <div className="p-6 flex flex-row justify-between items-end">
-            <div className="space-y-2 ">
-              <p className="font-medium">No : {invoice._id}</p>
+            <div className="space-y-2">
+              <div className="flex gap-2 items-center">
+                <p className="font-medium">No : {invoice.NO}</p>
+
+                <Button variant="outline" size="sm">
+                  <Pen /> Edit
+                </Button>
+              </div>
               <p className="font-medium">
                 Date:
                 {` ${new Date().getFullYear()}/${

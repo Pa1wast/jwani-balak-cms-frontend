@@ -12,16 +12,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 import { Input } from '@/components/ui/input';
 import {
@@ -32,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
 import Loader from '../ui/loader';
 import { useInvoices } from '@/features/invoice.ts/useInvoices';
 import { Invoice } from '@/types/invoice';
@@ -42,13 +34,12 @@ import { formatPrice } from '@/lib/price';
 
 export const columns: ColumnDef<Invoice>[] = [
   {
-    accessorKey: '_id',
-    header: () => <div className="text-left">#ID</div>,
+    accessorKey: 'NO',
+    header: () => <div className="text-left">#NO</div>,
     cell: ({ row }) => (
-      <div className="text-left font-medium hidden sm:block">#{row.getValue('_id')}</div>
+      <div className="text-left font-medium hidden sm:block">#{row.getValue('NO')}</div>
     ),
   },
-
   {
     accessorKey: 'addressedTo',
     enableHiding: false,
@@ -201,32 +192,6 @@ export default function InvoicesDataTable() {
           }}
           className="max-w-sm"
         />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter(column => column.getCanHide())
-              .map(column => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className={cn('capitalize', column.id === '_id' && 'hidden sm:flex')}
-                    checked={column.getIsVisible()}
-                    onCheckedChange={value => column.toggleVisibility(!!value)}
-                  >
-                    {column.id === '_id' ? 'ID' : column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       <div className="rounded-md border">

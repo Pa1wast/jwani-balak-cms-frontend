@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { uploadInvoiceSchema } from '@/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Upload, UploadCloud } from 'lucide-react';
+import { UploadCloud } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
 function UploadedInvoices() {

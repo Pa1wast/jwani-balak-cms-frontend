@@ -3,6 +3,7 @@ import { Transaction } from './transaction';
 
 export interface Invoice {
   _id: string;
+  NO: number;
   transactions: Transaction[];
   company: Company;
   addressedTo: string;
