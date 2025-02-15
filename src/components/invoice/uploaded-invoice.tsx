@@ -5,6 +5,17 @@ import { type UploadedInvoice } from '@/types/invoice';
 import { Download, EllipsisVertical, File, Trash } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Separator } from '../ui/separator';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface UploadedInvoiceProps {
   invoice: UploadedInvoice;
@@ -83,14 +94,33 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
               Download
             </Button>
 
-            <Button
-              variant="ghost"
-              onClick={() => deleteUploadedInvoice(invoice._id)}
-              disabled={isDeleting}
-            >
-              <Trash className="text-destructive" />
-              Delete
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost">
+                  <Trash className="text-destructive" />
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete your account and
+                    remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
+                    onClick={() => deleteUploadedInvoice(invoice._id)}
+                    disabled={isDeleting}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </PopoverContent>
         </Popover>
       </div>
