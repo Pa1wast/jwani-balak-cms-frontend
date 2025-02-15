@@ -13,6 +13,18 @@ interface UploadedInvoiceProps {
 function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
   const { isDeleting, deleteUploadedInvoice } = useDeleteUploadedInvoice();
 
+  const getFileNameWithExtension = () => {
+    const filePath = invoice.filePath;
+    const name = invoice.name;
+
+    // Extract file extension from filePath
+    const extensionMatch = filePath.match(/\.[0-9a-z]+$/i);
+    const extension = extensionMatch ? extensionMatch[0] : '';
+
+    // Ensure filename has an extension
+    return name.includes('.') ? name : `${name}${extension}`;
+  };
+
   const handleDownload = async () => {
     try {
       const fileUrl = getUploadedInvoiceImgLocalPath(invoice.filePath);
@@ -26,7 +38,7 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
 
       const link = document.createElement('a');
       link.href = blobUrl;
-      link.download = invoice.name || 'invoice-file';
+      link.download = getFileNameWithExtension(); // Ensure correct filename
       document.body.appendChild(link);
       link.click();
 
@@ -56,7 +68,7 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
       <Separator />
 
       <div className="flex justify-between items-center p-1">
-        <p className="font-semibold truncate max-w-[150px] text-right">{invoice.name}</p>
+        <p className="font-medium text-sm ml-2 truncate max-w-[150px] text-right">{invoice.name}</p>
 
         <Popover>
           <PopoverTrigger asChild>
