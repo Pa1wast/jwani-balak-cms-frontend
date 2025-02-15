@@ -13,6 +13,11 @@ export interface Invoice {
   updatedAt: string;
 }
 
+export interface UpdatedInvoice {
+  _id: string;
+  NO: number;
+}
+
 export interface UploadedInvoice {
   _id: string;
   company: string;

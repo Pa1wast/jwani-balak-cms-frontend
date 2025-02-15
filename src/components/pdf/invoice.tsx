@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Download, Mail, MapPin, Pen, Phone, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useInvoice } from '@/features/invoice.ts/useInvoice';
 import Loader from '../ui/loader';
 import ErrorMessage from '../ui/error-message';
@@ -12,9 +12,14 @@ import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { WhatsappShareButton } from 'react-share';
 import { formatDate } from '@/lib/date';
 import { Invoice as InvoiceType } from '@/types/invoice';
+import { useUpdateInvoice } from '@/features/invoice.ts/useUpdateInvoice';
+import { Input } from '../ui/input';
 
 function Invoice() {
   const { isLoading, invoice } = useInvoice();
+  const { isUpdating, updateInvoice } = useUpdateInvoice();
+
+  const [invoiceNO, setInvoiceNO] = useState(invoice?.NO);
 
   const transactionsWithTotal = invoice?.transactions?.map(transaction => {
     let total = transaction.pricePerUnit * transaction.quantity;
@@ -196,11 +201,29 @@ ${transactions}
           <div className="p-6 flex flex-row justify-between items-end">
             <div className="space-y-2">
               <div className="flex gap-2 items-center">
-                <p className="font-medium">No : {invoice.NO}</p>
+                <p className="font-medium min-w-max mr-6">No : {invoice.NO}</p>
+                <div className="flex gap-1" data-html2canvas-ignore="true">
+                  <Input
+                    type="text"
+                    value={invoiceNO}
+                    onChange={e => {
+                      const value = e.target.value;
+                      if (!isNaN(Number(value)) && value.length <= 20) setInvoiceNO(Number(value));
+                    }}
+                    disabled={isUpdating}
+                  />
 
-                <Button variant="outline" size="sm">
-                  <Pen /> Edit
-                </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const updatedInvoice = { _id: invoice._id, NO: invoiceNO };
+                      updateInvoice(updatedInvoice);
+                    }}
+                    disabled={isUpdating}
+                  >
+                    <Pen /> Edit
+                  </Button>
+                </div>
               </div>
               <p className="font-medium">
                 Date:
@@ -217,7 +240,7 @@ ${transactions}
           </div>
 
           <div className="flex flex-col gap-1 ">
-            <div className="flex gap-1 h-[550px]">
+            <div className="flex gap-1 h-[455px]">
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
