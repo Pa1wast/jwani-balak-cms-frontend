@@ -38,10 +38,11 @@ export const addExpenseSchema = z.object({
 export const addInvoiceSchema = z.object({
   company: z.string().min(1, 'Company is required'),
   addressedTo: z.string().min(1, 'Addressed To is required'),
-  buyer: z.string().min(1, 'Addressed To is required'),
-  seller: z.string().min(1, 'Addressed To is required'),
+  buyer: z.string().min(1, 'Buyer is required'),
+  seller: z.string().min(1, 'Seller is required'),
 });
 
 export const uploadInvoiceSchema = z.object({
   invoice: z.instanceof(File),
+  name: z.string().min(1, 'Name is required'),
 });

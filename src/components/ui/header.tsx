@@ -15,7 +15,7 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { useCompanies } from '@/features/company/useCompanies';
 import { Company } from '@/types/company';
 import Loader from './loader';
-import { getImgLocalPath } from '@/lib/getImgLocalPath';
+import { getCompanyImgLocalPath } from '@/lib/getImgLocalPath';
 
 function Header({ className }: { className?: string }) {
   const { pathname } = useLocation();
@@ -68,7 +68,7 @@ function Header({ className }: { className?: string }) {
                       <div className="flex gap-2 w-full items-center justify-between text-xs">
                         <Avatar className="h-7 w-7 rounded-none">
                           <AvatarImage
-                            src={getImgLocalPath(company.logo)}
+                            src={getCompanyImgLocalPath(company.logo)}
                             alt={company.companyName}
                             className="dark:bg-white"
                           />

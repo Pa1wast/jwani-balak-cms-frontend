@@ -22,21 +22,35 @@ import { uploadInvoiceSchema } from '@/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UploadCloud } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useUploadedInvoices } from '@/features/invoice.ts/useUploadedInvoices';
+import Loader from '@/components/ui/loader';
+import { useCompaniesView } from '@/contexts/companies-view-context';
+import { useUploadInvoice } from '@/features/invoice.ts/useUploadInvoice';
 
 function UploadedInvoices() {
+  const { isLoading, uploadedInvoices } = useUploadedInvoices();
+  const { isUploading, uploadInvoice } = useUploadInvoice();
+  const { selectedCompanyId } = useCompaniesView();
+
   const form = useForm<z.infer<typeof uploadInvoiceSchema>>({
     resolver: zodResolver(uploadInvoiceSchema),
+    defaultValues: { name: '' },
   });
 
   function onSubmit(values: z.infer<typeof uploadInvoiceSchema>) {
-    console.log(values);
+    const { success, data } = uploadInvoiceSchema.safeParse(values);
+
+    if (success) {
+      const uploadedInvoice = { ...data, company: selectedCompanyId as string };
+      uploadInvoice(uploadedInvoice);
+    }
   }
 
   return (
     <div className="space-y-4">
       <Dialog>
-        <DialogTrigger>
-          <Button>
+        <DialogTrigger asChild>
+          <Button className="mt-6">
             <UploadCloud /> Upload Invoice
           </Button>
         </DialogTrigger>
@@ -48,6 +62,21 @@ function UploadedInvoices() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+
+                    <FormControl>
+                      <Input {...field} type="text" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="invoice"
@@ -73,7 +102,7 @@ function UploadedInvoices() {
                 )}
               />
 
-              <Button type="submit">
+              <Button type="submit" disabled={isUploading}>
                 <UploadCloud /> Upload
               </Button>
             </form>
@@ -81,22 +110,14 @@ function UploadedInvoices() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
-        <UploadedInvoice />
+      <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+        {isLoading ? (
+          <Loader size="lg" className="col-span-6 mt-40" />
+        ) : uploadedInvoices?.length ? (
+          uploadedInvoices?.map(invoice => <UploadedInvoice key={invoice._id} invoice={invoice} />)
+        ) : (
+          <div className="col-span-6 mt-40 mx-auto">No results.</div>
+        )}
       </div>
     </div>
   );

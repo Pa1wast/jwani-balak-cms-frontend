@@ -9,7 +9,5 @@ export async function getInvoices(companyId: string, page = 1, limit = 10000) {
 
   const data = await response.json();
 
-  console.log(data);
-
   return data;
 }
