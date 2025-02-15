@@ -1,18 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from 'react-router-dom';
-
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { ArrowLeft, Download, Hexagon, Mail, MapPin, Phone } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, Download, Mail, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
 import { useKleshNote } from '@/features/klesh/useKleshNote';
 import Loader from '../ui/loader';
 import ErrorMessage from '../ui/error-message';
 import { stripHtmlTags } from '@/lib/pdf';
+import React from 'react';
 
 function KleshNote() {
   const { isLoading, kleshNote } = useKleshNote();
-  const pdfRef = useRef(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   if (isLoading)
     return (
@@ -29,21 +28,25 @@ function KleshNote() {
     );
 
   async function handleClick() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const html2pdf = (await import('html2pdf.js')).default as any;
 
-    if (!pdfRef) return;
+    if (!pdfRef.current) return;
 
     const element = pdfRef.current;
     const options = {
       margin: [10, 10, 10, 10],
       filename: `klesh-${kleshNote._id}.pdf`,
-      html2canvas: { scale: 2, useCORS: true },
+      html2canvas: { scale: 3, useCORS: true },
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+      pagebreak: { mode: ['css', 'legacy'] },
     };
 
     html2pdf().set(options).from(element).save();
   }
+
+  const rawText = stripHtmlTags(kleshNote.note);
+  const textChunks = rawText.match(/.{1,2000}/g) || [];
 
   return (
     <div className="w-full max-w-3xl mx-auto relative">
@@ -59,73 +62,87 @@ function KleshNote() {
         </Button>
       </div>
 
-      <Card className="p-6 border-0 shadow-none" ref={pdfRef}>
-        <CardHeader className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2 text-right">
-              <p className="text-xl font-bold">شرکە جوانی بالک</p>
-              <p className="text-lg">للتجارة العامة / المحدودة</p>
-            </div>
-
-            <Hexagon className="w-7 h-7 text-red-500" />
-
-            <div className="space-y-2 text-right">
-              <p className="text-xl font-bold">کۆمپانیای جوانی باڵەک</p>
-              <p className="text-lg">بۆ بازرگانی گشتی / سنوردار</p>
-            </div>
-          </div>
-        </CardHeader>
-
-        <div className="w-full h-[4px] flex">
-          <div className="bg-red-500 h-full flex-1" />
-          <div className="bg-black/60 h-full flex-1" />
-          <div className="bg-red-500 h-full flex-1" />
-        </div>
-
+      <Card className="p-0 border-0 shadow-none min-h-[800px]" ref={pdfRef}>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <p>No : {kleshNote._id}</p>
-            <p>
-              Date:
-              {` ${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate()}`}
-            </p>
-          </div>
+          <div className="text-right leading-relaxed break-words" dir="rtl" lang="ku">
+            {textChunks.map((chunk, index) => (
+              <React.Fragment key={index}>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2 text-right">
+                      <p className="text-xl font-bold">شرکە جوانی بالک</p>
+                      <p className="text-lg">للتجارة العامة / المحدودة</p>
+                    </div>
 
-          <div className="text-right leading-relaxed break-words h-[690px]" dir="rtl" lang="ku">
-            {stripHtmlTags(kleshNote.note.replace(/<p>|<\/p>|<br>/gim, ''))}
+                    <img
+                      src="../../../public/jwani-balak-logo.jpg"
+                      alt="Jwani Balak Logo"
+                      className="w-40"
+                    />
+
+                    <div className="space-y-2 text-right">
+                      <p className="text-xl font-bold">کۆمپانیای جوانی باڵەک</p>
+                      <p className="text-lg">بۆ بازرگانی گشتی / سنوردار</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full h-[4px] flex">
+                  <div className="bg-red-500 h-full flex-1" />
+                  <div className="bg-black/60 h-full flex-1" />
+                  <div className="bg-red-500 h-full flex-1" />
+                </div>
+
+                <div className="space-y-2 mt-2 mb-2">
+                  <p className="font-semibold">No : {kleshNote._id}</p>
+                  <p className="font-semibold">
+                    Date:
+                    {` ${new Date().getFullYear()}/${
+                      new Date().getMonth() + 1
+                    }/${new Date().getDate()}`}
+                  </p>
+                </div>
+
+                <div className="min-h-[700px] flex flex-col justify-between">
+                  <p>{chunk}</p>
+
+                  <div className="flex mt-auto gap-2 justify-between">
+                    <div className="flex gap-2 items-center">
+                      <Mail className="w-5 h-5 text-red-500" />
+                      jwanibalakco@gmail.com
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-5 h-5 text-red-500" />
+                      <div>
+                        <p>+964 750 990 4445</p>
+                        <p>+964 770 990 4445</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 items-center">
+                      <MapPin className="w-5 h-5 text-red-500" />
+                      Slemani / Aqary / Park Tower
+                    </div>
+                  </div>
+
+                  <div className="w-full h-12 flex">
+                    <div className="bg-red-400 h-full flex-1" />
+                    <div className="bg-red-500 h-full flex-1" />
+                    <div className="bg-red-600 h-full flex-1" />
+                    <div className="bg-red-700 h-full flex-1" />
+                    <div className="bg-red-800 h-full flex-1" />
+                    <div className="bg-red-900 h-full flex-1" />
+                  </div>
+                </div>
+
+                {index < textChunks.length - 1 && (
+                  <div className="html2pdf__page-break" style={{ pageBreakAfter: 'always' }} />
+                )}
+              </React.Fragment>
+            ))}
           </div>
         </CardContent>
-
-        <CardFooter className="flex justify-around mb-6">
-          <div className="flex flex-row items-center gap-6">
-            <div className="flex gap-2 items-center">
-              <Mail className="w-5 h-5 text-red-500" />
-              jwanibalakco@gmail.com
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Phone className="w-5 h-5 text-red-500" />
-              <div>
-                <p>+964 750 990 4445</p>
-                <p>+964 770 990 4445</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2 items-center">
-              <MapPin className="w-5 h-5 text-red-500" />
-              Slemani / Aqary / Park Tower
-            </div>
-          </div>
-        </CardFooter>
-
-        <div className="w-full h-12 flex">
-          <div className="bg-red-400 h-full flex-1" />
-          <div className="bg-red-500 h-full flex-1" />
-          <div className="bg-red-600 h-full flex-1" />
-          <div className="bg-red-700 h-full flex-1" />
-          <div className="bg-red-800 h-full flex-1" />
-          <div className="bg-red-900 h-full flex-1" />
-        </div>
       </Card>
     </div>
   );

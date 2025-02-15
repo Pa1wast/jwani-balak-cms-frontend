@@ -71,7 +71,7 @@ function KleshNoteCard({ kleshNote, onClick, setContent, setSelectedNoteId }: Kl
         </AlertDialog>
       </CardHeader>
 
-      <CardContent className="p-2 bg-secondary/80  flex-1 text-sm rounded-lg text-right">
+      <CardContent className="p-2 bg-secondary/80  flex-1 text-sm rounded-lg text-right truncate">
         {stripHtmlTags(
           kleshNote?.note?.length > 100
             ? kleshNote?.note
