@@ -16,8 +16,6 @@ interface AddInvoiceFormProps {
 function AddInvoiceForm({ transactions }: AddInvoiceFormProps) {
   const { selectedCompanyId } = useCompaniesView();
 
-  console.log({ transactions });
-
   const { isAdding, addInvoice } = useAddInvoice();
 
   const form = useForm<z.infer<typeof addInvoiceSchema>>({

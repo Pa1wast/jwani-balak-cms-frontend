@@ -22,6 +22,8 @@ import { CompaniesViewProvider } from '@/contexts/companies-view-context';
 import { KleshNotesEditorProvider } from '@/contexts/klesh-notes-context';
 import PdfPageLayout from './components/pdf/pdf-page-layout';
 import TransactionDetails from './components/transaction/transaction-details';
+import InvoicesLayout from './components/invoice/invoices-layout';
+import UploadedInvoices from './pages/uploaded-invoices';
 
 const queryClient = new QueryClient();
 
@@ -43,7 +45,13 @@ function App() {
                     path="/dashboard/transactions/:transactionId"
                     element={<TransactionDetails />}
                   />
-                  <Route path="/dashboard/invoices" element={<Invoices />} />
+                  <Route path="/dashboard/invoices" element={<InvoicesLayout />}>
+                    <Route index element={<Invoices />} />
+                    <Route
+                      path="/dashboard/invoices/uploaded-invoices"
+                      element={<UploadedInvoices />}
+                    />
+                  </Route>
 
                   <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
                 </Route>

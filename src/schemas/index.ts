@@ -41,3 +41,7 @@ export const addInvoiceSchema = z.object({
   buyer: z.string().min(1, 'Addressed To is required'),
   seller: z.string().min(1, 'Addressed To is required'),
 });
+
+export const uploadInvoiceSchema = z.object({
+  invoice: z.instanceof(File),
+});
