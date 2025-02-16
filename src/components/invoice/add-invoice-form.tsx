@@ -3,9 +3,16 @@ import { useForm } from 'react-hook-form';
 import { addInvoiceSchema } from '@/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAddInvoice } from '@/features/invoice.ts/useAddInvoice';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { Transaction } from '@/types/transaction';
 

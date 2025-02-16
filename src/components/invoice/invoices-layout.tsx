@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { FilePlus, Upload } from 'lucide-react';
 
 function InvoicesLayout() {

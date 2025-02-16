@@ -5,15 +5,15 @@ import { ArrowLeft, Download, Mail, MapPin, Pen, Phone, Share2 } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { useRef, useState } from 'react';
 import { useInvoice } from '@/features/invoice.ts/useInvoice';
-import Loader from '../ui/loader';
-import ErrorMessage from '../ui/error-message';
+import Loader from '@/components/ui/loader';
+import ErrorMessage from '@/components//ui/error-message';
 import { formatPrice } from '@/lib/price';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { WhatsappShareButton } from 'react-share';
 import { formatDate } from '@/lib/date';
 import { Invoice as InvoiceType } from '@/types/invoice';
 import { useUpdateInvoice } from '@/features/invoice.ts/useUpdateInvoice';
-import { Input } from '../ui/input';
+import { Input } from '@/components//ui/input';
 
 function Invoice() {
   const { isLoading, invoice } = useInvoice();
@@ -49,7 +49,7 @@ function Invoice() {
     const element = pdfRef.current;
     const options = {
       margin: 0,
-      filename: `invoice-${invoice._id}.pdf`,
+      filename: `invoice-${invoice.NO}.pdf`,
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
@@ -198,21 +198,10 @@ ${transactions}
         </div>
 
         <CardContent className="space-y-0">
-          <div className="p-6 flex flex-row justify-between items-end">
-            <div className="space-y-2">
+          <div className="p-3 flex flex-col justify-between items-end">
+            <div className="space-y-1 mb-2">
               <div className="flex gap-2 items-center">
-                <p className="font-medium min-w-max mr-6">No : {invoice.NO}</p>
                 <div className="flex gap-1" data-html2canvas-ignore="true">
-                  <Input
-                    type="text"
-                    value={invoiceNO}
-                    onChange={e => {
-                      const value = e.target.value;
-                      if (!isNaN(Number(value)) && value.length <= 20) setInvoiceNO(Number(value));
-                    }}
-                    disabled={isUpdating}
-                  />
-
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -223,9 +212,21 @@ ${transactions}
                   >
                     <Pen /> Edit
                   </Button>
+
+                  <Input
+                    type="text"
+                    value={invoiceNO}
+                    onChange={e => {
+                      const value = e.target.value;
+                      if (!isNaN(Number(value)) && value.length <= 20) setInvoiceNO(Number(value));
+                    }}
+                    disabled={isUpdating}
+                  />
                 </div>
+
+                <p className="font-medium min-w-max">No : {invoice.NO}</p>
               </div>
-              <p className="font-medium">
+              <p className="font-medium ml-auto w-max ">
                 Date:
                 {` ${new Date().getFullYear()}/${
                   new Date().getMonth() + 1
@@ -240,7 +241,7 @@ ${transactions}
           </div>
 
           <div className="flex flex-col gap-1 ">
-            <div className="flex gap-1 h-[455px]">
+            <div className="flex gap-1 h-[430px]">
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">

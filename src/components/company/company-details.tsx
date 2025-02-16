@@ -17,7 +17,13 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import UpdateCompanyForm from './update-company-form';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useDeleteCompany } from '@/features/company/useDeleteCompany';
 import { Link, useNavigate } from 'react-router-dom';
 import { getCompanyImgLocalPath } from '@/lib/getImgLocalPath';

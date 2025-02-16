@@ -61,20 +61,16 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
   };
 
   return (
-    <div className="flex flex-col border rounded-md">
-      <Button variant="ghost" className="p-1" asChild>
-        {isImage(invoice.filePath) ? (
-          <img
-            src={getUploadedInvoiceImgLocalPath(invoice.filePath)}
-            alt={invoice.name}
-            className="w-full h-40"
-          />
-        ) : (
-          <div className="w-full h-40">
-            <File />
-          </div>
-        )}
-      </Button>
+    <div className="flex flex-col border rounded-md overflow-hidden">
+      {isImage(invoice.filePath) ? (
+        <img
+          src={getUploadedInvoiceImgLocalPath(invoice.filePath)}
+          alt={invoice.name}
+          className="w-full h-40"
+        />
+      ) : (
+        <File className="size-14 mx-auto my-auto" />
+      )}
 
       <Separator />
 

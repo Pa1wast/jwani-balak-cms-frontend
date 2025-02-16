@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTransactions } from '@/features/transaction/useTransactions';
-import TransactionsChart from '../transaction/transactions-chart';
-import FinanceChart from '../ui/finance-chart';
+import TransactionsChart from '@/components/transaction/transactions-chart';
+import FinanceChart from '@/components/ui/finance-chart';
 import { useCompaniesView } from '@/contexts/companies-view-context';
-import ErrorMessage from '../ui/error-message';
+import ErrorMessage from '@/components/ui/error-message';
 import { ArrowLeft, Download } from 'lucide-react';
 import { useCompany } from '@/features/company/useCompany';
 import { useRef, useState } from 'react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import Loader from '../ui/loader';
+import Loader from '@/components/ui/loader';
 import { formatPrice } from '@/lib/price';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { cn } from '@/lib/utils';
-import { Separator } from '../ui/separator';
+import { Separator } from '@/components/ui/separator';
 import { useProducts } from '@/features/product/useProducts';
 
 function Report() {

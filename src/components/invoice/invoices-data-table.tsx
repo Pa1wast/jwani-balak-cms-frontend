@@ -25,10 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import Loader from '../ui/loader';
+import Loader from '@/components/ui/loader';
 import { useInvoices } from '@/features/invoice.ts/useInvoices';
 import { Invoice } from '@/types/invoice';
-import InvoiceRowActions from './invoice-row-actions';
+import InvoiceRowActions from '@/components/invoice/invoice-row-actions';
 import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
 import { formatPrice } from '@/lib/price';
 

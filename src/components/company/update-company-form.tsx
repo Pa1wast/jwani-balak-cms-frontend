@@ -4,9 +4,16 @@ import { useForm } from 'react-hook-form';
 import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { registerCompnaySchema } from '@/schemas';
-import { Input } from '../ui/input';
+import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateCompany } from '@/features/company/useUpdateCompany';
 import { Company } from '@/types/company';

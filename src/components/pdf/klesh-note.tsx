@@ -1,17 +1,22 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Download, Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowLeft, Download, Mail, MapPin, Pen, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useKleshNote } from '@/features/klesh/useKleshNote';
-import Loader from '../ui/loader';
-import ErrorMessage from '../ui/error-message';
+import Loader from '@/components//ui/loader';
+import ErrorMessage from '@/components//ui/error-message';
 import { stripHtmlTags } from '@/lib/pdf';
 import React from 'react';
+import { Input } from '@/components//ui/input';
+import { useUpdateKleshNote } from '@/features/klesh/useUpdateKleshNote';
 
 function KleshNote() {
   const { isLoading, kleshNote } = useKleshNote();
+  const { isUpdating, updateKleshNote } = useUpdateKleshNote();
+
   const pdfRef = useRef<HTMLDivElement>(null);
+  const [kleshNO, setKleshNO] = useState(kleshNote?.NO);
 
   if (isLoading)
     return (
@@ -36,7 +41,7 @@ function KleshNote() {
     const element = pdfRef.current;
     const options = {
       margin: [10, 10, 10, 10],
-      filename: `klesh-${kleshNote._id}.pdf`,
+      filename: `klesh-${kleshNote.NO}.pdf`,
       html2canvas: { scale: 3, useCORS: true },
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'] },
@@ -94,7 +99,34 @@ function KleshNote() {
                 </div>
 
                 <div className="space-y-2 mt-2 mb-2">
-                  <p className="font-semibold">No : {kleshNote._id}</p>
+                  <div className="flex gap-2 items-center">
+                    <p className="font-semibold">No : {kleshNote.NO}</p>
+
+                    <div className="flex gap-1" data-html2canvas-ignore="true">
+                      <Input
+                        type="text"
+                        value={kleshNO}
+                        onChange={e => {
+                          const value = e.target.value;
+                          if (!isNaN(Number(value)) && value.length <= 20)
+                            setKleshNO(Number(value));
+                        }}
+                        disabled={isUpdating}
+                      />
+
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          const updatedKleshNote = { NO: kleshNO };
+                          updateKleshNote({ kleshNoteId: kleshNote._id, updatedKleshNote });
+                        }}
+                        disabled={isUpdating}
+                      >
+                        <Pen /> Edit
+                      </Button>
+                    </div>
+                  </div>
+
                   <p className="font-semibold">
                     Date:
                     {` ${new Date().getFullYear()}/${

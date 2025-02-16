@@ -35,7 +35,7 @@ function KleshNoteCard({ kleshNote, onClick, setContent, setSelectedNoteId }: Kl
       )}
     >
       <CardHeader className="p-0 pb-2 space-y-0 flex-row justify-between items-center">
-        <p className="text-xs font-semibold pl-2 truncate">#{kleshNote._id}</p>
+        <p className="text-xs font-semibold pl-2 truncate">#{kleshNote.NO}</p>
 
         <AlertDialog>
           <AlertDialogTrigger asChild>

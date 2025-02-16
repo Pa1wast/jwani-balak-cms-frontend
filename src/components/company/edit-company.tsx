@@ -21,8 +21,14 @@ import { useState } from 'react';
 import useIsMobile from '@/hooks/useIsMobile';
 import { useDeleteCompany } from '@/features/company/useDeleteCompany';
 import { Company } from '@/types/company';
-import UpdateCompanyForm from './update-company-form';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import UpdateCompanyForm from '@/components/company/update-company-form';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface EditCompanyProps {
   dialog?: boolean;
