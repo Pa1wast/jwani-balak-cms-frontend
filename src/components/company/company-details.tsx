@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import UpdateCompanyForm from './update-company-form';
+import UpdateCompanyForm from '@/components/company/update-company-form';
 import {
   Dialog,
   DialogContent,

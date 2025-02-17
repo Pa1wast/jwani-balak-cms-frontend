@@ -22,8 +22,14 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useDeleteProduct } from '@/features/product/useDeleteProduct';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import UpdateProductForm from './update-product-form';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import UpdateProductForm from '@/components/product/update-product-form';
 import { Product } from '@/types/product';
 
 function ProductRowActions({ product }: { product: Product }) {

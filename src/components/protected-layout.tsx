@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import Loader from './ui/loader';
+import Loader from '@/components/ui/loader';
 import { useEffect } from 'react';
 
 function ProtectedLayout() {

@@ -36,9 +36,9 @@ import {
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/product';
 import { useProducts } from '@/features/product/useProducts';
-import Loader from '../ui/loader';
-import ProductRowActions from './product-row-actions';
-import ProductStockQuantity from './product-stock-quantity';
+import Loader from '@/components/ui/loader';
+import ProductRowActions from '@/components/product/product-row-actions';
+import ProductStockQuantity from '@/components/product/product-stock-quantity';
 
 export const columns: ColumnDef<Product>[] = [
   {

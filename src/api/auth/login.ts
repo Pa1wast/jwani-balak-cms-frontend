@@ -1,5 +1,7 @@
-export async function loginApi() {
+export async function loginApi(passcode) {
   const apiUrl = 'http://localhost:8080/login';
+
+  const hashedPasscode = passcode;
 
   const response = await fetch(apiUrl, {
     method: 'POST',

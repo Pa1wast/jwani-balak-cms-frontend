@@ -24,8 +24,8 @@ import TransactionDetails from '@/components/transaction/transaction-details';
 import InvoicesLayout from '@/components/invoice/invoices-layout';
 import UploadedInvoices from '@/pages/uploaded-invoices';
 import PageNotFound from '@/components/page-not-found';
-import ProtectedLayout from './components/protected-layout';
-import Login from './pages/login';
+import ProtectedLayout from '@/components/protected-layout';
+import Login from '@/pages/login';
 
 const queryClient = new QueryClient();
 
