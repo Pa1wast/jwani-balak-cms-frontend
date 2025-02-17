@@ -28,11 +28,9 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
     const filePath = invoice.filePath;
     const name = invoice.name;
 
-    // Extract file extension from filePath
     const extensionMatch = filePath.match(/\.[0-9a-z]+$/i);
     const extension = extensionMatch ? extensionMatch[0] : '';
 
-    // Ensure filename has an extension
     return name.includes('.') ? name : `${name}${extension}`;
   };
 
@@ -40,7 +38,6 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
     try {
       const fileUrl = getUploadedInvoiceImgLocalPath(invoice.filePath);
 
-      // Fetch the file as a Blob
       const response = await fetch(fileUrl);
       if (!response.ok) throw new Error('File download failed');
 
@@ -49,7 +46,7 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
 
       const link = document.createElement('a');
       link.href = blobUrl;
-      link.download = getFileNameWithExtension(); // Ensure correct filename
+      link.download = getFileNameWithExtension();
       document.body.appendChild(link);
       link.click();
 
@@ -69,7 +66,7 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
           className="w-full h-40"
         />
       ) : (
-        <File className="size-14 mx-auto my-auto" />
+        <File className="size-14 mx-auto my-auto h-40" />
       )}
 
       <Separator />

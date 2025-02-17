@@ -46,3 +46,7 @@ export const uploadInvoiceSchema = z.object({
   invoice: z.instanceof(File),
   name: z.string().min(1, 'Name is required'),
 });
+
+export const loginSchema = z.object({
+  passcode: z.string().min(1, 'Passcode is required'),
+});

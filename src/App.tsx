@@ -19,10 +19,13 @@ import KleshNote from '@/components/pdf/klesh-note';
 import { DarkModeProvider } from '@/contexts/dark-mode-context';
 import { CompaniesViewProvider } from '@/contexts/companies-view-context';
 import { KleshNotesEditorProvider } from '@/contexts/klesh-notes-context';
-import PdfPageLayout from './components/pdf/pdf-page-layout';
-import TransactionDetails from './components/transaction/transaction-details';
-import InvoicesLayout from './components/invoice/invoices-layout';
-import UploadedInvoices from './pages/uploaded-invoices';
+import PdfPageLayout from '@/components/pdf/pdf-page-layout';
+import TransactionDetails from '@/components/transaction/transaction-details';
+import InvoicesLayout from '@/components/invoice/invoices-layout';
+import UploadedInvoices from '@/pages/uploaded-invoices';
+import PageNotFound from '@/components/page-not-found';
+import ProtectedLayout from './components/protected-layout';
+import Login from './pages/login';
 
 const queryClient = new QueryClient();
 
@@ -34,30 +37,35 @@ function App() {
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
               <Routes>
-                <Route index element={<Home />} />
-                <Route path="dashboard" element={<DashboardLayout />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="/dashboard/products" element={<Products />} />
-                  <Route path="/dashboard/transactions" element={<Transactions />} />
-                  <Route
-                    path="/dashboard/transactions/:transactionId"
-                    element={<TransactionDetails />}
-                  />
-                  <Route path="/dashboard/invoices" element={<InvoicesLayout />}>
-                    <Route index element={<Invoices />} />
+                <Route element={<ProtectedLayout />}>
+                  <Route index element={<Home />} />
+                  <Route path="dashboard" element={<DashboardLayout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="/dashboard/products" element={<Products />} />
+                    <Route path="/dashboard/transactions" element={<Transactions />} />
                     <Route
-                      path="/dashboard/invoices/uploaded-invoices"
-                      element={<UploadedInvoices />}
+                      path="/dashboard/transactions/:transactionId"
+                      element={<TransactionDetails />}
                     />
-                  </Route>
+                    <Route path="/dashboard/invoices" element={<InvoicesLayout />}>
+                      <Route index element={<Invoices />} />
+                      <Route
+                        path="/dashboard/invoices/uploaded-invoices"
+                        element={<UploadedInvoices />}
+                      />
+                    </Route>
 
-                  <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
+                    <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
+                  </Route>
+                  <Route path="/pdf" element={<PdfPageLayout />}>
+                    <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
+                    <Route path="/pdf/klesh/:noteId" element={<KleshNote />} />
+                    <Route path="/pdf/report/:reportId" element={<Report />} />
+                  </Route>
                 </Route>
-                <Route path="/pdf" element={<PdfPageLayout />}>
-                  <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
-                  <Route path="/pdf/klesh/:noteId" element={<KleshNote />} />
-                  <Route path="/pdf/report/:reportId" element={<Report />} />
-                </Route>
+
+                <Route path="login" element={<Login />} />
+                <Route path="*" element={<PageNotFound />} />
               </Routes>
             </BrowserRouter>
             <Toaster position="top-center" />

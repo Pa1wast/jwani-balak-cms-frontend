@@ -14,11 +14,11 @@ export function useAddKleshNote() {
   } = useMutation({
     mutationFn: (newKleshNote: NewKleshNote) => addKleshNoteApi(newKleshNote),
     onSuccess: () => {
-      toast.success('Klesh note successfully added', { position: 'bottom-center' });
+      toast.success('Klesh note successfully added');
       queryClient.invalidateQueries({ queryKey: ['klesh-notes'] });
       queryClient.invalidateQueries({ queryKey: ['klesh-notes'] });
     },
-    onError: err => toast.error(err.message, { position: 'bottom-center' }),
+    onError: err => toast.error(err.message),
   });
 
   const addedKleshNote: KleshNote = data?.data?.klesh;
