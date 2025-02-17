@@ -1,7 +1,7 @@
 import { NewUploadedInvoice } from '@/types/invoice';
 
 export async function uploadInvoiceApi(newUploadedInvoice: NewUploadedInvoice) {
-  const apiUrl = 'http://localhost:8080/uploadedInvoices';
+  const apiUrl = 'http://85.217.171.125:8080/uploadedInvoices';
 
   const formData = new FormData();
   formData.append('company', newUploadedInvoice.company);

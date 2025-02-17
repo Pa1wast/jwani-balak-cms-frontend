@@ -1,7 +1,7 @@
 import { NewInvoice } from '@/types/invoice';
 
 export async function addInvoiceApi(newInvoice: NewInvoice) {
-  const apiUrl = 'http://localhost:8080/invoice';
+  const apiUrl = 'http://85.217.171.125:8080/invoice';
 
   console.log(newInvoice);
 

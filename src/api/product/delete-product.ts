@@ -1,5 +1,5 @@
 export async function deleteProductApi(productId: string) {
-  const apiUrl = `http://localhost:8080/product/${productId}`;
+  const apiUrl = `http://85.217.171.125:8080/product/${productId}`;
 
   const response = await fetch(apiUrl, {
     method: 'DELETE',

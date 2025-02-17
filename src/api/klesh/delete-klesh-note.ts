@@ -1,5 +1,5 @@
 export async function deleteKleshNoteApi(kleshNoteId: string) {
-  const apiUrl = `http://localhost:8080/klesh/${kleshNoteId}`;
+  const apiUrl = `http://85.217.171.125:8080/klesh/${kleshNoteId}`;
   console.log('lol');
   const response = await fetch(apiUrl, {
     method: 'DELETE',

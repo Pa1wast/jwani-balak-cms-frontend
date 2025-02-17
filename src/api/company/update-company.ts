@@ -7,7 +7,7 @@ export async function updateCompanyApi({
   companyId: string;
   updatedCompany: NewCompany;
 }) {
-  const apiUrl = `http://localhost:8080/company/${companyId}`;
+  const apiUrl = `http://85.217.171.125:8080/company/${companyId}`;
 
   const formData = new FormData();
   formData.append('companyName', updatedCompany.companyName);

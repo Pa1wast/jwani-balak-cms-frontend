@@ -1,5 +1,5 @@
 export async function deleteUploadedInvoiceApi(uploadedInvoiceId: string) {
-  const apiUrl = `http://localhost:8080/uploadedInvoices/${uploadedInvoiceId}`;
+  const apiUrl = `http://85.217.171.125:8080/uploadedInvoices/${uploadedInvoiceId}`;
 
   const response = await fetch(apiUrl, {
     method: 'DELETE',

@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 
 export async function loginApi(passcode: string) {
-  const apiUrl = 'http://localhost:8080/login';
+  const apiUrl = 'http://85.217.171.125:8080/login';
 
   const hashedPasscode = await bcrypt.hash(passcode, 10);
 

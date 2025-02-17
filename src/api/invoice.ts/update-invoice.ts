@@ -1,7 +1,7 @@
 import { UpdatedInvoice } from '@/types/invoice';
 
 export async function updateInvoiceApi(updatedInvoice: UpdatedInvoice) {
-  const apiUrl = `http://localhost:8080/invoice/${updatedInvoice._id}`;
+  const apiUrl = `http://85.217.171.125:8080/invoice/${updatedInvoice._id}`;
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',

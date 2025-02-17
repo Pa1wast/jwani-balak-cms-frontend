@@ -1,5 +1,5 @@
 export async function getTransactionsByProductId(productId: string) {
-  const apiUrl = `http://localhost:8080/transaction?productId=${productId}`;
+  const apiUrl = `http://85.217.171.125:8080/transaction?productId=${productId}`;
   const response = await fetch(apiUrl);
 
   if (!response.ok) {

@@ -7,7 +7,7 @@ export async function updateTransactionApi({
   transactionId: string;
   updatedTransaction: UpdatedTransaction;
 }) {
-  const apiUrl = `http://localhost:8080/transaction/${transactionId}`;
+  const apiUrl = `http://85.217.171.125:8080/transaction/${transactionId}`;
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',
