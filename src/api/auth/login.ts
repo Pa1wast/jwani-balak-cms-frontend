@@ -1,14 +1,16 @@
-export async function loginApi(passcode) {
+import bcrypt from 'bcryptjs';
+
+export async function loginApi(passcode: string) {
   const apiUrl = 'http://localhost:8080/login';
 
-  const hashedPasscode = await bcrypt.hash(password, 10);
+  const hashedPasscode = await bcrypt.hash(passcode, 10);
 
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ passcode: 'passcode1234' }),
+    body: JSON.stringify({ hashedPasscode }),
   });
 
   if (!response.ok) {

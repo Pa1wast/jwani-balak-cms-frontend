@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import bcrypt from 'bcryptjs';
 
 function Login() {
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -21,11 +22,13 @@ function Login() {
     defaultValues: { passcode: '' },
   });
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
     const { success, data } = loginSchema.safeParse(values);
 
     if (success) {
-      console.log(data);
+      const hashedPasscode = await bcrypt.hash(data.passcode, 10);
+
+      console.log(hashedPasscode);
     }
   }
 
