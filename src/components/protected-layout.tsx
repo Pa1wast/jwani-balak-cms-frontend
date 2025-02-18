@@ -5,9 +5,10 @@ import { useEffect } from 'react';
 function ProtectedLayout() {
   const navigate = useNavigate();
 
-  const { isLoading, isAuthenticated } = { isLoading: false, isAuthenticated: true };
+  const { isLoading, isAuthenticated } = { isLoading: false, isAuthenticated: false };
 
   useEffect(() => {
+    console.log(document.cookie);
     if (!isAuthenticated && !isLoading) navigate('/login');
   }, [isAuthenticated, isLoading, navigate]);
 

@@ -14,9 +14,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import bcrypt from 'bcryptjs';
+import { useLogin } from '@/features/auth/useLogin';
 
 function Login() {
+  const { isPending, login } = useLogin();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { passcode: '' },
@@ -26,9 +27,7 @@ function Login() {
     const { success, data } = loginSchema.safeParse(values);
 
     if (success) {
-      const hashedPasscode = await bcrypt.hash(data.passcode, 10);
-
-      console.log(hashedPasscode);
+      login(data.passcode);
     }
   }
 
@@ -56,7 +55,7 @@ function Login() {
                     <FormLabel className="font-semibold">Passcode</FormLabel>
 
                     <FormControl>
-                      <Input {...field} type="text" />
+                      <Input {...field} type="password" />
                     </FormControl>
 
                     <FormMessage />
@@ -64,7 +63,7 @@ function Login() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isPending}>
                 Login
               </Button>
             </form>

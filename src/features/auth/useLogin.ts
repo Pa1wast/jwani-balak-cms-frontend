@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 export function useLogin() {
   const { mutate: login, isPending } = useMutation({
-    mutationFn: loginApi,
+    mutationFn: (passcode: string) => loginApi(passcode),
     onSuccess: () => {
       toast.success('Logged in successfully');
     },
