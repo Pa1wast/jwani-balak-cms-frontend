@@ -37,7 +37,7 @@ function Login() {
         <CardHeader>
           <CardTitle className="flex flex-col gap-2 bg-white rounded-md">
             <img
-              src="../../../public/jwani-balak-logo.jpg"
+              src="/public/jwani-balak-logo.jpg"
               alt="Jwani Balak Logo"
               className="w-40 mx-auto"
             />
