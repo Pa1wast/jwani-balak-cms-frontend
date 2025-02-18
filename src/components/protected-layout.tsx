@@ -1,16 +1,25 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import Loader from '@/components/ui/loader';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getCookie } from '@/lib/cookie';
 
 function ProtectedLayout() {
   const navigate = useNavigate();
-
-  const { isLoading, isAuthenticated } = { isLoading: false, isAuthenticated: false };
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(document.cookie);
-    if (!isAuthenticated && !isLoading) navigate('/login');
-  }, [isAuthenticated, isLoading, navigate]);
+    const authToken = getCookie('auth');
+
+    if (authToken) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+      navigate('/login');
+    }
+
+    setIsLoading(false);
+  }, [navigate]);
 
   if (isLoading)
     return (
