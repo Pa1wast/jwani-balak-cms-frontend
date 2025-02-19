@@ -1,3 +1,4 @@
+import { API_URL } from '@/lib/api-url';
 import { NewProduct } from '@/types/product';
 
 export async function updateProductApi({
@@ -7,7 +8,7 @@ export async function updateProductApi({
   productId: string;
   updatedProduct: NewProduct;
 }) {
-  const apiUrl = `http://85.217.171.125:8080/product/${productId}`;
+  const apiUrl = `${API_URL}/product/${productId}`;
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',

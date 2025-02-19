@@ -1,7 +1,8 @@
+import { API_URL } from '@/lib/api-url';
 import { NewCompany } from '@/types/company';
 
 export async function addCompanyApi(newCompany: NewCompany) {
-  const apiUrl = 'http://85.217.171.125:8080/company';
+  const apiUrl = `${API_URL}/company`;
 
   const formData = new FormData();
   formData.append('companyName', newCompany.companyName);

@@ -1,7 +1,8 @@
+import { API_URL } from '@/lib/api-url';
 import { NewTransaction } from '@/types/transaction';
 
 export async function addTransactionApi(newTransaction: NewTransaction) {
-  const apiUrl = 'http://85.217.171.125:8080/transaction';
+  const apiUrl = `${API_URL}/transaction`;
 
   const response = await fetch(apiUrl, {
     method: 'POST',

@@ -1,7 +1,8 @@
+import { API_URL } from '@/lib/api-url';
 import { NewProduct } from '@/types/product';
 
 export async function addProductApi(newProduct: NewProduct) {
-  const apiUrl = 'http://85.217.171.125:8080/product';
+  const apiUrl = `${API_URL}/product`;
 
   const response = await fetch(apiUrl, {
     method: 'POST',

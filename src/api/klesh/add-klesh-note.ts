@@ -1,7 +1,8 @@
+import { API_URL } from '@/lib/api-url';
 import { NewKleshNote } from '@/types/klesh-note';
 
 export async function addKleshNoteApi(newKleshNote: NewKleshNote) {
-  const apiUrl = 'http://85.217.171.125:8080/klesh';
+  const apiUrl = `${API_URL}/klesh`;
 
   const response = await fetch(apiUrl, {
     method: 'POST',

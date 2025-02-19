@@ -1,5 +1,7 @@
+import { API_URL } from '@/lib/api-url';
+
 export async function deleteKleshNoteApi(kleshNoteId: string) {
-  const apiUrl = `http://85.217.171.125:8080/klesh/${kleshNoteId}`;
+  const apiUrl = `${API_URL}/klesh/${kleshNoteId}`;
   console.log('lol');
   const response = await fetch(apiUrl, {
     method: 'DELETE',

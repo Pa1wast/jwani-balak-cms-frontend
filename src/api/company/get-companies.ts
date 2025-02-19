@@ -1,5 +1,7 @@
+import { API_URL } from '@/lib/api-url';
+
 export async function getCompanies() {
-  const apiUrl = 'http://85.217.171.125:8080/company?page=1&limit=10000';
+  const apiUrl = `${API_URL}/company?page=1&limit=10000`;
   const response = await fetch(apiUrl);
 
   if (!response.ok) {

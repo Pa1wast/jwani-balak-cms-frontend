@@ -1,5 +1,7 @@
+import { API_URL } from '@/lib/api-url';
+
 export async function getUploadedInvoices(companyId: string) {
-  const apiUrl = `http://85.217.171.125:8080/uploadedInvoices?companyId=${companyId}`;
+  const apiUrl = `${API_URL}/uploadedInvoices?companyId=${companyId}`;
   const response = await fetch(apiUrl);
 
   if (!response.ok) {

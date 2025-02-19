@@ -1,3 +1,4 @@
+import { API_URL } from '@/lib/api-url';
 import { NewCompany } from '@/types/company';
 
 export async function updateCompanyApi({
@@ -7,7 +8,7 @@ export async function updateCompanyApi({
   companyId: string;
   updatedCompany: NewCompany;
 }) {
-  const apiUrl = `http://85.217.171.125:8080/company/${companyId}`;
+  const apiUrl = `${API_URL}/company/${companyId}`;
 
   const formData = new FormData();
   formData.append('companyName', updatedCompany.companyName);

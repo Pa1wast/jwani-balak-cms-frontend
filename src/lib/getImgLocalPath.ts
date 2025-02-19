@@ -1,9 +1,11 @@
+import { API_URL } from './api-url';
+
 export function getCompanyImgLocalPath(image: string) {
-  return `http://85.217.171.125:8080/img/${image}`;
+  return `${API_URL}/img/${image}`;
 }
 
 export function getUploadedInvoiceImgLocalPath(image: string) {
-  return `http://85.217.171.125:8080/uploadedInvoicesImg/${image}`;
+  return `${API_URL}/uploadedInvoicesImg/${image}`;
 }
 
 export function isImage(filePath: string): boolean {

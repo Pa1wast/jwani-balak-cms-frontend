@@ -1,3 +1,4 @@
+import { API_URL } from '@/lib/api-url';
 import { UpdatedKleshNote } from '@/types/klesh-note';
 
 export async function updateKleshNoteApi({
@@ -7,7 +8,7 @@ export async function updateKleshNoteApi({
   kleshNoteId: string;
   updatedKleshNote: UpdatedKleshNote;
 }) {
-  const apiUrl = `http://85.217.171.125:8080/klesh/${kleshNoteId}`;
+  const apiUrl = `${API_URL}/klesh/${kleshNoteId}`;
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',

@@ -1,7 +1,7 @@
-export async function loginApi(passcode: string) {
-  const apiUrl = 'http://localhost:8085';
+import { API_URL } from '@/lib/api-url';
 
-  const response = await fetch(apiUrl, {
+export async function loginApi(passcode: string) {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

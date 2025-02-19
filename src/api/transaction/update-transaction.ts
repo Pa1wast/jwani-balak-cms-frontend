@@ -1,3 +1,4 @@
+import { API_URL } from '@/lib/api-url';
 import { UpdatedTransaction } from '@/types/transaction';
 
 export async function updateTransactionApi({
@@ -7,7 +8,7 @@ export async function updateTransactionApi({
   transactionId: string;
   updatedTransaction: UpdatedTransaction;
 }) {
-  const apiUrl = `http://85.217.171.125:8080/transaction/${transactionId}`;
+  const apiUrl = `${API_URL}/transaction/${transactionId}`;
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',
