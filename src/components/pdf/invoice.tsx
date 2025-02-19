@@ -158,11 +158,7 @@ ${transactions}
               <p className="text-lg text-right">للتجارة العامة / المحدودة</p>
             </div>
 
-            <img
-              src="../../../public/jwani-balak-logo.jpg"
-              alt="Jwani Balak Logo"
-              className="w-40"
-            />
+            <img src="jwani-balak-logo.jpg" alt="Jwani Balak Logo" className="w-40" />
 
             <div className="space-y-2">
               <p className="text-xl font-bold text-right">کۆمپانیای جوانی باڵەک</p>

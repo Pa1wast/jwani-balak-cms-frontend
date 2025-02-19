@@ -79,11 +79,7 @@ function KleshNote() {
                       <p className="text-lg">للتجارة العامة / المحدودة</p>
                     </div>
 
-                    <img
-                      src="../../../public/jwani-balak-logo.jpg"
-                      alt="Jwani Balak Logo"
-                      className="w-40"
-                    />
+                    <img src="jwani-balak-logo.jpg" alt="Jwani Balak Logo" className="w-40" />
 
                     <div className="space-y-2 text-right">
                       <p className="text-xl font-bold">کۆمپانیای جوانی باڵەک</p>
