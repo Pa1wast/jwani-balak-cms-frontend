@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
 } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { AlertCircle, ArrowRight, Copy, FilePlus, MoreHorizontal, Trash } from 'lucide-react';
+import { AlertCircle, ArrowRight, Copy, MoreHorizontal, Trash } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AlertDialog } from '@radix-ui/react-alert-dialog';
 import {
@@ -86,12 +86,12 @@ function TransactionRowActions({ transaction }: TransactionRowActionsProps) {
 
       <div className="md:hidden flex justify-between w-full">
         <div className="flex gap-2 items-center">
-          <Button variant="outline" size="icon">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigator.clipboard.writeText(transaction._id)}
+          >
             <Copy />
-          </Button>
-
-          <Button variant="outline" size="icon">
-            <FilePlus />
           </Button>
 
           <Button variant="outline" asChild>
@@ -101,9 +101,34 @@ function TransactionRowActions({ transaction }: TransactionRowActionsProps) {
           </Button>
         </div>
 
-        <Button variant="destructive" size="icon" className="">
-          <Trash />
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" size="icon" className="">
+              <Trash />
+            </Button>
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+                  'All related sell transactions will also be deleted. '}
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
+                onClick={() => deleteTransaction(transaction._id)}
+                disabled={isDeleting}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </>
   );
