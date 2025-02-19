@@ -28,7 +28,7 @@ function ProtectedLayout() {
       </div>
     );
 
-  if (true) return <Outlet />;
+  if (isAuthenticated) return <Outlet />;
 }
 
 export default ProtectedLayout;
