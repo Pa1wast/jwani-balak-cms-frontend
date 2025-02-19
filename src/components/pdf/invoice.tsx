@@ -82,7 +82,7 @@ function Invoice() {
 
 --------------------------------------------
 
- *📄 Invoice Details* ${invoice._id}
+ *📄 Invoice Details* ${invoice.NO}
 
 --------------------------------------------
 
