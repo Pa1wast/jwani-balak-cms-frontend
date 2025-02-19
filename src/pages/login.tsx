@@ -20,7 +20,7 @@ function Login() {
   const { isPending, login } = useLogin();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { passcode: 'do12a11xu10la' },
+    defaultValues: { passcode: '' },
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
