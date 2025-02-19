@@ -1,15 +1,15 @@
-import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Download, Mail, MapPin, Pen, Phone } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useRef, useState } from 'react';
-import { useKleshNote } from '@/features/klesh/useKleshNote';
-import Loader from '@/components//ui/loader';
-import ErrorMessage from '@/components//ui/error-message';
-import { stripHtmlTags } from '@/lib/pdf';
-import React from 'react';
-import { Input } from '@/components//ui/input';
-import { useUpdateKleshNote } from '@/features/klesh/useUpdateKleshNote';
+import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Download, Mail, MapPin, Pen, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRef, useState } from "react";
+import { useKleshNote } from "@/features/klesh/useKleshNote";
+import Loader from "@/components//ui/loader";
+import ErrorMessage from "@/components//ui/error-message";
+import { stripHtmlTags } from "@/lib/pdf";
+import React from "react";
+import { Input } from "@/components//ui/input";
+import { useUpdateKleshNote } from "@/features/klesh/useUpdateKleshNote";
 
 function KleshNote() {
   const { isLoading, kleshNote } = useKleshNote();
@@ -18,23 +18,25 @@ function KleshNote() {
   const pdfRef = useRef<HTMLDivElement>(null);
   const [kleshNO, setKleshNO] = useState(kleshNote?.NO);
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="h-full w-full grid items-center">
         <Loader size="lg" />
       </div>
     );
+  }
 
-  if (!kleshNote)
+  if (!kleshNote) {
     return (
       <div className="h-full w-full grid items-center">
         <ErrorMessage message="Failed getting Klesh note" goBack />
       </div>
     );
+  }
 
   async function handleClick() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const html2pdf = (await import('html2pdf.js')).default as any;
+    const html2pdf = (await import("html2pdf.js")).default as any;
 
     if (!pdfRef.current) return;
 
@@ -43,8 +45,8 @@ function KleshNote() {
       margin: [10, 10, 10, 10],
       filename: `klesh-${kleshNote.NO}.pdf`,
       html2canvas: { scale: 3, useCORS: true },
-      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'] },
+      jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"] },
     };
 
     html2pdf().set(options).from(element).save();
@@ -69,7 +71,11 @@ function KleshNote() {
 
       <Card className="p-0 border-0 shadow-none min-h-[800px]" ref={pdfRef}>
         <CardContent className="space-y-6">
-          <div className="text-right leading-relaxed break-words" dir="rtl" lang="ku">
+          <div
+            className="text-right leading-relaxed break-words"
+            dir="rtl"
+            lang="ku"
+          >
             {textChunks.map((chunk, index) => (
               <React.Fragment key={index}>
                 <div className="space-y-4">
@@ -79,7 +85,11 @@ function KleshNote() {
                       <p className="text-lg">للتجارة العامة / المحدودة</p>
                     </div>
 
-                    <img src="jwani-balak-logo.jpg" alt="Jwani Balak Logo" className="w-40" />
+                    <img
+                      src="/jwani-balak-logo.jpg"
+                      alt="Jwani Balak Logo"
+                      className="w-40"
+                    />
 
                     <div className="space-y-2 text-right">
                       <p className="text-xl font-bold">کۆمپانیای جوانی باڵەک</p>
@@ -102,10 +112,11 @@ function KleshNote() {
                       <Input
                         type="text"
                         value={kleshNO}
-                        onChange={e => {
+                        onChange={(e) => {
                           const value = e.target.value;
-                          if (!isNaN(Number(value)) && value.length <= 20)
+                          if (!isNaN(Number(value)) && value.length <= 20) {
                             setKleshNO(Number(value));
+                          }
                         }}
                         disabled={isUpdating}
                       />
@@ -114,7 +125,10 @@ function KleshNote() {
                         variant="outline"
                         onClick={() => {
                           const updatedKleshNote = { NO: kleshNO };
-                          updateKleshNote({ kleshNoteId: kleshNote._id, updatedKleshNote });
+                          updateKleshNote({
+                            kleshNoteId: kleshNote._id,
+                            updatedKleshNote,
+                          });
                         }}
                         disabled={isUpdating}
                       >
@@ -165,7 +179,10 @@ function KleshNote() {
                 </div>
 
                 {index < textChunks.length - 1 && (
-                  <div className="html2pdf__page-break" style={{ pageBreakAfter: 'always' }} />
+                  <div
+                    className="html2pdf__page-break"
+                    style={{ pageBreakAfter: "always" }}
+                  />
                 )}
               </React.Fragment>
             ))}
