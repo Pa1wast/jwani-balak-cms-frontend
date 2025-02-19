@@ -14,6 +14,7 @@ export async function addCompanyApi(newCompany: NewCompany) {
 
   const response = await fetch(apiUrl, {
     method: 'POST',
+    credentials: 'include',
     body: formData,
   });
 

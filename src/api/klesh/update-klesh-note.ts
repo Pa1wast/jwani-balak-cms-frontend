@@ -12,6 +12,7 @@ export async function updateKleshNoteApi({
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

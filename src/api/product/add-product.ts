@@ -6,6 +6,7 @@ export async function addProductApi(newProduct: NewProduct) {
 
   const response = await fetch(apiUrl, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

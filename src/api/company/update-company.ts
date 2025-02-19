@@ -20,6 +20,7 @@ export async function updateCompanyApi({
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',
+    credentials: 'include',
     body: formData,
   });
 

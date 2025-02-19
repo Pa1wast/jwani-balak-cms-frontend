@@ -6,6 +6,7 @@ export async function addTransactionApi(newTransaction: NewTransaction) {
 
   const response = await fetch(apiUrl, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

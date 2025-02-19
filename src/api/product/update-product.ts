@@ -12,6 +12,7 @@ export async function updateProductApi({
 
   const response = await fetch(apiUrl, {
     method: 'PATCH',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

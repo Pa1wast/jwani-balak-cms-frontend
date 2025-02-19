@@ -5,6 +5,7 @@ export async function deleteProductApi(productId: string) {
 
   const response = await fetch(apiUrl, {
     method: 'DELETE',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

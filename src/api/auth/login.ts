@@ -3,6 +3,7 @@ import { API_URL } from '@/lib/api-url';
 export async function loginApi(passcode: string) {
   const response = await fetch(API_URL, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

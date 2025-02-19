@@ -4,6 +4,7 @@ export async function deleteInvoiceApi(invoiceId: string) {
   const apiUrl = `${API_URL}/invoice/${invoiceId}`;
   const response = await fetch(apiUrl, {
     method: 'DELETE',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

@@ -6,6 +6,7 @@ export async function addKleshNoteApi(newKleshNote: NewKleshNote) {
 
   const response = await fetch(apiUrl, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

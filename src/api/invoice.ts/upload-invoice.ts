@@ -13,6 +13,7 @@ export async function uploadInvoiceApi(newUploadedInvoice: NewUploadedInvoice) {
 
   const response = await fetch(apiUrl, {
     method: 'POST',
+    credentials: 'include',
     body: formData,
   });
 
