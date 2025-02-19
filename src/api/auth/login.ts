@@ -1,5 +1,5 @@
 export async function loginApi(passcode: string) {
-  const apiUrl = 'http://85.217.171.125:8080';
+  const apiUrl = 'http://85.217.171.125:80';
 
   const response = await fetch(apiUrl, {
     method: 'POST',
