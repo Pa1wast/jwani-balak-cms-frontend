@@ -16,6 +16,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import { downloadInvoiceApi } from '@/api/invoice.ts/download-uploaded-invoice';
 
 interface UploadedInvoiceProps {
   invoice: UploadedInvoice;
@@ -24,36 +26,11 @@ interface UploadedInvoiceProps {
 function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
   const { isDeleting, deleteUploadedInvoice } = useDeleteUploadedInvoice();
 
-  const getFileNameWithExtension = () => {
-    const filePath = invoice.filePath;
-    const name = invoice.name;
-
-    const extensionMatch = filePath.match(/\.[0-9a-z]+$/i);
-    const extension = extensionMatch ? extensionMatch[0] : '';
-
-    return name.includes('.') ? name : `${name}${extension}`;
-  };
-
   const handleDownload = async () => {
     try {
-      const fileUrl = getUploadedInvoiceImgLocalPath(invoice.filePath);
-
-      const response = await fetch(fileUrl);
-      if (!response.ok) throw new Error('File download failed');
-
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = getFileNameWithExtension();
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
+      await downloadInvoiceApi(invoice.filePath);
     } catch (error) {
-      console.error('Error downloading file:', error);
+      toast.error(String(error));
     }
   };
 
