@@ -9,7 +9,7 @@ function ProtectedLayout() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const authToken = getCookie('auth');
+    const authToken = getCookie('Auth');
 
     if (authToken) {
       setIsAuthenticated(true);
