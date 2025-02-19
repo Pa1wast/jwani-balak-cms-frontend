@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { downloadInvoiceApi } from '@/api/invoice.ts/download-uploaded-invoice';
+import { downloadInvoice } from '@/api/invoice.ts/download-uploaded-invoice';
 
 interface UploadedInvoiceProps {
   invoice: UploadedInvoice;
@@ -28,7 +28,16 @@ function UploadedInvoice({ invoice }: UploadedInvoiceProps) {
 
   const handleDownload = async () => {
     try {
-      await downloadInvoiceApi(invoice.filePath);
+      const file = await downloadInvoice(invoice.filePath);
+
+      const url = window.URL.createObjectURL(file);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       toast.error(String(error));
     }
