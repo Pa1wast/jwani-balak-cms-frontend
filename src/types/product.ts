@@ -9,3 +9,10 @@ export interface Product {
 export interface NewProduct {
   productName: string;
 }
+
+export interface ComposedProduct {
+  product: Product;
+  quantity: number;
+  pricePerUnit: number;
+  exchange: number;
+}

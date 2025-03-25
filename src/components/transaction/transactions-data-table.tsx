@@ -32,11 +32,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
+import { currencyTypes, BuyTransaction } from '@/types/transaction';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectGroup, SelectItem } from '../ui/select';
 import { SelectTrigger } from '@radix-ui/react-select';
-import { useTransactions } from '@/features/transaction/useTransactions';
+import { useBuyTransactions } from '@/features/transaction/useTransactions';
 import Loader from '../ui/loader';
 import { formatDate } from '@/lib/date';
 import { Product } from '@/types/product';
@@ -45,7 +45,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import AddInvoiceForm from '../invoice/add-invoice-form';
 
-export const columns: ColumnDef<Transaction>[] = [
+export const columns: ColumnDef<BuyTransaction>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -76,8 +76,8 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'transactionType',
     header: ({ column }) => {
-      const handleFilterChange = (value: transactionTypes) => {
-        column.setFilterValue(value === transactionTypes.ALL ? undefined : value);
+      const handleFilterChange = (value: string) => {
+        column.setFilterValue(value === 'ALL' ? undefined : value);
       };
 
       return (
@@ -90,9 +90,9 @@ export const columns: ColumnDef<Transaction>[] = [
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value={transactionTypes.ALL}>ALL</SelectItem>
-              <SelectItem value={transactionTypes.SELL}>SELL</SelectItem>
-              <SelectItem value={transactionTypes.BUY}>BUY</SelectItem>
+              <SelectItem value={'ALL'}>ALL</SelectItem>
+              <SelectItem value={'BUY'}>BUY</SelectItem>
+              <SelectItem value={'SELL'}>SELL</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -105,7 +105,7 @@ export const columns: ColumnDef<Transaction>[] = [
         <Badge
           className={cn(
             'text-left font-bold flex justify-center items-center rounded-md px-2 w-max uppercase',
-            type.toUpperCase() === transactionTypes.SELL
+            type.toUpperCase() === 'SELL'
               ? 'bg-green-500 dark:bg-green-500/20 dark:text-green-500 hover:bg-green-500/80 dark:hover:bg-green-500/60'
               : 'bg-blue-500 dark:bg-blue-500/20 dark:text-blue-500 hover:bg-blue-500/80 dark:hover:bg-blue-500/60'
           )}
@@ -258,7 +258,7 @@ export const columns: ColumnDef<Transaction>[] = [
 ];
 
 export default function TransactionDataTable() {
-  const { isLoading, transactions } = useTransactions();
+  const { isLoading, transactions } = useBuyTransactions();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -284,16 +284,6 @@ export default function TransactionDataTable() {
     },
   });
 
-  const selectedIndices = Object.keys(rowSelection).map(Number);
-  const selectedTransactions = selectedIndices.map(index => transactions[index]);
-  const firstTransaction = selectedTransactions[0];
-
-  const isValid = selectedTransactions.every(
-    transaction =>
-      firstTransaction?.currency === transaction?.currency &&
-      firstTransaction?.transactionType === transaction?.transactionType
-  );
-
   if (isLoading)
     return (
       <div className="h-full w-full grid items-center">
@@ -303,11 +293,6 @@ export default function TransactionDataTable() {
 
   return (
     <div className="w-full">
-      {!isValid && selectedTransactions.length > 0 && (
-        <p className="text-destructive">
-          Transactions have to be of the same type and currency to generate invoice.
-        </p>
-      )}
       <div className="flex items-center gap-2 py-4">
         <Input
           placeholder="Filter transactions by product name..."
@@ -347,22 +332,6 @@ export default function TransactionDataTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button disabled={!isValid || selectedTransactions.length === 0}>
-              <FilePlus /> Generate Invoice
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Generate Invoice</DialogTitle>
-            </DialogHeader>
-
-            <AddInvoiceForm transactions={selectedTransactions} />
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="rounded-md border">

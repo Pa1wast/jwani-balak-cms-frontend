@@ -1,5 +1,5 @@
 import { Company } from './company';
-import { Product } from './product';
+import { ComposedProduct } from './product';
 
 export enum transactionTypes {
   SELL = 'SELL',
@@ -19,39 +19,21 @@ export interface Expense {
   amount: number;
 }
 
-export interface Transaction {
+export interface BuyTransaction {
   _id: string;
-  transactionType: 'SELL' | 'BUY';
   currency: 'USD' | 'IQD';
-  buyTransaction?: string;
-  pricePerUnit: number;
-  quantity: number;
-  product: Product;
+  products: ComposedProduct[];
   company: Company;
-  soldQuantity?: number;
   expenses?: Expense[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface NewTransaction {
-  transactionType: 'SELL' | 'BUY';
+export interface SellTransaction {
+  _id: string;
   currency: 'USD' | 'IQD';
-  pricePerUnit: number;
-  quantity: number;
-  product: string;
-  company: string;
-  expenses?: Expense[];
-  soldQuantity?: number;
-}
-
-export interface UpdatedTransaction {
-  transactionType: 'SELL' | 'BUY';
-  currency?: 'USD' | 'IQD';
-  pricePerUnit?: number;
-  quantity?: number;
-  soldQuantity?: number;
-  expenses?: Expense[];
-  buyTransaction?: string;
-  oldQuantity?: number;
+  products: ComposedProduct[];
+  company: Company;
+  createdAt: string;
+  updatedAt: string;
 }

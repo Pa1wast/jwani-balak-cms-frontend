@@ -1,7 +1,7 @@
 import { API_URL } from '@/lib/api-url';
 
-export async function getInvoices(companyId: string, page = 1, limit = 10000) {
-  const apiUrl = `${API_URL}/invoice?companyId=${companyId}&page=${page}&limit=${limit}`;
+export async function getInvoices(companyId: string) {
+  const apiUrl = `${API_URL}/invoice?companyId=${companyId}`;
   const response = await fetch(apiUrl, {
     method: 'GET',
     credentials: 'include',

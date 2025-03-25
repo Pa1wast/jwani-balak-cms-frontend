@@ -10,11 +10,9 @@ import Dashboard from '@/pages/dashboard';
 import Products from '@/pages/products';
 import Transactions from '@/pages/transactions';
 import Invoices from '@/pages/invoices';
-import KleshNotes from '@/pages/klesh-notes';
 
 import Invoice from '@/components/pdf/invoice';
 import Report from '@/components/pdf/report';
-import KleshNote from '@/components/pdf/klesh-note';
 
 import { DarkModeProvider } from '@/contexts/dark-mode-context';
 import { CompaniesViewProvider } from '@/contexts/companies-view-context';
@@ -54,12 +52,9 @@ function App() {
                         element={<UploadedInvoices />}
                       />
                     </Route>
-
-                    <Route path="/dashboard/klesh-notes" element={<KleshNotes />} />
                   </Route>
                   <Route path="/pdf" element={<PdfPageLayout />}>
                     <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
-                    <Route path="/pdf/klesh/:noteId" element={<KleshNote />} />
                     <Route path="/pdf/report/:reportId" element={<Report />} />
                   </Route>
                 </Route>
