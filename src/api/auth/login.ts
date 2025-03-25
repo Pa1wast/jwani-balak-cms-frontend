@@ -10,6 +10,7 @@ export async function loginApi(passcode: string) {
     body: JSON.stringify({ passcode }),
   });
 
+  console.log(response);
   if (!response.ok) {
     throw new Error('Could not login');
   }
