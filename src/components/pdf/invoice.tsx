@@ -81,9 +81,11 @@ function Invoice() {
   }
 
   function getFormattedInvoiceMessage(invoice: InvoiceType): string {
-    const total = invoice.transaction?.products
+    const products2 = invoice.transaction?.products
       ?.map((product: any, index: number) => {
-        return `#${index + 1} - Product: *${product.product?.productName || 'N/A'}*
+        return `#${index + 1} - Product: *${
+          products.find(p => p._id === product.product)?.productName || 'N/A'
+        }*
   Quantity: *${product.quantity}*
   Price Per Unit: *${formatPrice(product.pricePerUnit, currencyTypes.IQD)}*
   Total: *${formatPrice(product.pricePerUnit * product.quantity, currencyTypes.IQD)}*`;
@@ -106,6 +108,10 @@ function Invoice() {
 🏢 Buyer: *${invoice.buyer}*
 
 📅 Date: ${formatDate(invoice.createdAt)}
+
+----------------------
+
+${products2}
 
 ----------------------
 

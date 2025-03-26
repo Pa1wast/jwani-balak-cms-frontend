@@ -84,7 +84,7 @@ export const columns: ColumnDef<Invoice>[] = [
     ),
     cell: ({ row }) => {
       const transaction = row.getValue('transaction') as Transaction;
-      return <div className="capitalize">{transaction.products?.length}</div>;
+      return <div className="capitalize">{transaction?.products?.length}</div>;
     },
   },
   {
@@ -127,7 +127,7 @@ export default function InvoicesDataTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [globalFilter, setGlobalFilter] = React.useState(''); // Added state for global filter
+  const [globalFilter, setGlobalFilter] = React.useState('');
 
   const table = useReactTable({
     data: invoices,

@@ -22,7 +22,7 @@ export function useUpdateBuyTransaction() {
     onSuccess: () => {
       toast.success('Buy transaction successfully updated');
       queryClient.invalidateQueries({ queryKey: ['buy-transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['buy-transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['buy-transaction'] });
     },
     onError: err => toast.error(err.message),
   });

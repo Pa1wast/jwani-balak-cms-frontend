@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useBuyTransactions } from '@/features/transaction/useTransactions';
+import { useBuyTransactions, useSellTransactions } from '@/features/transaction/useTransactions';
 import TransactionsChart from '@/components/transaction/transactions-chart';
 import FinanceChart from '@/components/ui/finance-chart';
 import { useCompaniesView } from '@/contexts/companies-view-context';
@@ -19,10 +19,10 @@ import { useProducts } from '@/features/product/useProducts';
 function Report() {
   const { selectedCompanyId } = useCompaniesView();
   const { isLoading, company } = useCompany();
-  const { isLoading: isLoadingTransactions, transactions } = useBuyTransactions();
-  const { productsCount } = useProducts();
-
-  const [currency, setCurrency] = useState(currencyTypes.IQD);
+  const { isLoading: isLoadingTransactions, transactions: buyTransactions } = useBuyTransactions();
+  const { isLoading: isLoadingTransactions2, transactions: sellTransactions } =
+    useSellTransactions();
+  const { productsCount, products } = useProducts();
 
   const pdfRef = useRef(null);
 
@@ -50,26 +50,47 @@ function Report() {
       </div>
     );
 
-  if (isLoadingTransactions || isLoading)
+  if (isLoadingTransactions || isLoadingTransactions2 || isLoading)
     return (
       <div className="h-full w-full grid items-center">
         <Loader size="lg" />
       </div>
     );
 
-  const filteredTransactions = !isLoadingTransactions
-    ? transactions.filter(transaction => transaction.currency.toUpperCase() === currency)
-    : [];
+  const totalExpenses = buyTransactions
+    ?.map(transaction =>
+      transaction?.products?.reduce((acc, cur) => {
+        if (transaction.currency === currencyTypes.USD) {
+          return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+        } else {
+          return (acc += cur.pricePerUnit * cur.quantity);
+        }
+      }, 0)
+    )
+    .reduce((acc: number, cur: number) => (acc += cur), 0);
 
-  const buyTransactions = 4;
+  const totalRevenue = sellTransactions
+    ?.map(transaction =>
+      transaction?.products?.reduce((acc, cur) => {
+        if (transaction.currency === currencyTypes.USD) {
+          return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+        } else {
+          return (acc += cur.pricePerUnit * cur.quantity);
+        }
+      }, 0)
+    )
+    .reduce((acc: number, cur: number) => (acc += cur), 0);
 
-  const sellTransactions = 5;
+  const totalProfits = totalRevenue - totalExpenses > 0 ? totalRevenue - totalExpenses : 0;
 
-  const totalExpenses = 567;
+  const highestPricedProduct = sellTransactions
+    .flatMap(transaction => transaction.products) // Merge all products into one array
+    .reduce((maxProduct, currentProduct) => {
+      const currentValue = currentProduct.pricePerUnit * currentProduct.quantity;
+      const maxValue = maxProduct ? maxProduct.pricePerUnit * maxProduct.quantity : 0;
 
-  const totalRevenue = 9999;
-
-  const totalProfits = 567797;
+      return currentValue > maxValue ? currentProduct : maxProduct;
+    }, null);
 
   return (
     <div>
@@ -85,31 +106,6 @@ function Report() {
         </Button>
       </div>
 
-      <div className="flex gap-1 items-center ml-auto w-max px-4">
-        <Button
-          variant={currency === currencyTypes.IQD ? 'default' : 'outline'}
-          onClick={() => setCurrency(currencyTypes.IQD)}
-          className={cn(
-            'text-orange-500 border-orange-500 hover:bg-orange-500/10 hover:text-orange-500',
-            currency === currencyTypes.IQD &&
-              'bg-orange-500 text-orange-100 hover:bg-orange-500 hover:text-orange-100'
-          )}
-        >
-          IQD
-        </Button>
-        <Button
-          variant={currency === currencyTypes.USD ? 'default' : 'outline'}
-          onClick={() => setCurrency(currencyTypes.USD)}
-          className={cn(
-            'text-cyan-500 border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-500',
-            currency === currencyTypes.USD &&
-              'bg-cyan-500 text-cyan-100 hover:bg-cyan- hover:text-cyan-100'
-          )}
-        >
-          USD
-        </Button>
-      </div>
-
       <div className="p-4" ref={pdfRef}>
         <h2 className="text-2xl font-bold mb-12">{company.companyName} - Summary Report</h2>
 
@@ -118,7 +114,9 @@ function Report() {
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Most Sold Product</span>
-            <div className="flex flex-col items-center gap-1 ml-auto">67</div>
+            <div className="flex flex-col items-center gap-1 ml-auto">
+              {products.find(p => p._id === highestPricedProduct.product)?.productName}
+            </div>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
@@ -132,21 +130,23 @@ function Report() {
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Buy Transactions</span>
-            <p className="ml-auto text-lg font-semibold">7</p>
+            <p className="ml-auto text-lg font-semibold">{buyTransactions?.length}</p>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Sell Transactions</span>
-            <p className="ml-auto text-lg font-semibold">8</p>
+            <p className="ml-auto text-lg font-semibold">{sellTransactions?.length}</p>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">All Transactions</span>
-            <p className="ml-auto text-lg font-semibold">{filteredTransactions?.length}</p>
+            <p className="ml-auto text-lg font-semibold">
+              {buyTransactions?.length + sellTransactions?.length}
+            </p>
           </div>
 
           <TransactionsChart
-            transactions={filteredTransactions}
+            transactions={[...buyTransactions, ...sellTransactions]}
             showRecentTransactions={false}
             enabelFilters={false}
             showTitle={false}
@@ -159,21 +159,27 @@ function Report() {
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Total Cost/Expenses</span>
-            <p className="ml-auto text-lg font-semibold ">{formatPrice(totalExpenses, currency)}</p>
+            <p className="ml-auto text-lg font-semibold ">
+              {formatPrice(totalExpenses, currencyTypes.IQD)}
+            </p>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Total Revenue</span>
-            <p className="ml-auto text-lg font-semibold">{formatPrice(totalRevenue, currency)}</p>
+            <p className="ml-auto text-lg font-semibold">
+              {formatPrice(totalRevenue, currencyTypes.IQD)}
+            </p>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Total Profits</span>
-            <p className="ml-auto text-lg font-semibold">{formatPrice(totalProfits, currency)}</p>
+            <p className="ml-auto text-lg font-semibold">
+              {formatPrice(totalProfits, currencyTypes.IQD)}
+            </p>
           </div>
 
           <FinanceChart
-            transactions={filteredTransactions}
+            transactions={[...buyTransactions, ...sellTransactions]}
             enableFilters={false}
             showTitle={false}
             className="border-0 shadow-none p-0 bg-secondary/10"

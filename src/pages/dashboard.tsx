@@ -32,7 +32,7 @@ function Dashboard() {
 
   const totalExpenses = transactions
     ?.map(transaction =>
-      transaction?.products.reduce((acc, cur) => {
+      transaction?.products?.reduce((acc, cur) => {
         if (transaction.currency === currencyTypes.USD) {
           return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
         } else {
@@ -42,20 +42,19 @@ function Dashboard() {
     )
     .reduce((acc: number, cur: number) => (acc += cur), 0);
 
-  const totalRevenue =
-    transactions2
-      ?.map(transaction =>
-        transaction?.products.reduce((acc, cur) => {
-          if (transaction.currency === currencyTypes.USD) {
-            return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
-          } else {
-            return (acc += cur.pricePerUnit * cur.quantity);
-          }
-        }, 0)
-      )
-      .reduce((acc: number, cur: number) => (acc += cur), 0) ?? 0;
+  console.log(transactions, transactions2);
 
-  console.log(totalRevenue, transactions2);
+  const totalRevenue = transactions2
+    ?.map(transaction =>
+      transaction?.products?.reduce((acc, cur) => {
+        if (transaction.currency === currencyTypes.USD) {
+          return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+        } else {
+          return (acc += cur.pricePerUnit * cur.quantity);
+        }
+      }, 0)
+    )
+    .reduce((acc: number, cur: number) => (acc += cur), 0);
 
   const totalProfits = totalRevenue - totalExpenses > 0 ? totalRevenue - totalExpenses : 0;
 

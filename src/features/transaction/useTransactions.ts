@@ -35,7 +35,7 @@ export function useSellTransactions() {
   const { selectedCompanyId } = useCompaniesView();
 
   const { isLoading, data, error } = useQuery({
-    queryKey: ['buy-transactions'],
+    queryKey: ['sell-transactions'],
     queryFn: () => getSellTransactionsApi(selectedCompanyId as string),
   });
 
