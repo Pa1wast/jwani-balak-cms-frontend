@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { dataTypes } from '@/types/finance';
 import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
 
@@ -88,30 +89,41 @@ export function calculateFinancials(
       return transactionDate >= monthStart && transactionDate <= monthEnd;
     });
 
-    // Calculate total expenses (including pricePerUnit * quantity for buy transactions)
+    // **Calculate Total Expenses (for BUY Transactions)**
     const monthlyExpenses = monthlyTransactions.reduce((total, transaction) => {
-      // Include the cost of "buy" transactions
-      if ('BUY'.toUpperCase() === 'BUY') {
-        const buyExpense = transaction.pricePerUnit * transaction.quantity;
-        total += buyExpense;
-      }
+      if ('expenses' in transaction) {
+        // It's a BUY transaction -> calculate expenses
+        const productCost = transaction.products.reduce(
+          (acc, cur) => acc + cur.pricePerUnit * cur.quantity * (cur.exchange?.rate || 1),
+          0
+        );
 
-      // Also include any expenses (if provided in the transaction)
-      const expenseTotal =
-        transaction.expenses?.reduce((expenseSum, expense) => expenseSum + expense.amount, 0) || 0;
-      return total + expenseTotal;
+        const additionalExpenses =
+          transaction.expenses?.reduce(
+            (expenseSum: any, expense: { amount: any }) => expenseSum + expense.amount,
+            0
+          ) || 0;
+
+        return total + productCost + additionalExpenses;
+      }
+      return total;
     }, 0);
 
-    // Calculate total revenue (only for SELL transactions)
+    // **Calculate Total Revenue (for SELL Transactions)**
     const monthlyRevenue = monthlyTransactions.reduce((total, transaction) => {
-      if ('BUY'.toUpperCase() === 'SELL') {
-        const transactionTotal = transaction.pricePerUnit * transaction.quantity;
+      if (!('expenses' in transaction)) {
+        // It's a SELL transaction -> calculate revenue
+        const transactionTotal = transaction.products.reduce(
+          (acc: number, cur: any) =>
+            acc + cur.pricePerUnit * cur.quantity * (cur.exchange?.rate || 1),
+          0
+        );
         return total + transactionTotal;
       }
       return total;
     }, 0);
 
-    // Ensure profit, revenue, and expenses are never less than zero
+    // **Ensure Profit, Revenue, and Expenses are valid**
     const monthlyProfit = Math.max(0, monthlyRevenue - monthlyExpenses);
     const validMonthlyExpenses = Math.max(0, monthlyExpenses);
     const validMonthlyRevenue = Math.max(0, monthlyRevenue);
@@ -157,14 +169,10 @@ export function calculateTransactionData(
       return transactionDate >= monthStart && transactionDate <= monthEnd;
     });
 
-    const monthlyBuy = monthlyTransactions.filter(
-      transaction => 'BUY'.toUpperCase() === transactionTypes.BUY
-    ).length;
-
+    const monthlyBuy = monthlyTransactions.filter(transaction => 'expenses' in transaction).length;
     const monthlySell = monthlyTransactions.filter(
-      transaction => 'BUY'.toUpperCase() === transactionTypes.SELL
+      transaction => !('expenses' in transaction)
     ).length;
-
     const monthlyTotal = monthlyTransactions.length;
 
     if (showDataFor === transactionTypes.BUY || showDataFor === transactionTypes.ALL) {
@@ -179,19 +187,4 @@ export function calculateTransactionData(
   }
 
   return { buyTransactions, sellTransactions, totalTransactions };
-}
-
-export function getStockQuantity(transactions: Transaction[]) {
-  const buyTransactions = transactions.filter(
-    transaction => 'BUY'.toUpperCase() === transactionTypes.BUY
-  );
-
-  const sellTransactions = transactions.filter(
-    transaction => 'BUY'.toUpperCase() === transactionTypes.SELL
-  );
-
-  const quantityBought = buyTransactions.reduce((acc, cur) => acc + cur.quantity, 0);
-  const quantitySold = sellTransactions.reduce((acc, cur) => acc + cur.quantity, 0);
-
-  return quantityBought - quantitySold;
 }

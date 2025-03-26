@@ -6,13 +6,12 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import ErrorMessage from '@/components/ui/error-message';
 import { ArrowLeft, Download } from 'lucide-react';
 import { useCompany } from '@/features/company/useCompany';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Loader from '@/components/ui/loader';
 import { formatPrice } from '@/lib/price';
 import { currencyTypes } from '@/types/transaction';
-import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useProducts } from '@/features/product/useProducts';
 
@@ -84,13 +83,13 @@ function Report() {
   const totalProfits = totalRevenue - totalExpenses > 0 ? totalRevenue - totalExpenses : 0;
 
   const highestPricedProduct = sellTransactions
-    .flatMap(transaction => transaction.products) // Merge all products into one array
+    .flatMap(transaction => transaction.products)
     .reduce((maxProduct, currentProduct) => {
       const currentValue = currentProduct.pricePerUnit * currentProduct.quantity;
-      const maxValue = maxProduct ? maxProduct.pricePerUnit * maxProduct.quantity : 0;
+      const maxValue = maxProduct.pricePerUnit * maxProduct.quantity;
 
       return currentValue > maxValue ? currentProduct : maxProduct;
-    }, null);
+    }, sellTransactions[0].products[0]);
 
   return (
     <div>

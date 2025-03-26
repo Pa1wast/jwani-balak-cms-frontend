@@ -336,7 +336,7 @@ ${products2}
 
                             <Button
                               variant="outline"
-                              onClick={() => handleChangeProduct(product._id)}
+                              onClick={() => handleChangeProduct(product._id as string)}
                             >
                               Change
                             </Button>
