@@ -290,71 +290,69 @@ ${products2}
                 <p className="bg-black/80 text-white text-center p-2">جۆر</p>
 
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  <div className="flex self-center gap-4 justify-center items-center w-full">
-                    {changedProducts?.map(product => (
-                      <>
-                        <span>{products.find(p => p._id === product.product)?.productName}</span>
-                        <Dialog data-html2canvas-ignore="true">
-                          <DialogTrigger data-html2canvas-ignore="true">
-                            <Edit />
-                          </DialogTrigger>
+                  {changedProducts?.map(product => (
+                    <div className="flex self-center gap-4 justify-center items-center w-full">
+                      <span>{products.find(p => p._id === product.product)?.productName}</span>
+                      <Dialog data-html2canvas-ignore="true">
+                        <DialogTrigger data-html2canvas-ignore="true">
+                          <Edit />
+                        </DialogTrigger>
 
-                          <DialogContent data-html2canvas-ignore="true">
-                            <DialogHeader>
-                              <DialogTitle>
-                                Change Product (
-                                {products.find(p => p._id === product.product)?.productName})
-                              </DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-1">
-                              <Label>Price / Unit ({product.pricePerUnit})</Label>
+                        <DialogContent data-html2canvas-ignore="true">
+                          <DialogHeader>
+                            <DialogTitle>
+                              Change Product (
+                              {products.find(p => p._id === product.product)?.productName})
+                            </DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-1">
+                            <Label>Price / Unit ({product.pricePerUnit})</Label>
 
-                              <Input
-                                type="text"
-                                value={pricePerUnit}
-                                onChange={e => {
-                                  const value = e.target.value;
-                                  if (!isNaN(Number(value)) && value.length <= 20)
-                                    setPricePerUnit(Number(value));
-                                }}
-                              />
-                            </div>
+                            <Input
+                              type="text"
+                              value={pricePerUnit}
+                              onChange={e => {
+                                const value = e.target.value;
+                                if (!isNaN(Number(value)) && value.length <= 20)
+                                  setPricePerUnit(Number(value));
+                              }}
+                            />
+                          </div>
 
-                            <div className="space-y-1">
-                              <Label>Quantity ({product.quantity})</Label>
+                          <div className="space-y-1">
+                            <Label>Quantity ({product.quantity})</Label>
 
-                              <Input
-                                type="text"
-                                value={quantity}
-                                onChange={e => {
-                                  const value = e.target.value;
-                                  if (!isNaN(Number(value)) && value.length <= 20)
-                                    setQuantity(Number(value));
-                                }}
-                              />
-                            </div>
+                            <Input
+                              type="text"
+                              value={quantity}
+                              onChange={e => {
+                                const value = e.target.value;
+                                if (!isNaN(Number(value)) && value.length <= 20)
+                                  setQuantity(Number(value));
+                              }}
+                            />
+                          </div>
 
-                            <Button
-                              variant="outline"
-                              onClick={() => handleChangeProduct(product._id as string)}
-                            >
-                              Change
-                            </Button>
-                          </DialogContent>
-                        </Dialog>
-                      </>
-                    ))}
-                  </div>
+                          <Button
+                            variant="outline"
+                            onClick={() => handleChangeProduct(product._id as string)}
+                          >
+                            Change
+                          </Button>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="flex gap-[1px] self-end w-full">
-              <p className="text-right p-2 border flex-[20%] font-semibold">
-                {formatPrice(totalAmount, currencyTypes.IQD)}
-              </p>
-              <p className="text-right font-bold text-lg p-2 border flex-[80%]">: کۆی گشتی</p>
-            </div>
+          <div className="flex gap-[1px] self-end w-full">
+            <p className="text-right p-2 border flex-[20%] font-semibold">
+              {formatPrice(totalAmount, currencyTypes.IQD)}
+            </p>
+            <p className="text-right font-bold text-lg p-2 border flex-[80%]">: کۆی گشتی</p>
           </div>
         </CardContent>
 

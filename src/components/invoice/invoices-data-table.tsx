@@ -97,7 +97,7 @@ export const columns: ColumnDef<Invoice>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const transaction = row.getValue('transactions') as Transaction;
+      const transaction = row.getValue('transaction') as Transaction;
       const total =
         transaction?.products?.reduce((acc, cur) => (acc += cur.pricePerUnit * cur.quantity), 0) ??
         0;

@@ -204,7 +204,7 @@ function ProductDetails() {
               <CardTitle className="mb-4">Buy Transactions</CardTitle>
 
               <div className="space-y-1">
-                {!sellTransactions.length ? (
+                {!buyTransactions.length ? (
                   <p>No transactions yet!</p>
                 ) : (
                   buyTransactions?.map((transaction: Transaction) => (
