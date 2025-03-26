@@ -41,6 +41,7 @@ function AddTransactionForm() {
   const [curProducts, setCurProducts] = useState(products);
   const { isAdding: isAddingBuy, addBuyTransaction } = useAddBuyTransaction();
   const { isAdding: isAddingSell, addSellTransaction } = useAddSellTransaction();
+  const [isQtyError, setIsQtyError] = useState(false);
 
   const form = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
@@ -120,9 +121,11 @@ function AddTransactionForm() {
           +value > stockQuantity
         ) {
           toast.error('Quantity exceeds stock quantity');
+          setIsQtyError(true);
           return;
         }
 
+        setIsQtyError(false);
         updatedProducts[index][field] = +value;
       }
     }
@@ -388,7 +391,7 @@ function AddTransactionForm() {
           </div>
         )}
 
-        <Button type="submit" disabled={isAddingBuy || isAddingSell}>
+        <Button type="submit" disabled={isAddingBuy || isAddingSell || isQtyError}>
           <Plus /> Add Transaction
         </Button>
       </form>
