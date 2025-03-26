@@ -16,13 +16,9 @@ export const updateProductSchema = z.object({
 });
 
 export const addTransactionSchema = z.object({
-  product: z.string().min(1, 'Product is required'),
-  buyTransaction: z.optional(z.string()),
+  label: z.string().min(1, 'Label is required'),
   company: z.string().min(1, 'Company is required'),
   currency: z.enum(['IQD', 'USD']),
-  transactionType: z.enum(['BUY', 'SELL']),
-  pricePerUnit: z.number().min(1, 'Price Per Unit is required'),
-  quantity: z.number().min(1, 'Quantity is required'),
 });
 
 export const updateTransactionSchema = z.object({

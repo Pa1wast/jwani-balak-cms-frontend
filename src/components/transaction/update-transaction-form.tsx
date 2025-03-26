@@ -11,72 +11,19 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Transaction, transactionTypes } from '@/types/transaction';
+import { BuyTransaction } from '@/types/transaction';
 import { Input } from '../ui/input';
-import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
-import { useTransactions } from '@/features/transaction/useTransactions';
-import { useState } from 'react';
 
 interface AddTransactionFormProps {
-  transaction: Transaction;
+  transaction: BuyTransaction;
 }
 
 function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
-  const { isUpdating, updateTransaction } = useUpdateTransaction();
-  const { transactions } = useTransactions();
-  const [quantityError, setQuantityError] = useState(false);
-
   const form = useForm<z.infer<typeof updateTransactionSchema>>({
     resolver: zodResolver(updateTransactionSchema),
-    defaultValues: {
-      pricePerUnit: transaction.pricePerUnit,
-      quantity: transaction.quantity,
-    },
   });
 
-  // SELL Transaction
-  const buyTransaction = transactions?.find(item => item._id === transaction.buyTransaction);
-  const allSellTransactionsWithoutCur = transactions?.filter(
-    item => item.buyTransaction === transaction.buyTransaction && item._id !== transaction._id
-  );
-
-  const soldQuantity = allSellTransactionsWithoutCur?.reduce((acc, item) => acc + item.quantity, 0);
-
-  console.log(soldQuantity);
-
-  const availableQuantity = buyTransaction ? buyTransaction.quantity - soldQuantity : 0;
-
-  function onSubmit(values: z.infer<typeof updateTransactionSchema>) {
-    const { success, data } = updateTransactionSchema.safeParse(values);
-
-    if (success) {
-      if (transaction.transactionType.toUpperCase() === transactionTypes.SELL) {
-        const buyTransaction = transactions.find(
-          item =>
-            item.transactionType.toUpperCase() === transactionTypes.BUY &&
-            item._id === transaction.buyTransaction
-        ) as Transaction;
-
-        updateTransaction({
-          transactionId: transaction._id,
-          updatedTransaction: {
-            ...data,
-            transactionType: transaction.transactionType,
-            buyTransaction: buyTransaction._id,
-            oldQuantity: transaction.quantity,
-          },
-        });
-      } else {
-        updateTransaction({
-          transactionId: transaction._id,
-          updatedTransaction: {
-            ...data,
-            transactionType: transaction.transactionType,
-          },
-        });
-      }
-    }
-  }
+  function onSubmit(values: z.infer<typeof updateTransactionSchema>) {}
 
   return (
     <Form {...form}>
@@ -117,40 +64,16 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
             <FormItem className="space-y-3 flex-1">
               <div className="flex gap-1 items-center">
                 <FormLabel>Quantity</FormLabel>
-                {quantityError && (
-                  <span className="bg-red-50 text-red-500 px-1 rounded-lg text-xs font-semibold">
-                    The available quantity is {availableQuantity}!
-                  </span>
-                )}
               </div>
               <FormControl>
-                <Input
-                  type="text"
-                  {...field}
-                  onChange={e => {
-                    const value = e.target.value;
-                    if (!isNaN(Number(value))) {
-                      if (
-                        transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
-                        Number(value) > availableQuantity
-                      ) {
-                        setQuantityError(true);
-                      } else {
-                        setQuantityError(false);
-                        field.onChange(Number(value));
-                      }
-                    }
-                  }}
-                />
+                <Input type="text" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" disabled={isUpdating}>
-          Update Transaction
-        </Button>
+        <Button type="submit">Update Transaction</Button>
       </form>
     </Form>
   );

@@ -6,9 +6,9 @@ import TransactionsChart from '@/components/transaction/transactions-chart';
 import { useCompany } from '@/features/company/useCompany';
 import Loader from '@/components/ui/loader';
 import ErrorMessage from '@/components/ui/error-message';
-import { useTransactions } from '@/features/transaction/useTransactions';
+import { useBuyTransactions } from '@/features/transaction/useTransactions';
 import { formatPrice } from '@/lib/price';
-import { currencyTypes, transactionTypes } from '@/types/transaction';
+import { currencyTypes } from '@/types/transaction';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 function Dashboard() {
   const { isLoading, company } = useCompany();
 
-  const { isLoading: isLoadingTransactions, transactions } = useTransactions();
+  const { isLoading: isLoadingBuyTransactions, transactions } = useBuyTransactions();
 
   const [currency, setCurrency] = useState(currencyTypes.IQD);
 
@@ -34,29 +34,13 @@ function Dashboard() {
       </div>
     );
 
-  const filteredTransactions = !isLoadingTransactions
+  const filteredTransactions = !isLoadingBuyTransactions
     ? transactions.filter(transaction => transaction.currency.toUpperCase() === currency)
     : [];
 
-  const totalExpenses = filteredTransactions
-    .filter(transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY)
-    .reduce((total, transaction) => {
-      const transactionTotal = transaction.pricePerUnit * transaction.quantity;
-      const expenseTotal = transaction.expenses?.reduce(
-        (expenseSum, expense) => expenseSum + expense.amount,
-        0
-      );
+  const totalExpenses = 15;
 
-      return total + transactionTotal + (expenseTotal ?? 0);
-    }, 0);
-
-  const totalRevenue = filteredTransactions
-    .filter(transaction => transaction.transactionType.toUpperCase() === transactionTypes.SELL)
-    .reduce((total, transaction) => {
-      const transactionTotal = transaction.pricePerUnit * transaction.quantity;
-
-      return total + transactionTotal;
-    }, 0);
+  const totalRevenue = 10;
 
   const totalProfits = totalRevenue - totalExpenses > 0 ? totalRevenue - totalExpenses : 0;
 
@@ -110,9 +94,9 @@ function Dashboard() {
           </Card>
         </div>
 
-        {!isLoadingTransactions && <FinanceChart transactions={filteredTransactions} />}
+        {!isLoadingBuyTransactions && <FinanceChart transactions={filteredTransactions} />}
 
-        {!isLoadingTransactions && <TransactionsChart transactions={transactions} />}
+        {!isLoadingBuyTransactions && <TransactionsChart transactions={transactions} />}
       </div>
     </div>
   );

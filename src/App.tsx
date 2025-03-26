@@ -16,7 +16,6 @@ import Report from '@/components/pdf/report';
 
 import { DarkModeProvider } from '@/contexts/dark-mode-context';
 import { CompaniesViewProvider } from '@/contexts/companies-view-context';
-import { KleshNotesEditorProvider } from '@/contexts/klesh-notes-context';
 import PdfPageLayout from '@/components/pdf/pdf-page-layout';
 import TransactionDetails from '@/components/transaction/transaction-details';
 import InvoicesLayout from '@/components/invoice/invoices-layout';
@@ -31,41 +30,39 @@ function App() {
   return (
     <DarkModeProvider>
       <CompaniesViewProvider>
-        <KleshNotesEditorProvider>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <Routes>
-                <Route element={<ProtectedLayout />}>
-                  <Route index element={<Home />} />
-                  <Route path="dashboard" element={<DashboardLayout />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path="/dashboard/products" element={<Products />} />
-                    <Route path="/dashboard/transactions" element={<Transactions />} />
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<ProtectedLayout />}>
+                <Route index element={<Home />} />
+                <Route path="dashboard" element={<DashboardLayout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="/dashboard/products" element={<Products />} />
+                  <Route path="/dashboard/transactions" element={<Transactions />} />
+                  <Route
+                    path="/dashboard/transactions/:transactionId"
+                    element={<TransactionDetails />}
+                  />
+                  <Route path="/dashboard/invoices" element={<InvoicesLayout />}>
+                    <Route index element={<Invoices />} />
                     <Route
-                      path="/dashboard/transactions/:transactionId"
-                      element={<TransactionDetails />}
+                      path="/dashboard/invoices/uploaded-invoices"
+                      element={<UploadedInvoices />}
                     />
-                    <Route path="/dashboard/invoices" element={<InvoicesLayout />}>
-                      <Route index element={<Invoices />} />
-                      <Route
-                        path="/dashboard/invoices/uploaded-invoices"
-                        element={<UploadedInvoices />}
-                      />
-                    </Route>
-                  </Route>
-                  <Route path="/pdf" element={<PdfPageLayout />}>
-                    <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
-                    <Route path="/pdf/report/:reportId" element={<Report />} />
                   </Route>
                 </Route>
+                <Route path="/pdf" element={<PdfPageLayout />}>
+                  <Route path="/pdf/invoice/:invoiceId" element={<Invoice />} />
+                  <Route path="/pdf/report/:reportId" element={<Report />} />
+                </Route>
+              </Route>
 
-                <Route path="login" element={<Login />} />
-                <Route path="*" element={<PageNotFound />} />
-              </Routes>
-            </BrowserRouter>
-            <Toaster position="top-center" />
-          </QueryClientProvider>
-        </KleshNotesEditorProvider>
+              <Route path="login" element={<Login />} />
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </BrowserRouter>
+          <Toaster position="top-center" />
+        </QueryClientProvider>
       </CompaniesViewProvider>
     </DarkModeProvider>
   );

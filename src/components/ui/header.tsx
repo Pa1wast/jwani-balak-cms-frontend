@@ -16,15 +16,30 @@ import { useCompanies } from '@/features/company/useCompanies';
 import { Company } from '@/types/company';
 import Loader from './loader';
 import { getCompanyImgLocalPath } from '@/lib/getImgLocalPath';
+import { Label } from './label';
+import { Input } from './input';
+import { useExchangeRate } from '@/features/exchange-rate/useExchangeRate';
+import { formatPrice } from '@/lib/price';
+import { currencyTypes } from '@/types/transaction';
+import { useAddExchangeRate } from '@/features/exchange-rate/useAddExchangeRate';
+import { useState } from 'react';
 
 function Header({ className }: { className?: string }) {
   const { pathname } = useLocation();
   const { selectedCompanyId, setSelectedCompany } = useCompaniesView();
   const { isLoading, companies } = useCompanies();
+  const { isLoading: isLoadingExchangeRate, exchangeRate } = useExchangeRate();
+  const { isAdding, addExchangeRate } = useAddExchangeRate();
+
+  const [rate, setRate] = useState(exchangeRate ?? 1450);
 
   function handleSelectCompany(id: string) {
     setSelectedCompany(id);
     window.location.reload();
+  }
+
+  function handleChangeExchangeRate() {
+    if (rate) addExchangeRate(rate);
   }
 
   return (
@@ -83,6 +98,38 @@ function Header({ className }: { className?: string }) {
             </Select>
           )}
         </div>
+
+        {pathname !== '/' && (
+          <div className="flex gap-2 items-center bg-foreground/10 p-2 rounded-sm">
+            <Label className="w-max">Exchange Rate ($ to IQD)</Label>
+            <Input
+              className="max-w-[100px]"
+              value={rate}
+              onChange={e => {
+                const value = e.target.value;
+                if (!isNaN(Number(value))) setRate(Number(value));
+              }}
+              disabled={isAdding}
+            />
+
+            <Button variant="outline" onClick={handleChangeExchangeRate} disabled={isAdding}>
+              Change
+            </Button>
+
+            <p className="p-2 bg-foreground/10 rounded-md font-semibold">
+              {isLoadingExchangeRate ? (
+                <Loader size="sm" className="text-foreground/50" />
+              ) : (
+                <>
+                  <span className="text-cyan-500">$100</span> ={' '}
+                  <span className="text-orange-500">
+                    {formatPrice((exchangeRate ?? 0) * 100, currencyTypes.IQD)}
+                  </span>
+                </>
+              )}
+            </p>
+          </div>
+        )}
       </div>
 
       <DarkModeToggle />

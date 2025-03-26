@@ -1,32 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  ArrowLeft,
-  Download,
-  Mail,
-  MapPin,
-  Pen,
-  Phone,
-  Share2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRef, useState } from "react";
-import { useInvoice } from "@/features/invoice.ts/useInvoice";
-import Loader from "@/components/ui/loader";
-import ErrorMessage from "@/components//ui/error-message";
-import { formatPrice } from "@/lib/price";
-import { currencyTypes, transactionTypes } from "@/types/transaction";
-import { WhatsappShareButton } from "react-share";
-import { formatDate } from "@/lib/date";
-import { Invoice as InvoiceType } from "@/types/invoice";
-import { useUpdateInvoice } from "@/features/invoice.ts/useUpdateInvoice";
-import { Input } from "@/components//ui/input";
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { ArrowLeft, Download, Mail, MapPin, Pen, Phone, Share2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useRef, useState } from 'react';
+import { useInvoice } from '@/features/invoice.ts/useInvoice';
+import Loader from '@/components/ui/loader';
+import ErrorMessage from '@/components//ui/error-message';
+import { formatPrice } from '@/lib/price';
+import { currencyTypes, transactionTypes } from '@/types/transaction';
+import { WhatsappShareButton } from 'react-share';
+import { formatDate } from '@/lib/date';
+import { Invoice as InvoiceType } from '@/types/invoice';
+import { useUpdateInvoice } from '@/features/invoice.ts/useUpdateInvoice';
+import { Input } from '@/components//ui/input';
 
 function Invoice() {
   const { isLoading, invoice } = useInvoice();
@@ -34,17 +21,11 @@ function Invoice() {
 
   const [invoiceNO, setInvoiceNO] = useState(invoice?.NO);
 
-  const transactionsWithTotal = invoice?.transactions?.map((transaction) => {
+  const transactionsWithTotal = invoice?.transactions?.map(transaction => {
     let total = transaction.pricePerUnit * transaction.quantity;
 
-    if (
-      transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
-      transaction.expenses?.length
-    ) {
-      total += transaction.expenses.reduce(
-        (acc, expense) => acc + expense.amount,
-        0,
-      );
+    if ('BUY'.toUpperCase() === transactionTypes.BUY && transaction.expenses?.length) {
+      total += transaction.expenses.reduce((acc, expense) => acc + expense.amount, 0);
     }
 
     return {
@@ -53,15 +34,12 @@ function Invoice() {
     };
   });
 
-  const totalAmount = transactionsWithTotal?.reduce(
-    (acc, cur) => acc + cur.total,
-    0,
-  );
+  const totalAmount = transactionsWithTotal?.reduce((acc, cur) => acc + cur.total, 0);
 
   const pdfRef = useRef(null);
 
   async function handleClick() {
-    const html2pdf = (await import("html2pdf.js")).default as any;
+    const html2pdf = (await import('html2pdf.js')).default as any;
 
     if (!pdfRef) return;
 
@@ -70,8 +48,8 @@ function Invoice() {
       margin: 0,
       filename: `invoice-${invoice.NO}.pdf`,
       html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
     };
 
     html2pdf().set(options).from(element).save();
@@ -80,28 +58,19 @@ function Invoice() {
   function getFormattedInvoiceMessage(invoice: InvoiceType): string {
     const transactions = invoice.transactions
       ?.map((transaction: any, index: number) => {
-        return `#${index + 1} - Product: *${
-          transaction.product?.productName || "N/A"
-        }*
+        return `#${index + 1} - Product: *${transaction.product?.productName || 'N/A'}*
   Quantity: *${transaction.quantity}*
-  Price Per Unit: *${
-          formatPrice(
-            transaction.pricePerUnit,
-            transaction.currency as currencyTypes,
-          )
-        }*
-  Total: *${
-          formatPrice(
-            transaction.pricePerUnit * transaction.quantity,
-            transaction.currency as currencyTypes,
-          )
-        }*`;
+  Price Per Unit: *${formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}*
+  Total: *${formatPrice(
+    transaction.pricePerUnit * transaction.quantity,
+    transaction.currency as currencyTypes
+  )}*`;
       })
-      .join("\n\n");
+      .join('\n\n');
 
     const totalAmount = transactionsWithTotal?.reduce(
       (acc: number, transaction: any) => acc + transaction.total,
-      0,
+      0
     );
 
     return `
@@ -129,12 +98,7 @@ ${transactions}
 
 ----------------------
 
-💵 Total Amount: *${
-      formatPrice(
-        totalAmount,
-        invoice.transactions[0]?.currency as currencyTypes,
-      )
-    }*
+💵 Total Amount: *${formatPrice(totalAmount, invoice.transactions[0]?.currency as currencyTypes)}*
 
 ----------------------
 
@@ -185,10 +149,7 @@ ${transactions}
         </div>
       </div>
 
-      <Card
-        className="p-0 w-full flex flex-col  border-0 shadow-none"
-        ref={pdfRef}
-      >
+      <Card className="p-0 w-full flex flex-col  border-0 shadow-none" ref={pdfRef}>
         <CardHeader className="space-y-4">
           <div className="flex flex-row items-center justify-between">
             <div className="space-y-2">
@@ -196,16 +157,10 @@ ${transactions}
               <p className="text-lg text-right">للتجارة العامة / المحدودة</p>
             </div>
 
-            <img
-              src="/jwani-balak-logo.jpg"
-              alt="Jwani Balak Logo"
-              className="w-40"
-            />
+            <img src="/jwani-balak-logo.jpg" alt="Jwani Balak Logo" className="w-40" />
 
             <div className="space-y-2">
-              <p className="text-xl font-bold text-right">
-                کۆمپانیای جوانی باڵەک
-              </p>
+              <p className="text-xl font-bold text-right">کۆمپانیای جوانی باڵەک</p>
               <p className="text-lg text-right">بۆ بازرگانی گشتی / سنوردار</p>
             </div>
           </div>
@@ -259,11 +214,9 @@ ${transactions}
                   <Input
                     type="text"
                     value={invoiceNO}
-                    onChange={(e) => {
+                    onChange={e => {
                       const value = e.target.value;
-                      if (
-                        !isNaN(Number(value)) && value.length <= 20
-                      ) setInvoiceNO(Number(value));
+                      if (!isNaN(Number(value)) && value.length <= 20) setInvoiceNO(Number(value));
                     }}
                     disabled={isUpdating}
                   />
@@ -273,9 +226,9 @@ ${transactions}
               </div>
               <p className="font-medium ml-auto w-max ">
                 Date:
-                {` ${new Date().getFullYear()}/${new Date().getMonth() + 1}/${
-                  new Date().getDate()
-                }`}
+                {` ${new Date().getFullYear()}/${
+                  new Date().getMonth() + 1
+                }/${new Date().getDate()}`}
               </p>
             </div>
 
@@ -290,12 +243,9 @@ ${transactions}
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map((transaction) => (
+                  {transactionsWithTotal?.map(transaction => (
                     <p className="text-sm font-semibold">
-                      {formatPrice(
-                        transaction.total,
-                        transaction.currency as currencyTypes,
-                      )}
+                      {formatPrice(transaction.total, transaction.currency as currencyTypes)}
                     </p>
                   ))}
                 </div>
@@ -304,12 +254,9 @@ ${transactions}
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">نرخ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map((transaction) => (
+                  {transactionsWithTotal?.map(transaction => (
                     <p className="text-sm font-semibold text-secondary-foreground/60">
-                      {formatPrice(
-                        transaction.pricePerUnit,
-                        transaction.currency as currencyTypes,
-                      )}
+                      {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
                     </p>
                   ))}
                 </div>
@@ -318,7 +265,7 @@ ${transactions}
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">دانە</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map((transaction) => (
+                  {transactionsWithTotal?.map(transaction => (
                     <p className="text-sm font-semibold text-secondary-foreground/60">
                       {transaction.quantity}
                     </p>
@@ -329,7 +276,7 @@ ${transactions}
               <div className="flex flex-col flex-[40%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">جۆر</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map((transaction) => (
+                  {transactionsWithTotal?.map(transaction => (
                     <p>{transaction.product?.productName}</p>
                   ))}
                 </div>
@@ -338,30 +285,21 @@ ${transactions}
 
             <div className="flex gap-[1px] self-end w-full">
               <p className="text-right p-2 border flex-[20%] font-semibold">
-                {formatPrice(
-                  totalAmount,
-                  transactionsWithTotal[0]?.currency as currencyTypes,
-                )}
+                {formatPrice(totalAmount, transactionsWithTotal[0]?.currency as currencyTypes)}
               </p>
-              <p className="text-right font-bold text-lg p-2 border flex-[80%]">
-                : کۆی گشتی
-              </p>
+              <p className="text-right font-bold text-lg p-2 border flex-[80%]">: کۆی گشتی</p>
             </div>
           </div>
         </CardContent>
 
         <CardFooter className="flex justify-around space-y-0 mb-8">
           <div className="flex gap-1 items-center" dir="rtl" lang="ku">
-            <p className="text-xl font-semibold text-secondary-foreground/60">
-              فرۆشیار:
-            </p>
+            <p className="text-xl font-semibold text-secondary-foreground/60">فرۆشیار:</p>
             <p className="text-xl font-bold">{invoice.seller}</p>
           </div>
 
           <div className="flex gap-1 items-center" dir="rtl" lang="ku">
-            <p className="text-xl font-semibold text-secondary-foreground/60">
-              کریار:
-            </p>
+            <p className="text-xl font-semibold text-secondary-foreground/60">کریار:</p>
             <p className="text-xl font-bold">{invoice.buyer}</p>
           </div>
         </CardFooter>

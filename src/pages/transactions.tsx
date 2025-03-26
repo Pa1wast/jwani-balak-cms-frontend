@@ -19,7 +19,7 @@ function Transactions() {
               <Plus /> Add Transaction
             </Button>
           </SheetTrigger>
-          <SheetContent className="overflow-auto">
+          <SheetContent className="overflow-auto lg:min-w-[500px]">
             <SheetHeader className="mb-6">
               <SheetTitle>Create Transaction</SheetTitle>
             </SheetHeader>

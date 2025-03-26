@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, FilePlus } from 'lucide-react';
+import { ArrowUpDown, ChevronDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -32,85 +32,42 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { currencyTypes, BuyTransaction } from '@/types/transaction';
+import { currencyTypes, transactionTypes, Transaction } from '@/types/transaction';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectGroup, SelectItem } from '../ui/select';
 import { SelectTrigger } from '@radix-ui/react-select';
-import { useBuyTransactions } from '@/features/transaction/useTransactions';
+import { useTransactions } from '@/features/transaction/useTransactions';
 import Loader from '../ui/loader';
 import { formatDate } from '@/lib/date';
-import { Product } from '@/types/product';
+import { ComposedProduct } from '@/types/product';
 import TransactionRowActions from './transaction-row-actions';
-import { Checkbox } from '../ui/checkbox';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import AddInvoiceForm from '../invoice/add-invoice-form';
 
-export const columns: ColumnDef<BuyTransaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={value => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: '_id',
     enableHiding: false,
     header: () => <div className="text-left">#ID</div>,
-    cell: ({ row }) => <div className="text-left font-medium">#{row.getValue('_id')}</div>,
+    cell: ({ row }) => <div className="text-left font-medium">#{row?.getValue('_id')}</div>,
   },
   {
-    accessorKey: 'transactionType',
-    header: ({ column }) => {
-      const handleFilterChange = (value: string) => {
-        column.setFilterValue(value === 'ALL' ? undefined : value);
-      };
-
-      return (
-        <Select onValueChange={handleFilterChange}>
-          <SelectTrigger className="w-[180px]" asChild>
-            <Button className="justify-start w-max" variant="ghost">
-              Type
-              <ChevronDown />
-            </Button>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value={'ALL'}>ALL</SelectItem>
-              <SelectItem value={'BUY'}>BUY</SelectItem>
-              <SelectItem value={'SELL'}>SELL</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      );
+    accessorKey: 'type',
+    header: () => {
+      return <div className="capitalize font-bold truncate max-w-[200px]">Type</div>;
     },
     cell: ({ row }) => {
-      const type = row.getValue('transactionType') as string;
+      const transactionType =
+        'expenses' in row.original ? transactionTypes.BUY : transactionTypes.SELL;
 
       return (
         <Badge
           className={cn(
             'text-left font-bold flex justify-center items-center rounded-md px-2 w-max uppercase',
-            type.toUpperCase() === 'SELL'
+            transactionType === transactionTypes.SELL
               ? 'bg-green-500 dark:bg-green-500/20 dark:text-green-500 hover:bg-green-500/80 dark:hover:bg-green-500/60'
               : 'bg-blue-500 dark:bg-blue-500/20 dark:text-blue-500 hover:bg-blue-500/80 dark:hover:bg-blue-500/60'
           )}
         >
-          {type}
+          {transactionType}
         </Badge>
       );
     },
@@ -158,49 +115,42 @@ export const columns: ColumnDef<BuyTransaction>[] = [
     },
   },
   {
-    accessorKey: 'product',
+    accessorKey: 'label',
     enableHiding: false,
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Product
+        Label
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => {
-      const product = row.getValue('product') as Product;
       return (
-        <div className="capitalize font-bold truncate max-w-[200px]">
-          {product?.productName ? (
-            product.productName
-          ) : (
-            <p className="bg-red-500/20 font-medium text-red-500 px-2 rounded-lg w-max">
-              Unavailable
-            </p>
-          )}
-        </div>
+        <div className="capitalize font-bold truncate max-w-[200px]">{row.getValue('label')}</div>
       );
-    },
-    filterFn: (row, _, filterValue) => {
-      const product = row.getValue('product') as Product;
-      return product?.productName.toLowerCase().includes(filterValue.toLowerCase());
     },
   },
   {
-    accessorKey: 'pricePerUnit',
+    accessorKey: 'products',
+    enableHiding: false,
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Price / Unit
+        Total Price
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => {
-      const price = parseFloat(row.getValue('pricePerUnit'));
+      const products = row.getValue('products') as ComposedProduct[];
+
+      const totalPrice = products.reduce((acc, cur) => {
+        return acc + cur.quantity * cur.pricePerUnit;
+      }, 0);
+
       const currency = row._valuesCache.currency;
 
       const formattedPriceValue = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      }).format(price);
+      }).format(totalPrice);
 
       const formattedPrice =
         currency === currencyTypes.IQD ? `${formattedPriceValue} IQD` : `$${formattedPriceValue}`;
@@ -218,16 +168,6 @@ export const columns: ColumnDef<BuyTransaction>[] = [
         </div>
       );
     },
-  },
-  {
-    accessorKey: 'quantity',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Quantity
-        <ArrowUpDown />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="font-bold">{row.getValue('quantity')}</div>,
   },
   {
     accessorKey: 'createdAt',
@@ -258,7 +198,7 @@ export const columns: ColumnDef<BuyTransaction>[] = [
 ];
 
 export default function TransactionDataTable() {
-  const { isLoading, transactions } = useBuyTransactions();
+  const { isLoading, transactions } = useTransactions();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -295,9 +235,11 @@ export default function TransactionDataTable() {
     <div className="w-full">
       <div className="flex items-center gap-2 py-4">
         <Input
-          placeholder="Filter transactions by product name..."
-          value={(table.getColumn('product')?.getFilterValue() as string) ?? ''}
-          onChange={event => table.getColumn('product')?.setFilterValue(event.target.value)}
+          placeholder="Filter transactions by label..."
+          value={(table.getColumn('label')?.getFilterValue() as string) ?? ''}
+          onChange={event => {
+            table.getColumn('label')?.setFilterValue(event.target.value);
+          }}
           className="md:max-w-sm"
         />
 
@@ -322,7 +264,7 @@ export default function TransactionDataTable() {
                   >
                     {column.id === 'createdAt'
                       ? 'Date'
-                      : column.id === 'transactionType'
+                      : column.id === 'type'
                       ? 'Type'
                       : column.id === 'pricePerUnit'
                       ? 'Price / Unit'
@@ -381,14 +323,8 @@ export default function TransactionDataTable() {
                         {cell.id.includes('type') && (
                           <p className="md:hidden font-medium opacity-60">Type: </p>
                         )}
-                        {cell.id.includes('product') && (
-                          <p className="md:hidden font-medium opacity-60">Product name: </p>
-                        )}
-                        {cell.id.includes('pricePerUnit') && (
-                          <p className="md:hidden font-medium opacity-60">Price / Unit: </p>
-                        )}
-                        {cell.id.includes('quantity') && (
-                          <p className="md:hidden font-medium opacity-60">Quantity: </p>
+                        {cell.id.includes('products') && (
+                          <p className="md:hidden font-medium opacity-60">Total Price: </p>
                         )}
                         {cell.id.includes('createdAt') && (
                           <p className="md:hidden font-medium opacity-60">Date: </p>

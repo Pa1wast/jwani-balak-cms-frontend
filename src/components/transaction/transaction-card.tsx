@@ -20,14 +20,11 @@ function TransactionCard({ transaction }: TransactionCardProps) {
           <div
             className={cn(
               'w-2 h-2  rounded-full',
-              transaction.transactionType.toUpperCase() === transactionTypes.SELL
-                ? 'bg-green-700'
-                : 'bg-blue-500'
+              'BUY'.toUpperCase() === transactionTypes.SELL ? 'bg-green-700' : 'bg-blue-500'
             )}
           />
           <p className="text-foreground/60 text-sm font-medium">
-            {transaction.transactionType.toUpperCase() === transactionTypes.BUY ? 'Buy' : 'Sell'}{' '}
-            Transaction
+            {'BUY'.toUpperCase() === transactionTypes.BUY ? 'Buy' : 'Sell'} Transaction
           </p>
         </CardHeader>
 

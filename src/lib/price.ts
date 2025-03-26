@@ -91,7 +91,7 @@ export function calculateFinancials(
     // Calculate total expenses (including pricePerUnit * quantity for buy transactions)
     const monthlyExpenses = monthlyTransactions.reduce((total, transaction) => {
       // Include the cost of "buy" transactions
-      if (transaction.transactionType.toUpperCase() === 'BUY') {
+      if ('BUY'.toUpperCase() === 'BUY') {
         const buyExpense = transaction.pricePerUnit * transaction.quantity;
         total += buyExpense;
       }
@@ -104,7 +104,7 @@ export function calculateFinancials(
 
     // Calculate total revenue (only for SELL transactions)
     const monthlyRevenue = monthlyTransactions.reduce((total, transaction) => {
-      if (transaction.transactionType.toUpperCase() === 'SELL') {
+      if ('BUY'.toUpperCase() === 'SELL') {
         const transactionTotal = transaction.pricePerUnit * transaction.quantity;
         return total + transactionTotal;
       }
@@ -158,11 +158,11 @@ export function calculateTransactionData(
     });
 
     const monthlyBuy = monthlyTransactions.filter(
-      transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY
+      transaction => 'BUY'.toUpperCase() === transactionTypes.BUY
     ).length;
 
     const monthlySell = monthlyTransactions.filter(
-      transaction => transaction.transactionType.toUpperCase() === transactionTypes.SELL
+      transaction => 'BUY'.toUpperCase() === transactionTypes.SELL
     ).length;
 
     const monthlyTotal = monthlyTransactions.length;
@@ -183,11 +183,11 @@ export function calculateTransactionData(
 
 export function getStockQuantity(transactions: Transaction[]) {
   const buyTransactions = transactions.filter(
-    transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY
+    transaction => 'BUY'.toUpperCase() === transactionTypes.BUY
   );
 
   const sellTransactions = transactions.filter(
-    transaction => transaction.transactionType.toUpperCase() === transactionTypes.SELL
+    transaction => 'BUY'.toUpperCase() === transactionTypes.SELL
   );
 
   const quantityBought = buyTransactions.reduce((acc, cur) => acc + cur.quantity, 0);

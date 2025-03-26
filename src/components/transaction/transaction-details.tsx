@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import Loader from '../ui/loader';
-import { useTransaction } from '@/features/transaction/useTransaction';
+import { useBuyTransaction } from '@/features/transaction/useTransaction';
 import { formatDate } from '@/lib/date';
 import {
   AlertDialog,
@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../ui/alert-dialog';
-import { useDeleteTransaction } from '@/features/transaction/useDeleteTransaction';
+import { useDeleteBuyTransaction } from '@/features/transaction/useDeleteTransaction';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import UpdateTransactionForm from './update-transaction-form';
@@ -32,19 +32,19 @@ import { useState } from 'react';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import AddInvoiceForm from '../invoice/add-invoice-form';
 import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
-import { useTransactionById } from '@/features/transaction/useTransactionById';
+import { useBuyTransactionById } from '@/features/transaction/useTransactionById';
 
 function TransactionDetails() {
   const navigate = useNavigate();
   const { selectedCompanyId } = useCompaniesView();
 
-  const { isLoading, error, transaction } = useTransaction();
+  const { isLoading, error, transaction } = useBuyTransaction();
 
-  const { transaction: buyTransaction } = useTransactionById(transaction?.buyTransaction as string);
+  const { transaction: buyTransaction } = useBuyTransactionById(transaction?._id as string);
 
   const { isUpdating, updateTransaction } = useUpdateTransaction();
 
-  const { isDeleting, deleteTransaction } = useDeleteTransaction();
+  const { isDeleting, deleteBuyTransaction } = useDeleteBuyTransaction();
 
   const [sellingPricePerUnit, setSellingPricePerUnit] = useState(0);
   const [profitMargin, setProfitMargin] = useState(0);
@@ -74,13 +74,13 @@ function TransactionDetails() {
 
   // BUY Transaction
   const totalAmountExpenses = transaction.expenses?.reduce((acc, cur) => acc + cur.amount, 0);
-  const totalBuyCost = transaction.pricePerUnit * transaction.quantity;
+  const totalBuyCost = 900;
   const totalAmountPaid = totalAmountExpenses ? totalAmountExpenses + totalBuyCost : totalBuyCost;
   const breakEvenQuantity = Math.ceil(totalAmountPaid / sellingPricePerUnit);
   const breakEvenRevenue = breakEvenQuantity * sellingPricePerUnit;
   const estimatedProfitAmount = calculateProfit(
     profitMargin,
-    sellingPricePerUnit * transaction.quantity,
+    sellingPricePerUnit * 10,
     totalAmountPaid
   );
   const revenueNeeded = totalAmountPaid + estimatedProfitAmount.value;
@@ -92,9 +92,9 @@ function TransactionDetails() {
     ? allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0)
     : 0;
 
-  const totalCost = buyTransaction?.pricePerUnit * buyTransaction?.quantity + allSellExpensesAmount;
+  const totalCost = 67 + allSellExpensesAmount;
 
-  const totalRevenue = transaction.pricePerUnit * transaction.quantity;
+  const totalRevenue = 67;
 
   let profitAmount = totalRevenue - totalCost;
   let actualProfitMargin = totalRevenue > 0 ? (profitAmount / totalRevenue) * 100 : 0;
@@ -110,7 +110,6 @@ function TransactionDetails() {
     updateTransaction({
       transactionId: transaction._id,
       updatedTransaction: {
-        transactionType: transaction.transactionType,
         expenses: updatedExpenses,
       },
     });
@@ -127,12 +126,12 @@ function TransactionDetails() {
           <Badge
             className={cn(
               'text-left font-bold text-xl flex justify-center items-center rounded-md px-2 w-max',
-              transaction.transactionType.toUpperCase() === transactionTypes.SELL
+              'SELL' === transactionTypes.SELL
                 ? 'bg-green-500 dark:bg-green-500/20 dark:text-green-500 hover:bg-green-500/80 dark:hover:bg-green-500/60'
                 : 'bg-blue-500 dark:bg-blue-500/20 dark:text-blue-500 hover:bg-blue-500/80 dark:hover:bg-blue-500/60'
             )}
           >
-            {transaction.transactionType.toUpperCase()} Transaction
+            Transaction
           </Badge>
 
           <p className="font-medium">{formatDate(transaction.createdAt)}</p>
@@ -143,41 +142,28 @@ function TransactionDetails() {
             <CardContent className="flex gap-10 flex-row flex-wrap">
               <div className="flex flex-wrap flex-1 items-center gap-4">
                 <p className="text-lg text-foreground/60 min-w-max">Product name:</p>
-
-                {transaction.product ? (
-                  <p className="md:text-lg font-semibold truncate max-w-[200px] md:max-w-[500px]">
-                    {transaction.product?.productName}
-                  </p>
-                ) : (
-                  <ErrorMessage message="Could not find product data" />
-                )}
+                'Products
               </div>
 
               <div className="flex items-center gap-4">
                 <p className="text-lg text-foreground/60">Price / Unit:</p>
-                <p className="text-lg font-semibold">
-                  {formatPrice(transaction.pricePerUnit, currency)}
-                </p>
+                <p className="text-lg font-semibold">{formatPrice(10, currency)}</p>
               </div>
 
               <div className="flex items-center gap-4">
                 <p className="text-lg text-foreground/60">Quantity:</p>
-                <p className="text-lg font-semibold">{transaction.quantity}</p>
+                <p className="text-lg font-semibold">90</p>
               </div>
             </CardContent>
 
             <CardFooter className="flex-row p-4 items-center justify-between w-full">
               <p className="text-lg text-foreground/60">
-                {transaction.transactionType.toUpperCase() === transactionTypes.SELL
-                  ? 'Revenue: '
-                  : 'Total Cost (w/o) expenses: '}
+                {'SELL' === transactionTypes.SELL ? 'Revenue: ' : 'Total Cost (w/o) expenses: '}
               </p>
               <p
                 className={cn(
                   'text-xl font-bold ',
-                  transaction.transactionType.toUpperCase() === transactionTypes.SELL
-                    ? 'text-blue-500'
-                    : 'text-red-500'
+                  'SELL' === transactionTypes.SELL ? 'text-blue-500' : 'text-red-500'
                 )}
               >
                 {formatPrice(totalBuyCost, currency)}
@@ -188,14 +174,13 @@ function TransactionDetails() {
           <Card className="w-full sm:w-max">
             <CardContent className="flex flex-col gap-1">
               <Dialog>
-                {transaction.product && (
-                  <DialogTrigger asChild>
-                    <Button className="w-full" variant="outline">
-                      <FilePlus />
-                      Generate Invoice
-                    </Button>
-                  </DialogTrigger>
-                )}
+                <DialogTrigger asChild>
+                  <Button className="w-full" variant="outline">
+                    <FilePlus />
+                    Generate Invoice
+                  </Button>
+                </DialogTrigger>
+
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Generate invoice</DialogTitle>
@@ -241,7 +226,7 @@ function TransactionDetails() {
                     <AlertDialogAction
                       className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
                       onClick={() => {
-                        deleteTransaction(transaction._id);
+                        deleteBuyTransaction(transaction._id);
                         navigate('/dashboard/transactions');
                       }}
                       disabled={isDeleting}
@@ -257,7 +242,7 @@ function TransactionDetails() {
       </div>
 
       <div className="flex gap-2 w-full flex-col sm:flex-row mb-2">
-        {transaction.transactionType.toUpperCase() === transactionTypes.BUY && (
+        {'BUY' === transactionTypes.BUY && (
           <Card className="flex-1 max-h-max">
             <CardHeader>
               <CardTitle>Add Expenses</CardTitle>
@@ -269,7 +254,7 @@ function TransactionDetails() {
           </Card>
         )}
 
-        {transaction.transactionType.toUpperCase() === transactionTypes.BUY && (
+        {'BUY' === transactionTypes.BUY && (
           <Card className="flex-1">
             <CardHeader>
               <CardTitle>All Expenses</CardTitle>
@@ -298,15 +283,13 @@ function TransactionDetails() {
                 </Badge>
               ))}
 
-              {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
-                !transaction.expenses?.length && (
-                  <p className="text-foreground/60">There are no expenses!</p>
-                )}
+              {'BUY' === transactionTypes.BUY && !transaction.expenses?.length && (
+                <p className="text-foreground/60">There are no expenses!</p>
+              )}
 
-              {transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
-                !allSellExpenses?.length && (
-                  <p className="text-foreground/60">There are no expenses!</p>
-                )}
+              {'SELL' === transactionTypes.SELL && !allSellExpenses?.length && (
+                <p className="text-foreground/60">There are no expenses!</p>
+              )}
             </CardContent>
           </Card>
         )}
@@ -325,7 +308,7 @@ function TransactionDetails() {
           </p>
 
           <div className="space-y-1">
-            {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+            {'BUY' === transactionTypes.BUY &&
               transaction.expenses?.map((expense, index) => (
                 <Badge
                   key={index}
@@ -344,7 +327,7 @@ function TransactionDetails() {
                 </Badge>
               ))}
 
-            {transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
+            {'SELL' === transactionTypes.SELL &&
               allSellExpenses?.map((expense, index) => (
                 <Badge
                   key={index}
@@ -367,17 +350,17 @@ function TransactionDetails() {
             <p>Total Expenses: </p>
 
             <p className=" font-bold">
-              {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
+              {'BUY' === transactionTypes.BUY &&
                 formatPrice(!totalAmountExpenses ? 0 : totalAmountExpenses, currency)}
-              {transaction.transactionType.toUpperCase() === transactionTypes.SELL &&
+              {'SELL' === transactionTypes.SELL &&
                 formatPrice(!allSellExpensesAmount ? 0 : allSellExpensesAmount, currency)}
             </p>
           </div>
         </CardContent>
 
-        {transaction.transactionType.toUpperCase() === transactionTypes.BUY && <Separator />}
+        {'BUY' === transactionTypes.BUY && <Separator />}
 
-        {transaction.transactionType.toUpperCase() === transactionTypes.BUY && (
+        {'BUY' === transactionTypes.BUY && (
           <CardFooter className="flex flex-col gap-1 pt-4">
             <div className="w-full flex bg-blue-500/30 dark:bg-blue-500/30 font-semibold p-2 rounded-md justify-between">
               <p>Total Cost (w/o) expenses: </p>
@@ -394,7 +377,7 @@ function TransactionDetails() {
         )}
       </Card>
 
-      {transaction.transactionType.toUpperCase() === transactionTypes.BUY ? (
+      {'BUY' === transactionTypes.BUY ? (
         <Card className="flex-1">
           <CardHeader>
             <CardTitle>Insights & Estimations</CardTitle>
@@ -503,7 +486,7 @@ function TransactionDetails() {
                 <div className="flex flex-wrap bg-secondary/20 p-1 rounded-md items-center justify-between gap-1">
                   <div className="flex gap-1 items-center flex-wrap">
                     <p className="font-semibold">Break-even quantity: </p>
-                    {sellingPricePerUnit > 0 && breakEvenQuantity > transaction.quantity && (
+                    {sellingPricePerUnit > 0 && breakEvenQuantity > 90 && (
                       <span className="font-normal bg-red-500/10 text-red-500 text-xs sm:text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
                         <CircleAlert className="size-4" />
                         Insufficient stock to reach the break-even point.
@@ -572,7 +555,7 @@ function TransactionDetails() {
               <p className="text-lg font-bold text-red-500 dark:text-foreground">
                 {formatPrice(totalCost, currency)}
 
-                <span className="text-xs ml-2 text-foreground">x{buyTransaction?.quantity}</span>
+                <span className="text-xs ml-2 text-foreground">x{90}</span>
               </p>
             </div>
 
@@ -582,7 +565,7 @@ function TransactionDetails() {
               <p className="text-lg font-bold text-blue-500 dark:text-foreground">
                 {formatPrice(totalRevenue, currency)}
 
-                <span className="text-xs ml-2 text-foreground">x{transaction?.quantity}</span>
+                <span className="text-xs ml-2 text-foreground">x{90}</span>
               </p>
             </div>
 
@@ -596,11 +579,8 @@ function TransactionDetails() {
                   <span className=" font-normal dark:bg-secondary/40 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
                     <BadgeInfo className="size-4" />
                     No profit has been made. Quantity bought is{' '}
-                    <span className="font-semibold">x{buyTransaction?.quantity}</span> at{' '}
-                    <span className="font-semibold">
-                      {formatPrice(buyTransaction?.pricePerUnit, currency)}
-                    </span>{' '}
-                    Per Unit.
+                    <span className="font-semibold">x{90}</span> at{' '}
+                    <span className="font-semibold">{formatPrice(67, currency)}</span> Per Unit.
                   </span>
                 )}
               </div>

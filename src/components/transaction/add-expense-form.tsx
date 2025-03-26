@@ -29,7 +29,7 @@ function AddExpenseForm({ transaction }: AddExpenseFormProps) {
       updateTransaction({
         transactionId: transaction._id,
         updatedTransaction: {
-          transactionType: transaction.transactionType,
+          transactionType: 'BUY',
           expenses: updatedExpenses,
         },
       });

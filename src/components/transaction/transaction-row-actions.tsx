@@ -1,4 +1,4 @@
-import { Transaction, transactionTypes } from '@/types/transaction';
+import { BuyTransaction, Transaction, transactionTypes } from '@/types/transaction';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,14 +21,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../ui/alert-dialog';
-import { useDeleteTransaction } from '@/features/transaction/useDeleteTransaction';
+import {
+  useDeleteBuyTransaction,
+  useDeleteSellTransaction,
+} from '@/features/transaction/useDeleteTransaction';
 
 interface TransactionRowActionsProps {
   transaction: Transaction;
 }
 
 function TransactionRowActions({ transaction }: TransactionRowActionsProps) {
-  const { isDeleting, deleteTransaction } = useDeleteTransaction();
+  const { isDeleting, deleteBuyTransaction } = useDeleteBuyTransaction();
+  const { isDeleting: isDeleting2, deleteSellTransaction } = useDeleteSellTransaction();
+
+  const transactionType = 'expenses' in transaction ? transactionTypes.BUY : transactionTypes.SELL;
 
   return (
     <>
@@ -65,17 +71,13 @@ function TransactionRowActions({ transaction }: TransactionRowActionsProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
-                'All related sell transactions will also be deleted. '}
-              This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
-              onClick={() => deleteTransaction(transaction._id)}
+              onClick={() => deleteBuyTransaction(transaction._id)}
               disabled={isDeleting}
             >
               Delete
@@ -111,18 +113,18 @@ function TransactionRowActions({ transaction }: TransactionRowActionsProps) {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                {transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
-                  'All related sell transactions will also be deleted. '}
-                This action cannot be undone.
-              </AlertDialogDescription>
+              <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
-                onClick={() => deleteTransaction(transaction._id)}
-                disabled={isDeleting}
+                onClick={() =>
+                  transactionType === transactionTypes.BUY
+                    ? deleteBuyTransaction(transaction._id)
+                    : deleteSellTransaction(transaction._id)
+                }
+                disabled={isDeleting || isDeleting2}
               >
                 Delete
               </AlertDialogAction>

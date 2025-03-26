@@ -1,14 +1,25 @@
-import { getTransaction } from '@/api/transaction/get-transaction';
-import { Transaction } from '@/types/transaction';
+import { getBuyTransaction, getSellTransaction } from '@/api/transaction/get-transaction';
+import { BuyTransaction, SellTransaction } from '@/types/transaction';
 import { useQuery } from '@tanstack/react-query';
 
-export function useTransactionById(transactionId: string) {
+export function useBuyTransactionById(transactionId: string) {
   const { isLoading, data, error } = useQuery({
     queryKey: ['transactions', transactionId],
-    queryFn: () => getTransaction(transactionId as string),
+    queryFn: () => getBuyTransaction(transactionId as string),
   });
 
-  const transaction: Transaction = data?.data?.transaction;
+  const transaction: BuyTransaction = data?.data?.Buytransaction;
+
+  return { isLoading, error, transaction };
+}
+
+export function useSellTransactionById(transactionId: string) {
+  const { isLoading, data, error } = useQuery({
+    queryKey: ['transactions', transactionId],
+    queryFn: () => getSellTransaction(transactionId as string),
+  });
+
+  const transaction: SellTransaction = data?.data?.transaction;
 
   return { isLoading, error, transaction };
 }

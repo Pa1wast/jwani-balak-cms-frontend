@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 
 import { useForm } from 'react-hook-form';
 import { addTransactionSchema } from '@/schemas';
@@ -15,71 +15,75 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '../ui/command';
-import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { currencyTypes, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useProducts } from '@/features/product/useProducts';
-import { Product } from '@/types/product';
-import Loader from '../ui/loader';
-import { useAddTransaction } from '@/features/transaction/useAddTransaction';
+
+import {
+  useAddBuyTransaction,
+  useAddSellTransaction,
+} from '@/features/transaction/useAddTransaction';
 import { useCompaniesView } from '@/contexts/companies-view-context';
-import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
-import { formatPrice } from '@/lib/price';
+import { Label } from '../ui/label';
+import { ComposedProduct } from '@/types/product';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
 
-  const { isLoading, products } = useProducts();
-  const { isAdding, addTransaction } = useAddTransaction();
+  const { products } = useProducts();
+  const { isAdding: isAddingBuy, addBuyTransaction } = useAddBuyTransaction();
+  const { isAdding: isAddingSell, addSellTransaction } = useAddSellTransaction();
 
   const form = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
-      transactionType: 'BUY',
-      currency: 'IQD',
-      buyTransaction: '',
-      product: '',
       company: selectedCompanyId as string,
-      pricePerUnit: 0,
-      quantity: 0,
+      currency: currencyTypes.IQD,
+      label: '',
     },
   });
 
+  const [transactionType, setTransactionType] = useState<
+    transactionTypes.BUY | transactionTypes.SELL
+  >(transactionTypes.BUY);
+
   const [selectedProductId, setSelectedProductId] = useState('');
-  const [selectedTransactionId, setSelectedTransactionId] = useState('');
-
-  const { transactions } = useTransactionsByProductId(selectedProductId);
-
-  const buyTransactions = transactions?.filter(
-    transaction =>
-      transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
-      transaction?.product?._id === selectedProductId
-  );
-
-  const selectedBuyTransaction = buyTransactions?.find(
-    transaction => transaction._id === selectedTransactionId
-  );
-
-  const availableQuantity = selectedBuyTransaction
-    ? selectedBuyTransaction.quantity - (selectedBuyTransaction.soldQuantity as number)
-    : 0;
-
-  const [quantityError, setQuantityError] = useState(false);
 
   const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
+  const [composedProducts, setComposedProducts] = useState<ComposedProduct[]>([]);
+
+  const addProduct = () => {
+    const selectedProduct = products?.find(p => p._id === selectedProductId);
+
+    if (selectedProduct) {
+      setComposedProducts([
+        ...composedProducts,
+        {
+          product: selectedProduct._id,
+          quantity: 0,
+          pricePerUnit: 0,
+        },
+      ]);
+    }
+  };
+
+  const updateProduct = (index: number, field: 'pricePerUnit' | 'quantity', value: string) => {
+    const updatedProducts = [...composedProducts];
+    if (field === 'quantity' || field === 'pricePerUnit') {
+      if (!isNaN(Number(value))) updatedProducts[index][field] = +value;
+    }
+    setComposedProducts(updatedProducts);
+  };
+
+  const removeProduct = (index: number) => {
+    const updatedComposedProducts = composedProducts.filter((_, i) => i !== index);
+    setComposedProducts(updatedComposedProducts);
+  };
 
   const addExpense = () => {
     setExpenses([...expenses, { name: '', amount: 0 }]);
@@ -103,235 +107,100 @@ function AddTransactionForm() {
   function onSubmit(values: z.infer<typeof addTransactionSchema>) {
     const { success, data } = addTransactionSchema.safeParse(values);
 
-    if (success) {
-      if (expenses.length && expenses.every(expense => !expense.name || !expense.amount)) {
-        toast.error('Please fill all expenses fields');
-        return;
-      }
+    if (composedProducts.length === 0) {
+      toast.error('Please add products');
+      return;
+    }
 
-      const newTransaction = { ...data, expenses };
+    if (composedProducts.some(product => product.pricePerUnit === 0 || product.quantity === 0)) {
+      toast.error('Please fill in all product details');
+      return;
+    }
 
-      if (newTransaction.transactionType === transactionTypes.SELL) {
-        const currency = buyTransactions.find(
-          transaction => transaction._id === newTransaction.buyTransaction
-        )!.currency;
-        newTransaction.currency = currency;
-      }
+    if (
+      transactionType === transactionTypes.BUY &&
+      expenses.some(expense => expense.amount === 0 || expense.name === '')
+    ) {
+      toast.error('Please fill in all expense details');
+      return;
+    }
 
-      addTransaction(newTransaction);
+    if (!success) {
+      toast.error('Please fill in all details correctly');
+      return;
+    }
+
+    if (transactionType === transactionTypes.BUY) {
+      addBuyTransaction({ ...data, products: composedProducts, expenses });
+    } else {
+      addSellTransaction({ ...data, products: composedProducts });
     }
   }
+
+  console.log(composedProducts);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="product"
-          render={({ field }) => (
-            <FormItem className="flex flex-col space-y-3">
-              <FormLabel>Product</FormLabel>
-              {!isLoading ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className={cn(
-                          ' justify-between truncate',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        {field.value
-                          ? products?.find((product: Product) => product._id === field.value)
-                              ?.productName
-                          : 'Select product'}
-                        <ChevronsUpDown className="opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0">
-                    <Command>
-                      <CommandInput placeholder="Search product..." className="h-9" />
-                      <CommandList>
-                        <CommandEmpty>No products found.</CommandEmpty>
+        <div className="flex flex-col gap-4">
+          <Label>Transaction Type</Label>
 
-                        <CommandGroup>
-                          {products?.map((product: Product) => (
-                            <CommandItem
-                              value={product._id}
-                              key={product._id}
-                              onSelect={() => {
-                                form.setValue('product', product._id);
-                                setSelectedProductId(product._id);
+          <RadioGroup
+            onValueChange={value =>
+              setTransactionType(value as transactionTypes.BUY | transactionTypes.SELL)
+            }
+            defaultValue={transactionType}
+            className="flex items-center gap-6"
+          >
+            <div className="flex gap-2">
+              <RadioGroupItem
+                value={transactionTypes.BUY}
+                className="text-blue-500 border-blue-500"
+              />
+              <Label>Buy</Label>
+            </div>
 
-                                const hasBuyTransactions = transactions?.some(
-                                  transaction =>
-                                    transaction.transactionType.toUpperCase() ===
-                                      transactionTypes.BUY &&
-                                    transaction?.product?._id === product._id
-                                );
-
-                                if (!hasBuyTransactions) {
-                                  form.setValue('buyTransaction', '');
-                                  setSelectedTransactionId('');
-                                }
-                              }}
-                            >
-                              {product?.productName}
-                              <Check
-                                className={cn(
-                                  'ml-auto',
-                                  product._id === field.value ? 'opacity-100' : 'opacity-0'
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              ) : (
-                <Loader />
-              )}
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {form.getValues('transactionType').toUpperCase() === transactionTypes.SELL && (
-          <FormField
-            control={form.control}
-            name="buyTransaction"
-            render={({ field }) => (
-              <FormItem className="flex flex-col space-y-3">
-                <FormLabel>Buy Transaction</FormLabel>
-                {!isLoading ? (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            ' justify-between truncate',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            <div className="flex gap-1 w-full items-center justify-between">
-                              <span className="font-bold">
-                                {formatPrice(
-                                  buyTransactions?.find(
-                                    buyTransaction => buyTransaction._id === field.value
-                                  )?.pricePerUnit as number,
-                                  buyTransactions?.find(
-                                    buyTransaction => buyTransaction._id === field.value
-                                  )?.currency as currencyTypes
-                                )}
-                              </span>
-                              -
-                              <span className="font-bold">
-                                x
-                                {
-                                  buyTransactions?.find(
-                                    buyTransaction => buyTransaction._id === field.value
-                                  )?.quantity as number
-                                }
-                              </span>
-                            </div>
-                          ) : (
-                            'Select transaction'
-                          )}
-
-                          <ChevronsUpDown className="opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                      <Command>
-                        <CommandInput placeholder="Search transaction..." className="h-9" />
-                        <CommandList>
-                          <CommandEmpty>
-                            No transactions with the selected product found.
-                          </CommandEmpty>
-
-                          <CommandGroup>
-                            {buyTransactions?.map(buyTransaction => (
-                              <CommandItem
-                                value={buyTransaction._id}
-                                key={buyTransaction._id}
-                                onSelect={() => {
-                                  form.setValue('buyTransaction', buyTransaction._id);
-                                  setSelectedTransactionId(buyTransaction._id);
-                                }}
-                              >
-                                <div className="flex gap-1 items-center justify-between w-full">
-                                  <span className="font-bold">
-                                    {formatPrice(
-                                      buyTransaction.pricePerUnit,
-                                      buyTransaction.currency as currencyTypes
-                                    )}
-                                  </span>
-                                  -<span className="font-bold">x{buyTransaction.quantity}</span>
-                                </div>
-                                <Check
-                                  className={cn(
-                                    'ml-auto',
-                                    buyTransaction._id === field.value ? 'opacity-100' : 'opacity-0'
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                ) : (
-                  <Loader />
-                )}
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
+            <div className="flex gap-2">
+              <RadioGroupItem
+                value={transactionTypes.SELL}
+                className="text-green-500 border-green-500"
+              />
+              <Label>Sell</Label>
+            </div>
+          </RadioGroup>
+        </div>
 
         <div className="flex justify-between">
           <FormField
             control={form.control}
-            name="transactionType"
+            name="currency"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Transaction Type</FormLabel>
+                <FormLabel>Currency</FormLabel>
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                     className="flex items-center gap-6"
                   >
-                    <FormItem className="flex items-center space-x-3 space-y-0 ">
+                    <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
                         <RadioGroupItem
-                          value={transactionTypes.BUY}
-                          className="text-blue-500 border-blue-500"
+                          value={currencyTypes.IQD}
+                          className="text-orange-500 border-orange-500"
                         />
                       </FormControl>
-                      <FormLabel className="font-normal">Buy</FormLabel>
+                      <FormLabel className="font-normal">IQD</FormLabel>
                     </FormItem>
 
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
                         <RadioGroupItem
-                          value={transactionTypes.SELL}
-                          className="text-green-500 border-green-500"
+                          value={currencyTypes.USD}
+                          className="text-cyan-500 border-cyan-500"
                         />
                       </FormControl>
-                      <FormLabel className="font-normal">Sell</FormLabel>
+                      <FormLabel className="font-normal">USD</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
@@ -339,112 +208,105 @@ function AddTransactionForm() {
               </FormItem>
             )}
           />
-
-          {form.getValues('transactionType').toUpperCase() === transactionTypes.BUY && (
-            <FormField
-              control={form.control}
-              name="currency"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Currency</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex items-center gap-6"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem
-                            value={currencyTypes.IQD}
-                            className="text-orange-500 border-orange-500"
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">IQD</FormLabel>
-                      </FormItem>
-
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem
-                            value={currencyTypes.USD}
-                            className="text-cyan-500 border-cyan-500"
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">USD</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
         </div>
+
         <FormField
           control={form.control}
-          name="pricePerUnit"
+          name="label"
           render={({ field }) => (
-            <FormItem className="space-y-3 flex-1">
-              <FormLabel>Price / Unit</FormLabel>
-
+            <FormItem className="space-y-3">
+              <FormLabel>Label</FormLabel>
               <FormControl>
-                <Input
-                  type="text"
-                  {...field}
-                  onChange={e => {
-                    const value = e.target.value;
-                    if (!isNaN(Number(value))) field.onChange(Number(value));
-                  }}
-                />
+                <Input type="text" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="quantity"
-          render={({ field }) => (
-            <FormItem className="space-y-3 flex-1">
-              <div className="flex gap-1 items-center">
-                <FormLabel>Quantity</FormLabel>
-                {quantityError && (
-                  <span className="bg-red-50 text-red-500 px-1 rounded-lg text-xs font-semibold">
-                    The available quantity is {availableQuantity}!
-                  </span>
-                )}
+        <div className="flex flex-col space-y-4">
+          <FormLabel>Products</FormLabel>
+
+          <Select onValueChange={setSelectedProductId} value={selectedProductId}>
+            <SelectTrigger>
+              <SelectValue
+                placeholder={
+                  selectedProductId
+                    ? products?.find(p => p._id === selectedProductId)?.productName
+                    : 'Select product'
+                }
+              />
+            </SelectTrigger>
+
+            <SelectContent>
+              {products?.map(product => (
+                <SelectItem
+                  key={product._id}
+                  value={product._id}
+                  className="cursor-pointer hover:opacity-80"
+                  onClick={() => setSelectedProductId(product._id)}
+                >
+                  {product.productName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Button type="button" variant="outline" onClick={addProduct}>
+            <Plus /> Add Product
+          </Button>
+
+          <div className="flex flex-col gap-4">
+            {composedProducts.map((product, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center gap-4 bg-foreground/10 p-2 rounded-md"
+              >
+                <div className="flex items-center w-full">
+                  <p className="flex-1">
+                    {products?.find(p => p._id === product.product)?.productName}
+                  </p>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => removeProduct(index)}
+                    className="text-destructive dark:text-red-500"
+                  >
+                    <Trash2 />
+                  </Button>
+                </div>
+
+                <div className="flex gap-2 items-center w-full justify-between">
+                  <div className="space-y-2">
+                    <Label>Price / Unit</Label>
+                    <Input
+                      type="text"
+                      placeholder="Price / Unit"
+                      value={product.pricePerUnit}
+                      onChange={e => updateProduct(index, 'pricePerUnit', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Quantity</Label>
+                    <Input
+                      type="text"
+                      placeholder="Price / Unit"
+                      value={product.quantity}
+                      onChange={e => updateProduct(index, 'quantity', e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
-              <FormControl>
-                <Input
-                  type="text"
-                  {...field}
-                  onChange={e => {
-                    const value = e.target.value;
-                    if (!isNaN(Number(value))) {
-                      if (
-                        form.getValues('transactionType') === transactionTypes.SELL &&
-                        Number(value) > availableQuantity
-                      ) {
-                        setQuantityError(true);
-                      } else {
-                        setQuantityError(false);
-                        field.onChange(Number(value));
-                      }
-                    }
-                  }}
-                  disabled={!form.getValues('product')}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            ))}
+          </div>
+        </div>
 
-        {form.getValues('transactionType').toUpperCase() === transactionTypes.BUY && (
+        {transactionType === transactionTypes.BUY && (
           <div className="flex flex-col space-y-4">
             <FormLabel>Expenses</FormLabel>
+
             {expenses.map((expense, index) => (
               <div key={index} className="flex items-center gap-4">
                 <div className="flex gap-2 items-center">
@@ -461,6 +323,7 @@ function AddTransactionForm() {
                     onChange={e => updateExpense(index, 'amount', e.target.value)}
                   />
                 </div>
+
                 <Button
                   type="button"
                   variant="ghost"
@@ -471,13 +334,14 @@ function AddTransactionForm() {
                 </Button>
               </div>
             ))}
+
             <Button type="button" variant="outline" onClick={addExpense}>
               <Plus /> Add Expense
             </Button>
           </div>
         )}
 
-        <Button type="submit" disabled={isAdding}>
+        <Button type="submit" disabled={isAddingBuy || isAddingSell}>
           <Plus /> Add Transaction
         </Button>
       </form>

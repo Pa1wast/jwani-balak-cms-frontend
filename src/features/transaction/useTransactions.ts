@@ -1,14 +1,29 @@
-import { getBuyTransactions, getSellTransactions } from '@/api/transaction/get-transactions';
+import {
+  getBuyTransactionsApi,
+  getSellTransactionsApi,
+  getTransactionsApi,
+} from '@/api/transaction/get-transactions';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { BuyTransaction, SellTransaction } from '@/types/transaction';
 import { useQuery } from '@tanstack/react-query';
+
+export function useTransactions() {
+  const { selectedCompanyId } = useCompaniesView();
+
+  const { isLoading, data, error } = useQuery({
+    queryKey: ['buy-transactions', 'sell-transactions'],
+    queryFn: () => getTransactionsApi(selectedCompanyId as string),
+  });
+
+  return { isLoading, error, transactions: data };
+}
 
 export function useBuyTransactions() {
   const { selectedCompanyId } = useCompaniesView();
 
   const { isLoading, data, error } = useQuery({
     queryKey: ['buy-transactions'],
-    queryFn: () => getBuyTransactions(selectedCompanyId as string),
+    queryFn: () => getBuyTransactionsApi(selectedCompanyId as string),
   });
 
   const transactions: BuyTransaction[] = data?.data?.buyTransactions;
@@ -21,7 +36,7 @@ export function useSellTransactions() {
 
   const { isLoading, data, error } = useQuery({
     queryKey: ['buy-transactions'],
-    queryFn: () => getSellTransactions(selectedCompanyId as string),
+    queryFn: () => getSellTransactionsApi(selectedCompanyId as string),
   });
 
   const transactions: SellTransaction[] = data?.data?.sellTransactions;

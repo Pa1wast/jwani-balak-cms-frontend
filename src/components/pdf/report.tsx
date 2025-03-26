@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useTransactions } from '@/features/transaction/useTransactions';
+import { useBuyTransactions } from '@/features/transaction/useTransactions';
 import TransactionsChart from '@/components/transaction/transactions-chart';
 import FinanceChart from '@/components/ui/finance-chart';
 import { useCompaniesView } from '@/contexts/companies-view-context';
@@ -19,7 +19,7 @@ import { useProducts } from '@/features/product/useProducts';
 function Report() {
   const { selectedCompanyId } = useCompaniesView();
   const { isLoading, company } = useCompany();
-  const { isLoading: isLoadingTransactions, transactions } = useTransactions();
+  const { isLoading: isLoadingTransactions, transactions } = useBuyTransactions();
   const { productsCount } = useProducts();
 
   const [currency, setCurrency] = useState(currencyTypes.IQD);
@@ -61,53 +61,15 @@ function Report() {
     ? transactions.filter(transaction => transaction.currency.toUpperCase() === currency)
     : [];
 
-  const buyTransactions = filteredTransactions.filter(
-    transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY
-  );
+  const buyTransactions = 4;
 
-  const sellTransactions = filteredTransactions.filter(
-    transaction => transaction.transactionType.toUpperCase() === transactionTypes.SELL
-  );
+  const sellTransactions = 5;
 
-  const totalExpenses = buyTransactions.reduce((total, transaction) => {
-    const transactionTotal = transaction.pricePerUnit * transaction.quantity;
-    const expenseTotal = transaction.expenses?.reduce(
-      (expenseSum, expense) => expenseSum + expense.amount,
-      0
-    );
+  const totalExpenses = 567;
 
-    return total + transactionTotal + (expenseTotal ?? 0);
-  }, 0);
+  const totalRevenue = 9999;
 
-  const totalRevenue = sellTransactions.reduce((total, transaction) => {
-    const transactionTotal = transaction.pricePerUnit * transaction.quantity;
-
-    return total + transactionTotal;
-  }, 0);
-
-  const totalProfits = totalRevenue - totalExpenses > 0 ? totalRevenue - totalExpenses : 0;
-
-  const productSales = sellTransactions.reduce((acc: { [key: string]: number }, transaction) => {
-    const productName = transaction.product.productName;
-    const quantity = transaction.quantity;
-
-    if (!acc[productName]) {
-      acc[productName] = 0;
-    }
-
-    acc[productName] += quantity;
-    return acc;
-  }, {});
-
-  let mostSoldProduct = null;
-  let highestQuantity = 0;
-
-  for (const [product, quantity] of Object.entries(productSales)) {
-    if (quantity > highestQuantity) {
-      highestQuantity = quantity;
-      mostSoldProduct = product;
-    }
-  }
+  const totalProfits = 567797;
 
   return (
     <div>
@@ -156,18 +118,7 @@ function Report() {
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Most Sold Product</span>
-            <div className="flex flex-col items-center gap-1 ml-auto">
-              {mostSoldProduct ? (
-                <>
-                  <p className="text-lg font-semibold">{mostSoldProduct}</p>
-                  <p className="ml-auto text-sm font-medium text-foreground/60">
-                    Quantity Sold: {highestQuantity}
-                  </p>
-                </>
-              ) : (
-                '_'
-              )}
-            </div>
+            <div className="flex flex-col items-center gap-1 ml-auto">67</div>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
@@ -181,12 +132,12 @@ function Report() {
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Buy Transactions</span>
-            <p className="ml-auto text-lg font-semibold">{buyTransactions?.length}</p>
+            <p className="ml-auto text-lg font-semibold">7</p>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Sell Transactions</span>
-            <p className="ml-auto text-lg font-semibold">{sellTransactions?.length}</p>
+            <p className="ml-auto text-lg font-semibold">8</p>
           </div>
 
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">

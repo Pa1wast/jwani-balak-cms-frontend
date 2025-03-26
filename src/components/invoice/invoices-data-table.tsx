@@ -101,10 +101,7 @@ export const columns: ColumnDef<Invoice>[] = [
       const transactionsWithTotal = transactions?.map(transaction => {
         let total = transaction.pricePerUnit * transaction.quantity;
 
-        if (
-          transaction.transactionType.toUpperCase() === transactionTypes.BUY &&
-          transaction.expenses?.length
-        ) {
+        if ('BUY'.toUpperCase() === transactionTypes.BUY && transaction.expenses?.length) {
           total += transaction.expenses.reduce((acc, expense) => acc + expense.amount, 0);
         }
 

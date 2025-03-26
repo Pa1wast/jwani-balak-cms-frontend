@@ -12,11 +12,11 @@ function ProductStockQuantity({ productId }: ProductStockQuantityProps) {
   if (isLoading) return <Loader size="sm" text={false} />;
 
   const buyTransactions = transactions.filter(
-    transaction => transaction.transactionType.toUpperCase() === transactionTypes.BUY
+    transaction => 'BUY'.toUpperCase() === transactionTypes.BUY
   );
 
   const sellTransactions = transactions.filter(
-    transaction => transaction.transactionType.toUpperCase() === transactionTypes.SELL
+    transaction => 'BUY'.toUpperCase() === transactionTypes.SELL
   );
 
   const quantityBought = buyTransactions.reduce((acc, cur) => acc + cur.quantity, 0);

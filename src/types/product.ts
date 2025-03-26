@@ -11,8 +11,7 @@ export interface NewProduct {
 }
 
 export interface ComposedProduct {
-  product: Product;
+  product: Product | string;
   quantity: number;
   pricePerUnit: number;
-  exchange: number;
 }
