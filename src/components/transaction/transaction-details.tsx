@@ -17,6 +17,7 @@ import {
   BuyTransaction,
   currencyTypes,
   Expense,
+  SellTransaction,
   Transaction,
   transactionTypes,
 } from '@/types/transaction';
@@ -117,10 +118,13 @@ function TransactionDetails() {
       ? buyTransaction.expenses?.reduce((acc, cur) => acc + cur.amount, 0)
       : 0;
 
-  const totalBuyCost = transaction.products?.reduce(
-    (acc: number, cur: any) => (acc += cur.pricePerUnit * cur.quantity),
-    0
-  );
+  const totalBuyCost = buyTransaction.products?.reduce((acc: number, cur: any) => {
+    if (transaction.currency === currencyTypes.USD) {
+      return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+    } else {
+      return (acc += cur.pricePerUnit * cur.quantity);
+    }
+  }, 0);
 
   const totalAmountPaid = totalAmountExpenses ? totalAmountExpenses + totalBuyCost : totalBuyCost;
 
@@ -137,19 +141,15 @@ function TransactionDetails() {
 
   // SELL Transaction
 
-  const allSellExpensesAmount = 10;
+  const sellTransaction = transaction as SellTransaction;
 
-  const totalCost = 67 + allSellExpensesAmount;
-
-  const totalRevenue = 67;
-
-  let profitAmount = totalRevenue - totalCost;
-  let actualProfitMargin = totalRevenue > 0 ? (profitAmount / totalRevenue) * 100 : 0;
-
-  if (profitAmount <= 0) {
-    profitAmount = 0;
-    actualProfitMargin = 0;
-  }
+  const totalRevenue = sellTransaction?.products?.reduce((acc: number, cur: any) => {
+    if (transaction.currency === currencyTypes.USD) {
+      return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+    } else {
+      return (acc += cur.pricePerUnit * cur.quantity);
+    }
+  }, 0);
 
   function handleUpdateProduct(productId: string) {
     if (!pricePerUnit || !quantity) return;
@@ -478,87 +478,89 @@ function TransactionDetails() {
         )}
       </div>
 
-      <Card className="flex-1 mb-2">
-        <CardHeader>
-          <CardTitle>Cost Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent className="gap-2 flex flex-col flex-wrap">
-          <p className="flex gap-1 items-center font-semibold">
-            Expenses
-            <span className="inline-block ml-auto text-xs">
-              ({transaction.currency}) | (% Of the total cost)
-            </span>
-          </p>
-
-          <div className="space-y-1">
-            {transactionType === transactionTypes.BUY &&
-              transaction.expenses?.map((expense: Expense, index: number) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
-                >
-                  <p className="p-2">{expense.name}</p>
-
-                  <div className="flex gap-1">
-                    <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
-
-                    <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
-
-                    <p className="p-2">{formatPercentage(expense.amount, totalBuyCost)} </p>
-                  </div>
-                </Badge>
-              ))}
-
-            {transactionType === transactionTypes.BUY &&
-              []?.map((expense: Expense, index: number) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
-                >
-                  <p className="p-2">{expense.name}</p>
-                  <div className="flex gap-1">
-                    <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
-
-                    <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
-
-                    <p className="p-2">{formatPercentage(expense.amount, totalBuyCost)} </p>
-                  </div>
-                </Badge>
-              ))}
-          </div>
-
-          <div className="w-full flex font-medium  p-2 rounded-md justify-between">
-            <p>Total Expenses: </p>
-
-            <p className=" font-bold">
-              {transactionType === transactionTypes.BUY &&
-                formatPrice(!totalAmountExpenses ? 0 : totalAmountExpenses, currency)}
-              {transactionType === transactionTypes.SELL &&
-                formatPrice(!allSellExpensesAmount ? 0 : allSellExpensesAmount, currency)}
+      {transactionType === transactionTypes.BUY && (
+        <Card className="flex-1 mb-2">
+          <CardHeader>
+            <CardTitle>Cost Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent className="gap-2 flex flex-col flex-wrap">
+            <p className="flex gap-1 items-center font-semibold">
+              Expenses
+              <span className="inline-block ml-auto text-xs">
+                ({transaction.currency}) | (% Of the total cost)
+              </span>
             </p>
-          </div>
-        </CardContent>
 
-        {transactionType === transactionTypes.BUY && <Separator />}
+            <div className="space-y-1">
+              {transactionType === transactionTypes.BUY &&
+                transaction.expenses?.map((expense: Expense, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
+                  >
+                    <p className="p-2">{expense.name}</p>
 
-        {transactionType === transactionTypes.BUY && (
-          <CardFooter className="flex flex-col gap-1 pt-4">
-            <div className="w-full flex bg-blue-500/30 dark:bg-blue-500/30 font-semibold p-2 rounded-md justify-between">
-              <p>Total Cost (w/o) expenses: </p>
+                    <div className="flex gap-1">
+                      <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
 
-              <p className="text-lg font-bold ">{formatPrice(totalBuyCost, currency)}</p>
+                      <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
+
+                      <p className="p-2">{formatPercentage(expense.amount, totalBuyCost)} </p>
+                    </div>
+                  </Badge>
+                ))}
+
+              {transactionType === transactionTypes.BUY &&
+                []?.map((expense: Expense, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="w-full flex justify-between rounded-md bg-secondary/50 dark:bg-secondary"
+                  >
+                    <p className="p-2">{expense.name}</p>
+                    <div className="flex gap-1">
+                      <p className="p-2 font-bold">{formatPrice(expense.amount, currency)}</p>
+
+                      <div className="h-[20px] my-auto w-[1px] bg-foreground/50" />
+
+                      <p className="p-2">{formatPercentage(expense.amount, totalBuyCost)} </p>
+                    </div>
+                  </Badge>
+                ))}
             </div>
 
-            <div className="w-full flex bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
-              <p>Total Amount Paid: </p>
+            <div className="w-full flex font-medium  p-2 rounded-md justify-between">
+              <p>Total Expenses: </p>
 
-              <p className="text-lg font-bold">{formatPrice(totalAmountPaid, currency)}</p>
+              <p className=" font-bold">
+                {transactionType === transactionTypes.BUY &&
+                  formatPrice(!totalAmountExpenses ? 0 : totalAmountExpenses, currency)}
+                {/* {transactionType === transactionTypes.SELL &&
+                formatPrice(!allSellExpensesAmount ? 0 : allSellExpensesAmount, currency)} */}
+              </p>
             </div>
-          </CardFooter>
-        )}
-      </Card>
+          </CardContent>
+
+          {transactionType === transactionTypes.BUY && <Separator />}
+
+          {transactionType === transactionTypes.BUY && (
+            <CardFooter className="flex flex-col gap-1 pt-4">
+              <div className="w-full flex bg-blue-500/30 dark:bg-blue-500/30 font-semibold p-2 rounded-md justify-between">
+                <p>Total Cost (w/o) expenses: </p>
+
+                <p className="text-lg font-bold ">{formatPrice(totalBuyCost, currency)}</p>
+              </div>
+
+              <div className="w-full flex bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
+                <p>Total Amount Paid: </p>
+
+                <p className="text-lg font-bold">{formatPrice(totalAmountPaid, currency)}</p>
+              </div>
+            </CardFooter>
+          )}
+        </Card>
+      )}
 
       {transactionType === transactionTypes.BUY ? (
         <Card className="flex-1">
@@ -732,16 +734,6 @@ function TransactionDetails() {
           </CardHeader>
 
           <CardContent className="gap-2 flex flex-col flex-wrap">
-            <div className="w-full flex flex-wrap bg-red-500/20 dark:bg-red-500/50 font-semibold p-2 rounded-md justify-between">
-              <p className="text-lg font-bold">Total Cost (with) Expenses:</p>
-
-              <p className="text-lg font-bold text-red-500 dark:text-foreground">
-                {formatPrice(totalCost, currency)}
-
-                <span className="text-xs ml-2 text-foreground">x{90}</span>
-              </p>
-            </div>
-
             <div className="w-full flex flex-wrap bg-blue-500/20 dark:bg-blue-500/50 font-semibold p-2 rounded-md justify-between">
               <p className="text-lg font-bold">Total Revenue:</p>
 
@@ -749,33 +741,6 @@ function TransactionDetails() {
                 {formatPrice(totalRevenue, currency)}
 
                 <span className="text-xs ml-2 text-foreground">x{90}</span>
-              </p>
-            </div>
-
-            <Separator />
-
-            <div className="w-full flex flex-wrap items-center bg-green-500/40 dark:bg-green-500/30 font-semibold p-2 rounded-md justify-between">
-              <div className="flex gap-1 items-center">
-                <p className="text-lg font-bold">Profit:</p>
-
-                {profitAmount === 0 && (
-                  <span className=" font-normal dark:bg-secondary/40 text-sm py-1 px-2 rounded-lg flex gap-1 items-center">
-                    <BadgeInfo className="size-4" />
-                    No profit has been made. Quantity bought is{' '}
-                    <span className="font-semibold">x{90}</span> at{' '}
-                    <span className="font-semibold">{formatPrice(67, currency)}</span> Per Unit.
-                  </span>
-                )}
-              </div>
-
-              <p className="text-lg font-bold flex flex-col gap-2">
-                <span className="text-green-500">
-                  Amount: {formatPrice(profitAmount, currency)}
-                </span>
-                <span className="text-green-700 dark:text-green-200">
-                  {' '}
-                  Margin: {actualProfitMargin.toFixed(2)}%
-                </span>
               </p>
             </div>
           </CardContent>
