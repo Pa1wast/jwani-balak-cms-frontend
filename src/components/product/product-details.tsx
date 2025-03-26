@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Loader from '../ui/loader';
 import ErrorMessage from '../ui/error-message';
 import { useTransactions } from '@/features/transaction/useTransactions';
-import { currencyTypes, Transaction } from '@/types/transaction';
+import { BuyTransaction, currencyTypes, SellTransaction, Transaction } from '@/types/transaction';
 import { Card, CardContent, CardFooter, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
@@ -46,19 +46,17 @@ function ProductDetails() {
     (transaction: Transaction) => 'expenses' in transaction
   );
 
-  const currency = buyTransactions[0]?.currency ?? 'IQD';
-
   const sellTransactions = filteredTransactions.filter(
     (transaction: Transaction) => !('expenses' in transaction)
   );
 
   const buyQuantity = buyTransactions
-    ?.map((transaction: Transaction) =>
+    ?.map((transaction: BuyTransaction) =>
       transaction.products.reduce((acc, cur) => (acc += cur.quantity), 0)
     )
     .reduce((acc: number, cur: number) => (acc += cur), 0);
   const sellQuantity = sellTransactions
-    ?.map((transaction: Transaction) =>
+    ?.map((transaction: SellTransaction) =>
       transaction.products.reduce((acc, cur) => (acc += cur.quantity), 0)
     )
     .reduce((acc: number, cur: number) => (acc += cur), 0);
@@ -66,15 +64,25 @@ function ProductDetails() {
   const stockQuantity = buyQuantity - sellQuantity;
 
   const totalPrice = buyTransactions
-    ?.map((transaction: Transaction) =>
-      transaction.products.reduce((acc, cur) => {
+    ?.map((transaction: BuyTransaction) => {
+      const expenseAmount =
+        transaction.expenses?.reduce((acc, cur) => {
+          if (transaction.currency === 'USD') {
+            return (acc += cur.amount) * (transaction.products[0].exchange?.rate ?? 1);
+          } else {
+            return (acc += cur.amount);
+          }
+        }, 0) ?? 0;
+      const amount = transaction.products.reduce((acc, cur) => {
         if (transaction.currency === 'USD') {
           return acc + cur.quantity * cur.pricePerUnit * (cur.exchange?.rate ?? 1);
         } else {
           return acc + cur.quantity * cur.pricePerUnit;
         }
-      }, 0)
-    )
+      }, 0);
+
+      return amount + expenseAmount;
+    })
     .reduce((acc: number, cur: number) => acc + cur, 0);
 
   const totalRevenue = sellTransactions
@@ -184,7 +192,7 @@ function ProductDetails() {
               <div className="flex flex-wrap flex-1 items-center justify-between gap-4">
                 <p className="text-lg text-foreground/60">Total Price: </p>
                 <p className="text-lg text-foreground min-w-max">
-                  {formatPrice(totalPrice, currency)}
+                  {formatPrice(totalPrice, currencyTypes.IQD)}
                 </p>
               </div>
             </CardContent>
@@ -192,7 +200,7 @@ function ProductDetails() {
             <CardFooter className="flex-row p-4 items-center justify-between w-full">
               <p className="text-lg text-foreground/60">Total Revenue: </p>
               <p className="text-lg text-foreground min-w-max">
-                {formatPrice(totalRevenue, currency)}
+                {formatPrice(totalRevenue, currencyTypes.IQD)}
               </p>
             </CardFooter>
           </Card>
@@ -207,7 +215,7 @@ function ProductDetails() {
                 {!buyTransactions.length ? (
                   <p>No transactions yet!</p>
                 ) : (
-                  buyTransactions?.map((transaction: Transaction) => (
+                  buyTransactions?.map((transaction: BuyTransaction) => (
                     <Link
                       to={`/dashboard/transactions/${transaction._id}`}
                       className="bg-foreground/10 p-2 rounded-sm flex justify-between hover:bg-foreground/20"
@@ -224,11 +232,25 @@ function ProductDetails() {
                         <p>Total:</p>{' '}
                         <p>
                           {formatPrice(
-                            transaction.products?.reduce(
-                              (acc, cur) => (acc += cur.pricePerUnit * cur.quantity),
-                              0
-                            ),
-                            transaction.currency as currencyTypes
+                            transaction.products?.reduce((acc, cur) => {
+                              if (transaction.currency === currencyTypes.USD) {
+                                return (acc +=
+                                  cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+                              } else {
+                                return (acc += cur.pricePerUnit * cur.quantity);
+                              }
+                            }, 0) +
+                              (transaction.expenses?.reduce((acc, cur) => {
+                                if (transaction.currency === 'USD') {
+                                  return (
+                                    (acc += cur.amount) *
+                                    (transaction.products[0].exchange?.rate ?? 1)
+                                  );
+                                } else {
+                                  return (acc += cur.amount);
+                                }
+                              }, 0) ?? 0),
+                            currencyTypes.IQD
                           )}
                         </p>
                       </div>
@@ -247,7 +269,7 @@ function ProductDetails() {
                 {!sellTransactions.length ? (
                   <p>No transactions yet!</p>
                 ) : (
-                  sellTransactions?.map((transaction: Transaction) => (
+                  sellTransactions?.map((transaction: SellTransaction) => (
                     <Link
                       to={`/dashboard/transactions/${transaction._id}`}
                       className="bg-foreground/10 p-2 rounded-sm flex justify-between hover:bg-foreground/20"
@@ -264,11 +286,15 @@ function ProductDetails() {
                         <p>Total:</p>{' '}
                         <p>
                           {formatPrice(
-                            transaction.products?.reduce(
-                              (acc, cur) => (acc += cur.pricePerUnit * cur.quantity),
-                              0
-                            ),
-                            transaction.currency as currencyTypes
+                            transaction.products?.reduce((acc, cur) => {
+                              if (transaction.currency === currencyTypes.USD) {
+                                return (acc +=
+                                  cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+                              } else {
+                                return (acc += cur.pricePerUnit * cur.quantity);
+                              }
+                            }, 0),
+                            currencyTypes.IQD
                           )}
                         </p>
                       </div>

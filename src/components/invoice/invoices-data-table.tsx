@@ -92,18 +92,22 @@ export const columns: ColumnDef<Invoice>[] = [
     enableHiding: false,
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Total
+        Total (With Expenses)
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => {
       const transaction = row.getValue('transaction') as Transaction;
+      let expenseAmount = 0;
+      if ('expenses' in transaction)
+        expenseAmount = transaction.expenses?.reduce((acc, cur) => (acc += cur.amount), 0) ?? 0;
       const total =
         transaction?.products?.reduce((acc, cur) => (acc += cur.pricePerUnit * cur.quantity), 0) ??
         0;
+
       return (
         <div className="capitalize font-semibold">
-          {formatPrice(total, transaction?.currency as currencyTypes)}
+          {formatPrice(total + expenseAmount, transaction?.currency as currencyTypes)}
         </div>
       );
     },

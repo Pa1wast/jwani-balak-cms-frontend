@@ -118,13 +118,10 @@ function TransactionDetails() {
       ? buyTransaction.expenses?.reduce((acc, cur) => acc + cur.amount, 0)
       : 0;
 
-  const totalBuyCost = buyTransaction.products?.reduce((acc: number, cur: any) => {
-    if (transaction.currency === currencyTypes.USD) {
-      return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
-    } else {
-      return (acc += cur.pricePerUnit * cur.quantity);
-    }
-  }, 0);
+  const totalBuyCost = buyTransaction.products?.reduce(
+    (acc: number, cur: any) => (acc += cur.pricePerUnit * cur.quantity),
+    0
+  );
 
   const totalAmountPaid = totalAmountExpenses ? totalAmountExpenses + totalBuyCost : totalBuyCost;
 
@@ -143,13 +140,10 @@ function TransactionDetails() {
 
   const sellTransaction = transaction as SellTransaction;
 
-  const totalRevenue = sellTransaction?.products?.reduce((acc: number, cur: any) => {
-    if (transaction.currency === currencyTypes.USD) {
-      return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
-    } else {
-      return (acc += cur.pricePerUnit * cur.quantity);
-    }
-  }, 0);
+  const totalRevenue = sellTransaction?.products?.reduce(
+    (acc: number, cur: any) => (acc += cur.pricePerUnit * cur.quantity),
+    0
+  );
 
   function handleUpdateProduct(productId: string) {
     if (!pricePerUnit || !quantity) return;
@@ -240,7 +234,7 @@ function TransactionDetails() {
         </div>
 
         <div className="flex gap-1 flex-wrap sm:flex-nowrap">
-          <Card className="overflow-hidden w-full">
+          <Card className="overflow-hidden w-full flex-col justify-between flex">
             <CardContent className="flex gap-10 flex-row flex-wrap">
               <div className="flex flex-wrap flex-1 items-center gap-4">
                 <p className="text-lg text-foreground/60 min-w-max">Label:</p>
@@ -248,7 +242,7 @@ function TransactionDetails() {
               </div>
             </CardContent>
 
-            <CardFooter className="flex-row p-4 items-center justify-between w-full">
+            <CardFooter className="flex-row p-4 items-center justify-between w-full bg-foreground/10">
               <p className="text-lg text-foreground/60">
                 {transactionType === transactionTypes.SELL
                   ? 'Revenue: '
@@ -261,7 +255,9 @@ function TransactionDetails() {
                   transactionType === transactionTypes.SELL ? 'text-blue-500' : 'text-red-500'
                 )}
               >
-                {formatPrice(totalBuyCost, currency)}
+                {transactionType === transactionTypes.SELL
+                  ? formatPrice(totalRevenue, currency)
+                  : formatPrice(totalBuyCost, currency)}
               </p>
             </CardFooter>
           </Card>
@@ -739,8 +735,6 @@ function TransactionDetails() {
 
               <p className="text-lg font-bold text-blue-500 dark:text-foreground">
                 {formatPrice(totalRevenue, currency)}
-
-                <span className="text-xs ml-2 text-foreground">x{90}</span>
               </p>
             </div>
           </CardContent>
