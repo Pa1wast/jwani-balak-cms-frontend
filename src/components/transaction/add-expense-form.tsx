@@ -6,15 +6,15 @@ import { Input } from '../ui/input';
 import { Plus } from 'lucide-react';
 import { Button } from '../ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
-import { Transaction } from '@/types/transaction';
+import { BuyTransaction } from '@/types/transaction';
+import { useUpdateBuyTransaction } from '@/features/transaction/useUpdateTransaction';
 
 interface AddExpenseFormProps {
-  transaction: Transaction;
+  transaction: BuyTransaction;
 }
 
 function AddExpenseForm({ transaction }: AddExpenseFormProps) {
-  const { isUpdating, updateTransaction } = useUpdateTransaction();
+  const { isUpdating, updateBuyTransaction } = useUpdateBuyTransaction();
 
   const form = useForm<z.infer<typeof addExpenseSchema>>({
     resolver: zodResolver(addExpenseSchema),
@@ -24,16 +24,18 @@ function AddExpenseForm({ transaction }: AddExpenseFormProps) {
   function onSubmit(values: z.infer<typeof addExpenseSchema>) {
     const { success, data } = addExpenseSchema.safeParse(values);
 
-    if (success) {
-      const updatedExpenses = transaction.expenses ? [...transaction.expenses, data] : [data];
-      updateTransaction({
-        transactionId: transaction._id,
-        updatedTransaction: {
-          transactionType: 'BUY',
-          expenses: updatedExpenses,
-        },
-      });
-    }
+    if (!success) return;
+
+    const buyTransaction = transaction as BuyTransaction;
+
+    const updatedExpenses = buyTransaction.expenses ? [...buyTransaction.expenses, data] : [data];
+
+    updateBuyTransaction({
+      transactionId: transaction._id,
+      updatedTransaction: {
+        expenses: updatedExpenses,
+      },
+    });
   }
 
   return (

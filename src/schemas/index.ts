@@ -22,8 +22,7 @@ export const addTransactionSchema = z.object({
 });
 
 export const updateTransactionSchema = z.object({
-  pricePerUnit: z.number().min(1, 'Price Per Unit is required'),
-  quantity: z.number().min(1, 'Quantity is required'),
+  currency: z.string().min(1, 'Currency is required'),
 });
 
 export const addExpenseSchema = z.object({

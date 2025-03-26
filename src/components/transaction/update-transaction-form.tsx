@@ -11,19 +11,46 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { BuyTransaction } from '@/types/transaction';
-import { Input } from '../ui/input';
+import { currencyTypes, Transaction, UpdatedTransaction } from '@/types/transaction';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import {
+  useUpdateBuyTransaction,
+  useUpdateSellTransaction,
+} from '@/features/transaction/useUpdateTransaction';
 
 interface AddTransactionFormProps {
-  transaction: BuyTransaction;
+  transaction: Transaction;
 }
 
 function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
+  const { updateBuyTransaction, isUpdating } = useUpdateBuyTransaction();
+  const { updateSellTransaction, isUpdating: isUpdating2 } = useUpdateSellTransaction();
+
   const form = useForm<z.infer<typeof updateTransactionSchema>>({
     resolver: zodResolver(updateTransactionSchema),
+    defaultValues: { currency: transaction.currency },
   });
 
-  function onSubmit(values: z.infer<typeof updateTransactionSchema>) {}
+  function onSubmit(values: z.infer<typeof updateTransactionSchema>) {
+    const { success, data } = updateTransactionSchema.safeParse({
+      ...values,
+      currency: values.currency as 'USD' | 'IQD' | undefined,
+    });
+
+    if (!success) return;
+
+    if ('expense' in transaction) {
+      updateBuyTransaction({
+        transactionId: transaction._id,
+        updatedTransaction: data as UpdatedTransaction,
+      });
+    } else {
+      updateSellTransaction({
+        transactionId: transaction._id,
+        updatedTransaction: data as UpdatedTransaction,
+      });
+    }
+  }
 
   return (
     <Form {...form}>
@@ -36,44 +63,45 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
       >
         <FormField
           control={form.control}
-          name="pricePerUnit"
+          name="currency"
           render={({ field }) => (
-            <FormItem className="space-y-3 flex-1">
-              <FormLabel>Price / Unit</FormLabel>
-
+            <FormItem className="space-y-3">
+              <FormLabel>Currency</FormLabel>
               <FormControl>
-                <Input
-                  type="text"
-                  {...field}
-                  onChange={e => {
-                    const value = e.target.value;
-                    if (!isNaN(Number(value))) field.onChange(Number(value));
-                  }}
-                />
-              </FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex items-center gap-6"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem
+                        value={currencyTypes.IQD}
+                        className="text-orange-500 border-orange-500"
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal">IQD</FormLabel>
+                  </FormItem>
 
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem
+                        value={currencyTypes.USD}
+                        className="text-cyan-500 border-cyan-500"
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal">USD</FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="quantity"
-          render={({ field }) => (
-            <FormItem className="space-y-3 flex-1">
-              <div className="flex gap-1 items-center">
-                <FormLabel>Quantity</FormLabel>
-              </div>
-              <FormControl>
-                <Input type="text" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit">Update Transaction</Button>
+        <Button type="submit" disabled={isUpdating || isUpdating2}>
+          Update Transaction
+        </Button>
       </form>
     </Form>
   );

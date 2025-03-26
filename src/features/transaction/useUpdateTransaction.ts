@@ -1,26 +1,51 @@
-import { updateTransactionApi } from '@/api/transaction/update-transaction';
+import {
+  updateBuyTransactionApi,
+  updateSellTransactionApi,
+} from '@/api/transaction/update-transaction';
 import { UpdatedTransaction } from '@/types/transaction';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-export function useUpdateTransaction() {
+export function useUpdateBuyTransaction() {
   const queryClient = useQueryClient();
 
-  const { mutate: updateTransaction, isPending: isUpdating } = useMutation({
+  const { mutate: updateBuyTransaction, isPending: isUpdating } = useMutation({
     mutationFn: ({
       transactionId,
       updatedTransaction,
     }: {
       transactionId: string;
       updatedTransaction: UpdatedTransaction;
-    }) => updateTransactionApi({ transactionId, updatedTransaction }),
+    }) => updateBuyTransactionApi({ transactionId, updatedTransaction }),
     onSuccess: () => {
       toast.success('Transaction successfully updated');
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['transaction'] });
+      queryClient.invalidateQueries({ queryKey: ['buy-transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['buy-transactions'] });
     },
     onError: err => toast.error(err.message),
   });
 
-  return { updateTransaction, isUpdating };
+  return { updateBuyTransaction, isUpdating };
+}
+
+export function useUpdateSellTransaction() {
+  const queryClient = useQueryClient();
+
+  const { mutate: updateSellTransaction, isPending: isUpdating } = useMutation({
+    mutationFn: ({
+      transactionId,
+      updatedTransaction,
+    }: {
+      transactionId: string;
+      updatedTransaction: UpdatedTransaction;
+    }) => updateSellTransactionApi({ transactionId, updatedTransaction }),
+    onSuccess: () => {
+      toast.success('Transaction successfully updated');
+      queryClient.invalidateQueries({ queryKey: ['sell-transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['sell-transaction'] });
+    },
+    onError: err => toast.error(err.message),
+  });
+
+  return { updateSellTransaction, isUpdating };
 }

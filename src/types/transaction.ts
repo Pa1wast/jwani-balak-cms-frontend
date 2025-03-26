@@ -64,4 +64,10 @@ export interface NewSellTransaction {
   company: string;
 }
 
+export interface UpdatedTransaction {
+  currency?: 'USD' | 'IQD';
+  products?: ComposedProduct[];
+  expenses?: Expense[];
+}
+
 export type Transaction = BuyTransaction | SellTransaction;

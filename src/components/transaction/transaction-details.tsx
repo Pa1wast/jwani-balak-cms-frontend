@@ -1,13 +1,28 @@
-import { BadgeInfo, CircleAlert, FilePlus, Pen, Trash, TriangleAlert, X } from 'lucide-react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  BadgeInfo,
+  CircleAlert,
+  FilePlus,
+  Pen,
+  Trash,
+  TriangleAlert,
+  X,
+  XIcon,
+} from 'lucide-react';
 import { Card, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { CardContent } from '@mui/material';
 import { Badge } from '../ui/badge';
-import { currencyTypes, transactionTypes } from '@/types/transaction';
+import {
+  BuyTransaction,
+  currencyTypes,
+  Expense,
+  Transaction,
+  transactionTypes,
+} from '@/types/transaction';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import ErrorMessage from '../ui/error-message';
 import Loader from '../ui/loader';
-import { useBuyTransaction } from '@/features/transaction/useTransaction';
 import { formatDate } from '@/lib/date';
 import {
   AlertDialog,
@@ -21,28 +36,40 @@ import {
   AlertDialogTrigger,
 } from '../ui/alert-dialog';
 import { useDeleteBuyTransaction } from '@/features/transaction/useDeleteTransaction';
-import { useNavigate } from 'react-router-dom';
+import AddExpenseForm from './add-expense-form';
+import AddInvoiceForm from '../invoice/add-invoice-form';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import UpdateTransactionForm from './update-transaction-form';
 import { calculateProfit, formatPercentage, formatPrice } from '@/lib/price';
-import AddExpenseForm from './add-expense-form';
 import { Separator } from '../ui/separator';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useCompaniesView } from '@/contexts/companies-view-context';
-import AddInvoiceForm from '../invoice/add-invoice-form';
-import { useUpdateTransaction } from '@/features/transaction/useUpdateTransaction';
-import { useBuyTransactionById } from '@/features/transaction/useTransactionById';
+import {
+  useUpdateBuyTransaction,
+  useUpdateSellTransaction,
+} from '@/features/transaction/useUpdateTransaction';
+import { useProducts } from '@/features/product/useProducts';
+import { useTransactions } from '@/features/transaction/useTransactions';
 
 function TransactionDetails() {
   const navigate = useNavigate();
   const { selectedCompanyId } = useCompaniesView();
+  const { transactionId } = useParams();
 
-  const { isLoading, error, transaction } = useBuyTransaction();
+  const { isLoading: isLoadingProducts, products } = useProducts();
 
-  const { transaction: buyTransaction } = useBuyTransactionById(transaction?._id as string);
+  const { isLoading, error, transactions } = useTransactions();
 
-  const { isUpdating, updateTransaction } = useUpdateTransaction();
+  const transaction = transactions?.find(
+    (transaction: Transaction) => transaction._id === transactionId
+  );
+
+  console.log(transaction);
+
+  const { isUpdating, updateBuyTransaction } = useUpdateBuyTransaction();
+  const { isUpdating: isUpdating2, updateSellTransaction } = useUpdateSellTransaction();
 
   const { isDeleting, deleteBuyTransaction } = useDeleteBuyTransaction();
 
@@ -70,14 +97,28 @@ function TransactionDetails() {
       </div>
     );
 
+  const transactionType = 'expenses' in transaction ? transactionTypes.BUY : transactionTypes.SELL;
   const currency = transaction.currency as currencyTypes;
 
   // BUY Transaction
-  const totalAmountExpenses = transaction.expenses?.reduce((acc, cur) => acc + cur.amount, 0);
-  const totalBuyCost = 900;
+  const buyTransaction = transaction as BuyTransaction;
+  const totalAmountExpenses =
+    transactionType === transactionTypes.BUY
+      ? buyTransaction.expenses?.reduce((acc, cur) => acc + cur.amount, 0)
+      : 0;
+
+  const totalBuyCost = transaction.products?.reduce(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (acc: number, cur: any) => (acc += cur.pricePerUnit * cur.quantity),
+    0
+  );
+
   const totalAmountPaid = totalAmountExpenses ? totalAmountExpenses + totalBuyCost : totalBuyCost;
+
   const breakEvenQuantity = Math.ceil(totalAmountPaid / sellingPricePerUnit);
+
   const breakEvenRevenue = breakEvenQuantity * sellingPricePerUnit;
+
   const estimatedProfitAmount = calculateProfit(
     profitMargin,
     sellingPricePerUnit * 10,
@@ -86,11 +127,9 @@ function TransactionDetails() {
   const revenueNeeded = totalAmountPaid + estimatedProfitAmount.value;
 
   // SELL Transaction
-  const allSellExpenses = buyTransaction?.expenses;
+  const allSellExpenses = 0;
 
-  const allSellExpensesAmount = allSellExpenses
-    ? allSellExpenses.reduce((acc, cur) => acc + cur.amount, 0)
-    : 0;
+  const allSellExpensesAmount = 10;
 
   const totalCost = 67 + allSellExpensesAmount;
 
@@ -104,10 +143,32 @@ function TransactionDetails() {
     actualProfitMargin = 0;
   }
 
-  function handleDeleteExpense(expenseId: string) {
-    const updatedExpenses = transaction.expenses?.filter(expense => expense._id !== expenseId);
+  function handleDeleteProduct(productId: string) {
+    const updatedProducts = transaction.products?.filter(
+      (product: any) => product.product !== productId
+    );
 
-    updateTransaction({
+    if (transactionType === transactionTypes.BUY) {
+      updateBuyTransaction({
+        transactionId: transaction._id,
+        updatedTransaction: {
+          products: updatedProducts,
+        },
+      });
+    } else {
+      updateSellTransaction({
+        transactionId: transaction._id,
+        updatedTransaction: {
+          products: updatedProducts,
+        },
+      });
+    }
+  }
+
+  function handleDeleteExpense(expenseId: string) {
+    const updatedExpenses = buyTransaction.expenses?.filter(expense => expense._id !== expenseId);
+
+    updateBuyTransaction({
       transactionId: transaction._id,
       updatedTransaction: {
         expenses: updatedExpenses,
@@ -126,11 +187,12 @@ function TransactionDetails() {
           <Badge
             className={cn(
               'text-left font-bold text-xl flex justify-center items-center rounded-md px-2 w-max',
-              'SELL' === transactionTypes.SELL
+              transactionType === transactionTypes.SELL
                 ? 'bg-green-500 dark:bg-green-500/20 dark:text-green-500 hover:bg-green-500/80 dark:hover:bg-green-500/60'
                 : 'bg-blue-500 dark:bg-blue-500/20 dark:text-blue-500 hover:bg-blue-500/80 dark:hover:bg-blue-500/60'
             )}
           >
+            {transactionType === transactionTypes.SELL ? transactionType : transactionType}{' '}
             Transaction
           </Badge>
 
@@ -141,29 +203,22 @@ function TransactionDetails() {
           <Card className="overflow-hidden w-full">
             <CardContent className="flex gap-10 flex-row flex-wrap">
               <div className="flex flex-wrap flex-1 items-center gap-4">
-                <p className="text-lg text-foreground/60 min-w-max">Product name:</p>
-                'Products
-              </div>
-
-              <div className="flex items-center gap-4">
-                <p className="text-lg text-foreground/60">Price / Unit:</p>
-                <p className="text-lg font-semibold">{formatPrice(10, currency)}</p>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <p className="text-lg text-foreground/60">Quantity:</p>
-                <p className="text-lg font-semibold">90</p>
+                <p className="text-lg text-foreground/60 min-w-max">Label:</p>
+                {transaction.label}
               </div>
             </CardContent>
 
             <CardFooter className="flex-row p-4 items-center justify-between w-full">
               <p className="text-lg text-foreground/60">
-                {'SELL' === transactionTypes.SELL ? 'Revenue: ' : 'Total Cost (w/o) expenses: '}
+                {transactionType === transactionTypes.SELL
+                  ? 'Revenue: '
+                  : 'Total Cost (w/o) expenses: '}
               </p>
+
               <p
                 className={cn(
                   'text-xl font-bold ',
-                  'SELL' === transactionTypes.SELL ? 'text-blue-500' : 'text-red-500'
+                  transactionType === transactionTypes.SELL ? 'text-blue-500' : 'text-red-500'
                 )}
               >
                 {formatPrice(totalBuyCost, currency)}
@@ -241,8 +296,46 @@ function TransactionDetails() {
         </div>
       </div>
 
+      {!isLoadingProducts && (
+        <div className="flex gap-2 w-full flex-col sm:flex-row mb-2">
+          <Card className="flex-1 max-h-max">
+            <CardHeader>
+              <CardTitle>Products</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col space-y-4">
+              {transaction.products?.map((product: any) => (
+                <Badge
+                  key={product.product as string}
+                  variant="outline"
+                  className="w-full flex justify-between rounded-md"
+                >
+                  <div className="flex justify-between w-full gap-4 items-center">
+                    <p className="p-2 text-lg truncate">
+                      {products?.find(p => p._id === product.product)?.productName}
+                    </p>
+                    <p className="p-2 font-bold">
+                      <span className="text-teal-100 text-lg">{product.quantity}</span> x{' '}
+                      <span className="text-xl text-blue-300">
+                        {formatPrice(product.pricePerUnit, currency)}
+                      </span>
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDeleteProduct(product.product as string)}
+                  >
+                    <XIcon />
+                  </Button>
+                </Badge>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <div className="flex gap-2 w-full flex-col sm:flex-row mb-2">
-        {'BUY' === transactionTypes.BUY && (
+        {transactionType === transactionTypes.BUY && (
           <Card className="flex-1 max-h-max">
             <CardHeader>
               <CardTitle>Add Expenses</CardTitle>
@@ -254,13 +347,13 @@ function TransactionDetails() {
           </Card>
         )}
 
-        {'BUY' === transactionTypes.BUY && (
+        {transactionType === transactionTypes.BUY && (
           <Card className="flex-1">
             <CardHeader>
               <CardTitle>All Expenses</CardTitle>
             </CardHeader>
             <CardContent className="gap-2 flex mr-2 flex-col lg:grid lg:grid-cols-2 overflow-auto h-[150px]">
-              {transaction.expenses?.map(expense => (
+              {transaction.expenses?.map((expense: Expense) => (
                 <Badge
                   key={expense._id}
                   variant="outline"
@@ -276,18 +369,14 @@ function TransactionDetails() {
                     variant="ghost"
                     className=" h-6 w-6 m-2"
                     onClick={() => handleDeleteExpense(expense._id as string)}
-                    disabled={isUpdating}
+                    disabled={isUpdating || isUpdating2}
                   >
                     <X />
                   </Button>
                 </Badge>
               ))}
 
-              {'BUY' === transactionTypes.BUY && !transaction.expenses?.length && (
-                <p className="text-foreground/60">There are no expenses!</p>
-              )}
-
-              {'SELL' === transactionTypes.SELL && !allSellExpenses?.length && (
+              {transactionType === transactionTypes.BUY && !transaction.expenses?.length && (
                 <p className="text-foreground/60">There are no expenses!</p>
               )}
             </CardContent>
@@ -308,8 +397,8 @@ function TransactionDetails() {
           </p>
 
           <div className="space-y-1">
-            {'BUY' === transactionTypes.BUY &&
-              transaction.expenses?.map((expense, index) => (
+            {transactionType === transactionTypes.BUY &&
+              transaction.expenses?.map((expense: Expense, index: number) => (
                 <Badge
                   key={index}
                   variant="outline"
@@ -327,8 +416,8 @@ function TransactionDetails() {
                 </Badge>
               ))}
 
-            {'SELL' === transactionTypes.SELL &&
-              allSellExpenses?.map((expense, index) => (
+            {transactionType === transactionTypes.BUY &&
+              []?.map((expense: Expense, index: number) => (
                 <Badge
                   key={index}
                   variant="outline"
@@ -350,17 +439,17 @@ function TransactionDetails() {
             <p>Total Expenses: </p>
 
             <p className=" font-bold">
-              {'BUY' === transactionTypes.BUY &&
+              {transactionType === transactionTypes.BUY &&
                 formatPrice(!totalAmountExpenses ? 0 : totalAmountExpenses, currency)}
-              {'SELL' === transactionTypes.SELL &&
+              {transactionType === transactionTypes.SELL &&
                 formatPrice(!allSellExpensesAmount ? 0 : allSellExpensesAmount, currency)}
             </p>
           </div>
         </CardContent>
 
-        {'BUY' === transactionTypes.BUY && <Separator />}
+        {transactionType === transactionTypes.BUY && <Separator />}
 
-        {'BUY' === transactionTypes.BUY && (
+        {transactionType === transactionTypes.BUY && (
           <CardFooter className="flex flex-col gap-1 pt-4">
             <div className="w-full flex bg-blue-500/30 dark:bg-blue-500/30 font-semibold p-2 rounded-md justify-between">
               <p>Total Cost (w/o) expenses: </p>
@@ -377,7 +466,7 @@ function TransactionDetails() {
         )}
       </Card>
 
-      {'BUY' === transactionTypes.BUY ? (
+      {transactionType === transactionTypes.BUY ? (
         <Card className="flex-1">
           <CardHeader>
             <CardTitle>Insights & Estimations</CardTitle>
