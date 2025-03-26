@@ -18,7 +18,7 @@ export function useUpdateBuyTransaction() {
       updatedTransaction: UpdatedTransaction;
     }) => updateBuyTransactionApi({ transactionId, updatedTransaction }),
     onSuccess: () => {
-      toast.success('Transaction successfully updated');
+      toast.success('Buy transaction successfully updated');
       queryClient.invalidateQueries({ queryKey: ['buy-transactions'] });
       queryClient.invalidateQueries({ queryKey: ['buy-transactions'] });
     },
@@ -40,7 +40,7 @@ export function useUpdateSellTransaction() {
       updatedTransaction: UpdatedTransaction;
     }) => updateSellTransactionApi({ transactionId, updatedTransaction }),
     onSuccess: () => {
-      toast.success('Transaction successfully updated');
+      toast.success('Sell transaction successfully updated');
       queryClient.invalidateQueries({ queryKey: ['sell-transactions'] });
       queryClient.invalidateQueries({ queryKey: ['sell-transaction'] });
     },

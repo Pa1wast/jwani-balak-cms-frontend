@@ -36,6 +36,7 @@ function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
 
   const { products } = useProducts();
+  const [curProducts, setCurProducts] = useState(products);
   const { isAdding: isAddingBuy, addBuyTransaction } = useAddBuyTransaction();
   const { isAdding: isAddingSell, addSellTransaction } = useAddSellTransaction();
 
@@ -60,6 +61,11 @@ function AddTransactionForm() {
   const addProduct = () => {
     const selectedProduct = products?.find(p => p._id === selectedProductId);
 
+    if (composedProducts.find(p => p.product === selectedProductId)) {
+      toast.error('Product already added');
+      return;
+    }
+
     if (selectedProduct) {
       setComposedProducts([
         ...composedProducts,
@@ -69,6 +75,7 @@ function AddTransactionForm() {
           pricePerUnit: 0,
         },
       ]);
+      setCurProducts(curProducts?.filter(p => p._id !== selectedProductId));
     }
   };
 
@@ -136,8 +143,6 @@ function AddTransactionForm() {
       addSellTransaction({ ...data, products: composedProducts });
     }
   }
-
-  console.log(composedProducts);
 
   return (
     <Form {...form}>
@@ -239,7 +244,7 @@ function AddTransactionForm() {
             </SelectTrigger>
 
             <SelectContent>
-              {products?.map(product => (
+              {curProducts?.map(product => (
                 <SelectItem
                   key={product._id}
                   value={product._id}

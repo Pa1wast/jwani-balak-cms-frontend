@@ -39,7 +39,7 @@ function UpdateTransactionForm({ transaction }: AddTransactionFormProps) {
 
     if (!success) return;
 
-    if ('expense' in transaction) {
+    if ('expenses' in transaction) {
       updateBuyTransaction({
         transactionId: transaction._id,
         updatedTransaction: data as UpdatedTransaction,

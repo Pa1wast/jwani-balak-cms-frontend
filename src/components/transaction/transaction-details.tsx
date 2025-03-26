@@ -4,6 +4,7 @@ import {
   CircleAlert,
   FilePlus,
   Pen,
+  PenBox,
   Trash,
   TriangleAlert,
   X,
@@ -52,6 +53,7 @@ import {
 } from '@/features/transaction/useUpdateTransaction';
 import { useProducts } from '@/features/product/useProducts';
 import { useTransactions } from '@/features/transaction/useTransactions';
+import { Label } from '../ui/label';
 
 function TransactionDetails() {
   const navigate = useNavigate();
@@ -66,8 +68,6 @@ function TransactionDetails() {
     (transaction: Transaction) => transaction._id === transactionId
   );
 
-  console.log(transaction);
-
   const { isUpdating, updateBuyTransaction } = useUpdateBuyTransaction();
   const { isUpdating: isUpdating2, updateSellTransaction } = useUpdateSellTransaction();
 
@@ -75,6 +75,9 @@ function TransactionDetails() {
 
   const [sellingPricePerUnit, setSellingPricePerUnit] = useState(0);
   const [profitMargin, setProfitMargin] = useState(0);
+
+  const [pricePerUnit, setPricePerUnit] = useState(0);
+  const [quantity, setQuantity] = useState(0);
 
   if (isLoading)
     return (
@@ -108,7 +111,6 @@ function TransactionDetails() {
       : 0;
 
   const totalBuyCost = transaction.products?.reduce(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (acc: number, cur: any) => (acc += cur.pricePerUnit * cur.quantity),
     0
   );
@@ -127,7 +129,6 @@ function TransactionDetails() {
   const revenueNeeded = totalAmountPaid + estimatedProfitAmount.value;
 
   // SELL Transaction
-  const allSellExpenses = 0;
 
   const allSellExpensesAmount = 10;
 
@@ -143,9 +144,41 @@ function TransactionDetails() {
     actualProfitMargin = 0;
   }
 
+  function handleUpdateProduct(productId: string) {
+    if (!pricePerUnit || !quantity) return;
+
+    const updatedProducts = transaction.products?.map((product: any) => {
+      if (product._id === productId) {
+        return {
+          ...product,
+          pricePerUnit,
+          quantity,
+        };
+      }
+
+      return product;
+    });
+
+    if (transactionType === transactionTypes.BUY) {
+      updateBuyTransaction({
+        transactionId: transaction._id,
+        updatedTransaction: {
+          products: updatedProducts,
+        },
+      });
+    } else {
+      updateSellTransaction({
+        transactionId: transaction._id,
+        updatedTransaction: {
+          products: updatedProducts,
+        },
+      });
+    }
+  }
+
   function handleDeleteProduct(productId: string) {
     const updatedProducts = transaction.products?.filter(
-      (product: any) => product.product !== productId
+      (product: any) => product._id !== productId
     );
 
     if (transactionType === transactionTypes.BUY) {
@@ -302,7 +335,7 @@ function TransactionDetails() {
             <CardHeader>
               <CardTitle>Products</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col space-y-4">
+            <CardContent className="space-y-2">
               {transaction.products?.map((product: any) => (
                 <Badge
                   key={product.product as string}
@@ -320,10 +353,61 @@ function TransactionDetails() {
                       </span>
                     </p>
                   </div>
+
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button variant="ghost" size="icon">
+                        <PenBox />
+                      </Button>
+                    </DialogTrigger>
+
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>
+                          Update product (
+                          {products?.find(p => p._id === product.product)?.productName})
+                        </DialogTitle>
+                      </DialogHeader>
+
+                      <div className="space-y-4">
+                        <div className="space-y-1">
+                          <Label>Price / Unit ({product.pricePerUnit})</Label>
+
+                          <Input
+                            type="text"
+                            value={pricePerUnit}
+                            onChange={e => {
+                              const value = e.target.value;
+                              if (!isNaN(Number(value)) && value.length <= 20)
+                                setPricePerUnit(Number(value));
+                            }}
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label>Quantity ({product.quantity})</Label>
+
+                          <Input
+                            type="text"
+                            value={quantity}
+                            onChange={e => {
+                              const value = e.target.value;
+                              if (!isNaN(Number(value)) && value.length <= 20)
+                                setQuantity(Number(value));
+                            }}
+                          />
+                        </div>
+                        <Button onClick={() => handleUpdateProduct(product._id as string)}>
+                          Update
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDeleteProduct(product.product as string)}
+                    onClick={() => handleDeleteProduct(product._id as string)}
                   >
                     <XIcon />
                   </Button>

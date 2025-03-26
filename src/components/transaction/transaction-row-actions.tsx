@@ -1,4 +1,4 @@
-import { BuyTransaction, Transaction, transactionTypes } from '@/types/transaction';
+import { Transaction, transactionTypes } from '@/types/transaction';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,8 +77,12 @@ function TransactionRowActions({ transaction }: TransactionRowActionsProps) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="text-background hover:bg-destructive/80 bg-destructive dark:hover:bg-red-500/80 dark:text-foreground dark:bg-red-500"
-              onClick={() => deleteBuyTransaction(transaction._id)}
-              disabled={isDeleting}
+              onClick={() =>
+                transactionType === transactionTypes.BUY
+                  ? deleteBuyTransaction(transaction._id)
+                  : deleteSellTransaction(transaction._id)
+              }
+              disabled={isDeleting || isDeleting2}
             >
               Delete
             </AlertDialogAction>
