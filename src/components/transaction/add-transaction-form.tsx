@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { currencyTypes, transactionTypes } from '@/types/transaction';
+import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useProducts } from '@/features/product/useProducts';
@@ -31,6 +31,8 @@ import { Label } from '../ui/label';
 import { ComposedProduct } from '@/types/product';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner';
+import { useTransactions } from '@/features/transaction/useTransactions';
+import Loader from '../ui/loader';
 
 function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
@@ -58,6 +60,10 @@ function AddTransactionForm() {
   const [expenses, setExpenses] = useState<{ name: string; amount: number }[]>([]);
   const [composedProducts, setComposedProducts] = useState<ComposedProduct[]>([]);
 
+  const { isLoading, transactions } = useTransactions();
+
+  if (isLoading) return <Loader size="sm" text={false} />;
+
   const addProduct = () => {
     const selectedProduct = products?.find(p => p._id === selectedProductId);
 
@@ -82,7 +88,43 @@ function AddTransactionForm() {
   const updateProduct = (index: number, field: 'pricePerUnit' | 'quantity', value: string) => {
     const updatedProducts = [...composedProducts];
     if (field === 'quantity' || field === 'pricePerUnit') {
-      if (!isNaN(Number(value))) updatedProducts[index][field] = +value;
+      if (!isNaN(Number(value))) {
+        const filteredTransactions = transactions?.filter((transaction: Transaction) =>
+          transaction.products.some(product => product.product === updatedProducts[index].product)
+        );
+
+        const buyTransactions = filteredTransactions.filter(
+          (transaction: Transaction) => 'expenses' in transaction
+        );
+
+        const sellTransactions = filteredTransactions.filter(
+          (transaction: Transaction) => !('expenses' in transaction)
+        );
+
+        const buyQuantity = buyTransactions
+          ?.map((transaction: Transaction) =>
+            transaction.products.reduce((acc, cur) => (acc += cur.quantity), 0)
+          )
+          .reduce((acc: number, cur: number) => (acc += cur), 0);
+        const sellQuantity = sellTransactions
+          ?.map((transaction: Transaction) =>
+            transaction.products.reduce((acc, cur) => (acc += cur.quantity), 0)
+          )
+          .reduce((acc: number, cur: number) => (acc += cur), 0);
+
+        const stockQuantity = buyQuantity - sellQuantity;
+
+        if (
+          transactionType === transactionTypes.SELL &&
+          field === 'quantity' &&
+          +value > stockQuantity
+        ) {
+          toast.error('Quantity exceeds stock quantity');
+          return;
+        }
+
+        updatedProducts[index][field] = +value;
+      }
     }
     setComposedProducts(updatedProducts);
   };

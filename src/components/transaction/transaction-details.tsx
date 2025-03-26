@@ -49,7 +49,9 @@ import { useState } from 'react';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import {
   useUpdateBuyTransaction,
+  useUpdateBuyTransactionProduct,
   useUpdateSellTransaction,
+  useUpdateSellTransactionProduct,
 } from '@/features/transaction/useUpdateTransaction';
 import { useProducts } from '@/features/product/useProducts';
 import { useTransactions } from '@/features/transaction/useTransactions';
@@ -70,6 +72,11 @@ function TransactionDetails() {
 
   const { isUpdating, updateBuyTransaction } = useUpdateBuyTransaction();
   const { isUpdating: isUpdating2, updateSellTransaction } = useUpdateSellTransaction();
+
+  const { isUpdating: isUpdatingProduct, updateBuyTransactionProduct } =
+    useUpdateBuyTransactionProduct();
+  const { isUpdating: isUpdatingProduct2, updateSellTransactionProduct } =
+    useUpdateSellTransactionProduct();
 
   const { isDeleting, deleteBuyTransaction } = useDeleteBuyTransaction();
 
@@ -160,14 +167,14 @@ function TransactionDetails() {
     });
 
     if (transactionType === transactionTypes.BUY) {
-      updateBuyTransaction({
+      updateBuyTransactionProduct({
         transactionId: transaction._id,
         updatedTransaction: {
           products: updatedProducts,
         },
       });
     } else {
-      updateSellTransaction({
+      updateSellTransactionProduct({
         transactionId: transaction._id,
         updatedTransaction: {
           products: updatedProducts,
@@ -274,7 +281,7 @@ function TransactionDetails() {
                     <DialogTitle>Generate invoice</DialogTitle>
                   </DialogHeader>
 
-                  <AddInvoiceForm transactions={[transaction]} />
+                  <AddInvoiceForm transaction={transaction} />
                 </DialogContent>
               </Dialog>
 
@@ -347,8 +354,8 @@ function TransactionDetails() {
                       {products?.find(p => p._id === product.product)?.productName}
                     </p>
                     <p className="p-2 font-bold">
-                      <span className="text-teal-100 text-lg">{product.quantity}</span> x{' '}
-                      <span className="text-xl text-blue-300">
+                      <span className="dark:text-teal-100 text-lg">{product.quantity}</span> x{' '}
+                      <span className="text-xl dark:text-blue-300">
                         {formatPrice(product.pricePerUnit, currency)}
                       </span>
                     </p>
@@ -397,7 +404,10 @@ function TransactionDetails() {
                             }}
                           />
                         </div>
-                        <Button onClick={() => handleUpdateProduct(product._id as string)}>
+                        <Button
+                          onClick={() => handleUpdateProduct(product._id as string)}
+                          disabled={isUpdatingProduct || isUpdatingProduct2}
+                        >
                           Update
                         </Button>
                       </div>

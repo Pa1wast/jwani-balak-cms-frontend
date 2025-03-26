@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/dialog';
 import UpdateProductForm from '@/components/product/update-product-form';
 import { Product } from '@/types/product';
+import { Link } from 'react-router-dom';
 
 function ProductRowActions({ product }: { product: Product }) {
   const { isDeleting, deleteProduct } = useDeleteProduct();
@@ -48,6 +49,10 @@ function ProductRowActions({ product }: { product: Product }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+              <DropdownMenuItem asChild>
+                <Link to={`/dashboard/products/${product._id}`}>View Details</Link>
+              </DropdownMenuItem>
 
               <DialogTrigger asChild>
                 <DropdownMenuItem>Edit product</DropdownMenuItem>

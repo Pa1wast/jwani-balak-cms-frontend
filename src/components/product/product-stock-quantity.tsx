@@ -1,28 +1,40 @@
-import { useTransactionsByProductId } from '@/features/transaction/useTransactionsByProductId';
 import Loader from '../ui/loader';
-import { transactionTypes } from '@/types/transaction';
+import { Transaction } from '@/types/transaction';
+import { useTransactions } from '@/features/transaction/useTransactions';
 
 interface ProductStockQuantityProps {
   productId: string;
 }
 
 function ProductStockQuantity({ productId }: ProductStockQuantityProps) {
-  const { isLoading, transactions } = useTransactionsByProductId(productId);
+  const { isLoading, transactions } = useTransactions();
 
   if (isLoading) return <Loader size="sm" text={false} />;
 
-  const buyTransactions = transactions.filter(
-    transaction => 'BUY'.toUpperCase() === transactionTypes.BUY
+  const filteredTransactions = transactions?.filter((transaction: Transaction) =>
+    transaction.products.some(product => product.product === productId)
   );
 
-  const sellTransactions = transactions.filter(
-    transaction => 'BUY'.toUpperCase() === transactionTypes.SELL
+  const buyTransactions = filteredTransactions.filter(
+    (transaction: Transaction) => 'expenses' in transaction
   );
 
-  const quantityBought = buyTransactions.reduce((acc, cur) => acc + cur.quantity, 0);
-  const quantitySold = sellTransactions.reduce((acc, cur) => acc + cur.quantity, 0);
+  const sellTransactions = filteredTransactions.filter(
+    (transaction: Transaction) => !('expenses' in transaction)
+  );
 
-  const stockQuantity = quantityBought - quantitySold;
+  const buyQuantity = buyTransactions
+    ?.map((transaction: Transaction) =>
+      transaction.products.reduce((acc, cur) => (acc += cur.quantity), 0)
+    )
+    .reduce((acc: number, cur: number) => (acc += cur), 0);
+  const sellQuantity = sellTransactions
+    ?.map((transaction: Transaction) =>
+      transaction.products.reduce((acc, cur) => (acc += cur.quantity), 0)
+    )
+    .reduce((acc: number, cur: number) => (acc += cur), 0);
+
+  const stockQuantity = buyQuantity - sellQuantity;
 
   return <p className="font-semibold">{stockQuantity}</p>;
 }

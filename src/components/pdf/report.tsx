@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Loader from '@/components/ui/loader';
 import { formatPrice } from '@/lib/price';
-import { currencyTypes, transactionTypes } from '@/types/transaction';
+import { currencyTypes } from '@/types/transaction';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useProducts } from '@/features/product/useProducts';

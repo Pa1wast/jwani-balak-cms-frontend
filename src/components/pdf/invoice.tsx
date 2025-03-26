@@ -1,40 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { ArrowLeft, Download, Mail, MapPin, Pen, Phone, Share2 } from 'lucide-react';
+import { ArrowLeft, Download, Edit, Mail, MapPin, Pen, Phone, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useInvoice } from '@/features/invoice.ts/useInvoice';
 import Loader from '@/components/ui/loader';
 import ErrorMessage from '@/components//ui/error-message';
 import { formatPrice } from '@/lib/price';
-import { currencyTypes, transactionTypes } from '@/types/transaction';
+import { currencyTypes } from '@/types/transaction';
 import { WhatsappShareButton } from 'react-share';
 import { formatDate } from '@/lib/date';
 import { Invoice as InvoiceType } from '@/types/invoice';
 import { useUpdateInvoice } from '@/features/invoice.ts/useUpdateInvoice';
 import { Input } from '@/components//ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Label } from '../ui/label';
+import { useProducts } from '@/features/product/useProducts';
+import { ComposedProduct } from '@/types/product';
 
 function Invoice() {
+  const [pricePerUnit, setPricePerUnit] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+
   const { isLoading, invoice } = useInvoice();
   const { isUpdating, updateInvoice } = useUpdateInvoice();
+  const { isLoading: isLoading2, products } = useProducts();
+
+  const [changedProducts, setChangedProducts] = useState<ComposedProduct[]>([]);
+
+  useEffect(() => {
+    if (invoice) setChangedProducts(invoice.transaction.products);
+  }, [invoice]);
 
   const [invoiceNO, setInvoiceNO] = useState(invoice?.NO);
 
-  const transactionsWithTotal = invoice?.transactions?.map(transaction => {
-    let total = transaction.pricePerUnit * transaction.quantity;
-
-    if ('BUY'.toUpperCase() === transactionTypes.BUY && transaction.expenses?.length) {
-      total += transaction.expenses.reduce((acc, expense) => acc + expense.amount, 0);
-    }
-
-    return {
-      ...transaction,
-      total,
-    };
-  });
-
-  const totalAmount = transactionsWithTotal?.reduce((acc, cur) => acc + cur.total, 0);
+  const totalAmount = invoice?.transaction?.products?.reduce(
+    (acc, cur) =>
+      invoice.transaction.currency === currencyTypes.USD
+        ? (acc += cur.quantity * cur.pricePerUnit * (cur.exchange?.rate ?? 1))
+        : (acc += cur.quantity * cur.pricePerUnit),
+    0
+  );
 
   const pdfRef = useRef(null);
 
@@ -55,23 +62,33 @@ function Invoice() {
     html2pdf().set(options).from(element).save();
   }
 
+  function handleChangeProduct(productId: string) {
+    if (!pricePerUnit || !quantity) return;
+
+    const product = changedProducts.find(p => p._id === productId);
+
+    if (!product) return;
+
+    const filteredProducts = changedProducts.filter(p => p._id !== productId);
+
+    product.pricePerUnit = pricePerUnit;
+    product.quantity = quantity;
+
+    setChangedProducts([...filteredProducts, product]);
+
+    setPricePerUnit(0);
+    setQuantity(0);
+  }
+
   function getFormattedInvoiceMessage(invoice: InvoiceType): string {
-    const transactions = invoice.transactions
-      ?.map((transaction: any, index: number) => {
-        return `#${index + 1} - Product: *${transaction.product?.productName || 'N/A'}*
-  Quantity: *${transaction.quantity}*
-  Price Per Unit: *${formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}*
-  Total: *${formatPrice(
-    transaction.pricePerUnit * transaction.quantity,
-    transaction.currency as currencyTypes
-  )}*`;
+    const total = invoice.transaction?.products
+      ?.map((product: any, index: number) => {
+        return `#${index + 1} - Product: *${product.product?.productName || 'N/A'}*
+  Quantity: *${product.quantity}*
+  Price Per Unit: *${formatPrice(product.pricePerUnit, currencyTypes.IQD)}*
+  Total: *${formatPrice(product.pricePerUnit * product.quantity, currencyTypes.IQD)}*`;
       })
       .join('\n\n');
-
-    const totalAmount = transactionsWithTotal?.reduce(
-      (acc: number, transaction: any) => acc + transaction.total,
-      0
-    );
 
     return `
 
@@ -92,13 +109,7 @@ function Invoice() {
 
 ----------------------
 
-🛍 Transactions:
-
-${transactions}
-
-----------------------
-
-💵 Total Amount: *${formatPrice(totalAmount, invoice.transactions[0]?.currency as currencyTypes)}*
+💵 Total Amount: *${formatPrice(totalAmount, invoice.transaction.currency as currencyTypes)}*
 
 ----------------------
 
@@ -106,7 +117,7 @@ ${transactions}
 📞 Contact: +964 750 990 4445`;
   }
 
-  if (isLoading) {
+  if (isLoading || isLoading2) {
     return (
       <div className="h-full w-full grid items-center">
         <Loader />
@@ -114,7 +125,7 @@ ${transactions}
     );
   }
 
-  if (!invoice || !invoice.transactions?.length) {
+  if (!invoice || !invoice.transaction) {
     return (
       <div className="h-screen w-full grid items-center my-auto">
         <ErrorMessage message="Failed getting invoice information" goBack />
@@ -243,10 +254,10 @@ ${transactions}
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">کۆ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map(transaction => (
-                    <p className="text-sm font-semibold">
-                      {formatPrice(transaction.total, transaction.currency as currencyTypes)}
-                    </p>
+                  {changedProducts?.map(product => (
+                    <span>
+                      {formatPrice(product.pricePerUnit * product.quantity, currencyTypes.IQD)}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -254,10 +265,8 @@ ${transactions}
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">نرخ</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map(transaction => (
-                    <p className="text-sm font-semibold text-secondary-foreground/60">
-                      {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
-                    </p>
+                  {changedProducts?.map(product => (
+                    <span>{formatPrice(product.pricePerUnit, currencyTypes.IQD)}</span>
                   ))}
                 </div>
               </div>
@@ -265,27 +274,78 @@ ${transactions}
               <div className="flex flex-col flex-[20%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">دانە</p>
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map(transaction => (
-                    <p className="text-sm font-semibold text-secondary-foreground/60">
-                      {transaction.quantity}
-                    </p>
+                  {changedProducts?.map(product => (
+                    <span>{product.quantity}</span>
                   ))}
                 </div>
               </div>
 
               <div className="flex flex-col flex-[40%] gap-2">
                 <p className="bg-black/80 text-white text-center p-2">جۆر</p>
+
                 <div className="border-[1px] h-full text-center flex flex-col gap-4 p-2">
-                  {transactionsWithTotal?.map(transaction => (
-                    <p>{transaction.product?.productName}</p>
-                  ))}
+                  <div className="flex self-center gap-4 justify-center items-center w-full">
+                    {changedProducts?.map(product => (
+                      <>
+                        <span>{products.find(p => p._id === product.product)?.productName}</span>
+                        <Dialog data-html2canvas-ignore="true">
+                          <DialogTrigger data-html2canvas-ignore="true">
+                            <Edit />
+                          </DialogTrigger>
+
+                          <DialogContent data-html2canvas-ignore="true">
+                            <DialogHeader>
+                              <DialogTitle>
+                                Change Product (
+                                {products.find(p => p._id === product.product)?.productName})
+                              </DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-1">
+                              <Label>Price / Unit ({product.pricePerUnit})</Label>
+
+                              <Input
+                                type="text"
+                                value={pricePerUnit}
+                                onChange={e => {
+                                  const value = e.target.value;
+                                  if (!isNaN(Number(value)) && value.length <= 20)
+                                    setPricePerUnit(Number(value));
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <Label>Quantity ({product.quantity})</Label>
+
+                              <Input
+                                type="text"
+                                value={quantity}
+                                onChange={e => {
+                                  const value = e.target.value;
+                                  if (!isNaN(Number(value)) && value.length <= 20)
+                                    setQuantity(Number(value));
+                                }}
+                              />
+                            </div>
+
+                            <Button
+                              variant="outline"
+                              onClick={() => handleChangeProduct(product._id)}
+                            >
+                              Change
+                            </Button>
+                          </DialogContent>
+                        </Dialog>
+                      </>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="flex gap-[1px] self-end w-full">
               <p className="text-right p-2 border flex-[20%] font-semibold">
-                {formatPrice(totalAmount, transactionsWithTotal[0]?.currency as currencyTypes)}
+                {formatPrice(totalAmount, currencyTypes.IQD)}
               </p>
               <p className="text-right font-bold text-lg p-2 border flex-[80%]">: کۆی گشتی</p>
             </div>

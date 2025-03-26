@@ -1,3 +1,5 @@
+import { ExchangeRate } from './transaction';
+
 export interface Product {
   _id: string;
   productName: string;
@@ -11,7 +13,9 @@ export interface NewProduct {
 }
 
 export interface ComposedProduct {
+  _id?: string;
   product: Product | string;
   quantity: number;
   pricePerUnit: number;
+  exchange?: ExchangeRate;
 }

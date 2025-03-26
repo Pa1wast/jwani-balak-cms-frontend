@@ -16,7 +16,7 @@ export async function addInvoiceApi(newInvoice: NewInvoice) {
   });
 
   if (!response.ok) {
-    throw new Error('Could not add invoice');
+    throw new Error('Could not generate invoice');
   }
 
   const data = await response.json();

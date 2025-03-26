@@ -55,7 +55,7 @@ function UpdateProductForm({ product }: UpdateProductFormProps) {
         />
 
         <Button type="submit" disabled={isUpdating}>
-          <Plus /> Add
+          <Plus /> Update
         </Button>
       </form>
     </Form>

@@ -4,7 +4,7 @@ import { Transaction } from './transaction';
 export interface Invoice {
   _id: string;
   NO: number;
-  transactions: Transaction[];
+  transaction: Transaction;
   company: Company;
   addressedTo: string;
   buyer: string;
@@ -27,7 +27,8 @@ export interface UploadedInvoice {
 
 export interface NewInvoice {
   company: string;
-  transactions: string[];
+  type: 'BuyTransaction' | 'SellTransaction';
+  transaction: string;
   addressedTo: string;
   buyer: string;
   seller: string;

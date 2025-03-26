@@ -23,6 +23,7 @@ import UploadedInvoices from '@/pages/uploaded-invoices';
 import PageNotFound from '@/components/page-not-found';
 import ProtectedLayout from '@/components/protected-layout';
 import Login from '@/pages/login';
+import ProductDetails from './components/product/product-details';
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ function App() {
                 <Route path="dashboard" element={<DashboardLayout />}>
                   <Route index element={<Dashboard />} />
                   <Route path="/dashboard/products" element={<Products />} />
+                  <Route path="/dashboard/products/:productId" element={<ProductDetails />} />
                   <Route path="/dashboard/transactions" element={<Transactions />} />
                   <Route
                     path="/dashboard/transactions/:transactionId"

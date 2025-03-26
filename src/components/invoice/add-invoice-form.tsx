@@ -17,11 +17,13 @@ import { useCompaniesView } from '@/contexts/companies-view-context';
 import { Transaction } from '@/types/transaction';
 
 interface AddInvoiceFormProps {
-  transactions: Transaction[];
+  transaction: Transaction;
 }
 
-function AddInvoiceForm({ transactions }: AddInvoiceFormProps) {
+function AddInvoiceForm({ transaction }: AddInvoiceFormProps) {
   const { selectedCompanyId } = useCompaniesView();
+
+  const transactionType = 'expenses' in transaction ? 'BuyTransaction' : 'SellTransaction';
 
   const { isAdding, addInvoice } = useAddInvoice();
 
@@ -38,8 +40,7 @@ function AddInvoiceForm({ transactions }: AddInvoiceFormProps) {
   function onSubmit(values: z.infer<typeof addInvoiceSchema>) {
     const { success, data } = addInvoiceSchema.safeParse(values);
 
-    if (success)
-      addInvoice({ ...data, transactions: transactions.map(transaction => transaction._id) });
+    if (success) addInvoice({ ...data, transaction: transaction._id, type: transactionType });
   }
   return (
     <Form {...form}>

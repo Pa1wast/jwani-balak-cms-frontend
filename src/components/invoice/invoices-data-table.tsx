@@ -29,7 +29,7 @@ import Loader from '@/components/ui/loader';
 import { useInvoices } from '@/features/invoice.ts/useInvoices';
 import { Invoice } from '@/types/invoice';
 import InvoiceRowActions from '@/components/invoice/invoice-row-actions';
-import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
+import { currencyTypes, Transaction } from '@/types/transaction';
 import { formatPrice } from '@/lib/price';
 
 export const columns: ColumnDef<Invoice>[] = [
@@ -74,21 +74,21 @@ export const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue('seller')}</div>,
   },
   {
-    accessorKey: 'transactions',
+    accessorKey: 'products',
     enableHiding: false,
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Transactions
+        Products
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => {
-      const transactions = row.getValue('transactions') as Transaction[];
-      return <div className="capitalize">{transactions?.length}</div>;
+      const transaction = row.getValue('transaction') as Transaction;
+      return <div className="capitalize">{transaction.products?.length}</div>;
     },
   },
   {
-    accessorKey: 'transactions',
+    accessorKey: 'transaction',
     enableHiding: false,
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
@@ -97,24 +97,13 @@ export const columns: ColumnDef<Invoice>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const transactions = row.getValue('transactions') as Transaction[];
-      const transactionsWithTotal = transactions?.map(transaction => {
-        let total = transaction.pricePerUnit * transaction.quantity;
-
-        if ('BUY'.toUpperCase() === transactionTypes.BUY && transaction.expenses?.length) {
-          total += transaction.expenses.reduce((acc, expense) => acc + expense.amount, 0);
-        }
-
-        return {
-          ...transaction,
-          total,
-        };
-      });
-
-      const totalAmount = transactionsWithTotal?.reduce((acc, cur) => acc + cur.total, 0);
+      const transaction = row.getValue('transactions') as Transaction;
+      const total =
+        transaction?.products?.reduce((acc, cur) => (acc += cur.pricePerUnit * cur.quantity), 0) ??
+        0;
       return (
         <div className="capitalize font-semibold">
-          {formatPrice(totalAmount, transactions[0]?.currency as currencyTypes)}
+          {formatPrice(total, transaction?.currency as currencyTypes)}
         </div>
       );
     },

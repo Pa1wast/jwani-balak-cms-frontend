@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
+import { currencyTypes, Transaction } from '@/types/transaction';
 import { formatDate } from '@/lib/date';
 import { formatPrice } from '@/lib/price';
 
@@ -20,36 +20,18 @@ function TransactionCard({ transaction }: TransactionCardProps) {
           <div
             className={cn(
               'w-2 h-2  rounded-full',
-              'BUY'.toUpperCase() === transactionTypes.SELL ? 'bg-green-700' : 'bg-blue-500'
+              !('expenses' in transaction) ? 'bg-green-700' : 'bg-blue-500'
             )}
           />
           <p className="text-foreground/60 text-sm font-medium">
-            {'BUY'.toUpperCase() === transactionTypes.BUY ? 'Buy' : 'Sell'} Transaction
+            {'expenses' in transaction ? 'Buy' : 'Sell'} Transaction
           </p>
         </CardHeader>
 
         <CardContent className="p-2 bg-secondary/30 rounded-lg grid grid-cols-2 gap-y-4 truncate">
           <p className="text-xs col-span-2 ">
-            Product Name:
-            {transaction.product ? (
-              <span className="font-bold inline-block ml-2">{transaction.product.productName}</span>
-            ) : (
-              <span className="font-medium inline-block ml-2 bg-red-200 text-red-500 px-1 rounded-lg">
-                Unavailable
-              </span>
-            )}
-          </p>
-
-          <p className="text-xs">
-            Price / Unit:
-            <span className="font-bold inline-block ml-2">
-              {formatPrice(transaction.pricePerUnit, transaction.currency as currencyTypes)}
-            </span>
-          </p>
-
-          <p className="text-xs">
-            Quantity:
-            <span className="font-bold inline-block ml-2">{transaction.quantity}</span>
+            Label:
+            {transaction.label}
           </p>
         </CardContent>
 
@@ -60,7 +42,13 @@ function TransactionCard({ transaction }: TransactionCardProps) {
             Total Cost:
             <span className="inline-block ml-2 font-bold">
               {formatPrice(
-                transaction.pricePerUnit * transaction.quantity,
+                transaction.products.reduce((acc, cur) => {
+                  if (transaction.currency === currencyTypes.USD) {
+                    return (acc += cur.pricePerUnit * cur.quantity * (cur.exchange?.rate ?? 1));
+                  } else {
+                    return (acc += cur.pricePerUnit * cur.quantity);
+                  }
+                }, 0),
                 transaction.currency as currencyTypes
               )}
             </span>

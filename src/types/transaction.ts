@@ -33,7 +33,6 @@ export interface BuyTransaction {
   products: ComposedProduct[];
   company: Company;
   expenses?: Expense[];
-  exchange: ExchangeRate;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,7 +43,6 @@ export interface SellTransaction {
   currency: 'USD' | 'IQD';
   products: ComposedProduct[];
   company: Company;
-  exchange: ExchangeRate;
   createdAt: string;
   updatedAt: string;
 }

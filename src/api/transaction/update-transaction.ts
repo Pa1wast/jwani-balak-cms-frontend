@@ -54,3 +54,57 @@ export async function updateSellTransactionApi({
 
   return data;
 }
+
+export async function updateBuyTransactionProductApi({
+  transactionId,
+  updatedTransaction,
+}: {
+  transactionId: string;
+  updatedTransaction: UpdatedTransaction;
+}) {
+  const apiUrl = `${API_URL}/buyTransaction/composed/${transactionId}`;
+
+  const response = await fetch(apiUrl, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedTransaction),
+  });
+
+  if (!response.ok) {
+    throw new Error('Could not update buy transaction');
+  }
+
+  const data = await response.json();
+
+  return data;
+}
+
+export async function updateSellTransactionProductApi({
+  transactionId,
+  updatedTransaction,
+}: {
+  transactionId: string;
+  updatedTransaction: UpdatedTransaction;
+}) {
+  const apiUrl = `${API_URL}/sellTransaction/composed/${transactionId}`;
+
+  const response = await fetch(apiUrl, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedTransaction),
+  });
+
+  if (!response.ok) {
+    throw new Error('Could not update sell transaction');
+  }
+
+  const data = await response.json();
+
+  return data;
+}
