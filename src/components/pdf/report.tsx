@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Loader from '@/components/ui/loader';
 import { formatPrice } from '@/lib/price';
-import { currencyTypes } from '@/types/transaction';
+import { currencyTypes, SellTransaction } from '@/types/transaction';
 import { Separator } from '@/components/ui/separator';
 import { useProducts } from '@/features/product/useProducts';
 
@@ -83,13 +83,13 @@ function Report() {
   const totalProfits = totalRevenue - totalExpenses > 0 ? totalRevenue - totalExpenses : 0;
 
   const highestPricedProduct = sellTransactions
-    .flatMap(transaction => transaction.products)
+    .flatMap((transaction: SellTransaction) => transaction.products)
     .reduce((maxProduct, currentProduct) => {
       const currentValue = currentProduct.pricePerUnit * currentProduct.quantity;
       const maxValue = maxProduct.pricePerUnit * maxProduct.quantity;
 
       return currentValue > maxValue ? currentProduct : maxProduct;
-    }, sellTransactions[0].products[0]);
+    }, sellTransactions[0]?.products[0]);
 
   return (
     <div>
@@ -114,7 +114,7 @@ function Report() {
           <div className="flex gap-1 items-center shadow-none p-2  flex-wrap border-0">
             <span className="text-sm text-foreground/60">Most Sold Product</span>
             <div className="flex flex-col items-center gap-1 ml-auto">
-              {products.find(p => p._id === highestPricedProduct.product)?.productName}
+              {products?.find(p => p._id === highestPricedProduct.product)?.productName}
             </div>
           </div>
 
