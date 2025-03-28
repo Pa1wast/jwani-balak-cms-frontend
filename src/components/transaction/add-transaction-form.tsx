@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { currencyTypes, Transaction, transactionTypes } from '@/types/transaction';
 import { Input } from '../ui/input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useProducts } from '@/features/product/useProducts';
 
 import {
@@ -28,7 +28,7 @@ import {
 } from '@/features/transaction/useAddTransaction';
 import { useCompaniesView } from '@/contexts/companies-view-context';
 import { Label } from '../ui/label';
-import { ComposedProduct } from '@/types/product';
+import { ComposedProduct, Product } from '@/types/product';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner';
 import { useTransactions } from '@/features/transaction/useTransactions';
@@ -38,7 +38,8 @@ function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
 
   const { products } = useProducts();
-  const [curProducts, setCurProducts] = useState(products);
+  console.log(products);
+  const [curProducts, setCurProducts] = useState<Product[]>([]);
   const { isAdding: isAddingBuy, addBuyTransaction } = useAddBuyTransaction();
   const { isAdding: isAddingSell, addSellTransaction } = useAddSellTransaction();
 
@@ -61,6 +62,10 @@ function AddTransactionForm() {
   const [composedProducts, setComposedProducts] = useState<ComposedProduct[]>([]);
 
   const { isLoading, transactions } = useTransactions();
+
+  useEffect(() => {
+    if (products) setCurProducts(products);
+  }, [products]);
 
   if (isLoading) return <Loader size="sm" text={false} />;
 
