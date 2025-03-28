@@ -38,7 +38,7 @@ function AddTransactionForm() {
   const { selectedCompanyId } = useCompaniesView();
 
   const { products } = useProducts();
-  console.log(products);
+
   const [curProducts, setCurProducts] = useState<Product[]>([]);
   const { isAdding: isAddingBuy, addBuyTransaction } = useAddBuyTransaction();
   const { isAdding: isAddingSell, addSellTransaction } = useAddSellTransaction();
